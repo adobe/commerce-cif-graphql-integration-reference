@@ -1,0 +1,35 @@
+{
+  "name": "commerce-cif-graphql-integration-reference",
+  "version": "1.0.0",
+  "description": "Reference implementation showcasing a GraphQL integration on Adobe I/O Runtime with a fake 3rd-party commerce system",
+  "author": "Adobe",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "lint": "eslint -f table --ignore-path ./.eslintignore .",
+    "test": "npm run lint && npm run test-cov",
+    "test-cov": "nyc npm run unit && npm run lcov-report",
+    "lcov-report": "nyc report --reporter=lcov",
+    "unit": "mocha test/**/*Test.js",
+    "deploy": "serverless deploy"
+  },
+  "dependencies": {
+    "dataloader": "^1.4.0",
+    "graphql": "^14.5.8",
+    "graphql-tools": "3.1.1",
+    "openwhisk": "^3.19.0"
+  },
+  "devDependencies": {
+    "serverless": "^1.49.0",
+    "serverless-openwhisk": "^0.18.4",
+    "serverless-webpack": "^5.3.1",
+    "webpack": "^4.39.1",
+    "eslint": "^6.1.0",
+    "eslint-plugin-header": "^3.0.0",
+    "mocha": "^6.2.0",
+    "sinon": "^7.5.0",
+    "chai": "^4.2.0",
+    "nyc": "^14.1.1",
+    "mock-require": "^3.0.3"
+  }
+}
