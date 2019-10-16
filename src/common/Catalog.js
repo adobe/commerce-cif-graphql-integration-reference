@@ -14,9 +14,9 @@
 
 'use strict';
 
-const { ProductsLoader } = require('./ProductsLoader.js');
-const { CategoryTreeLoader } = require('./CategoryTreeLoader.js');
-const { LoaderProxy } = require('./LoaderProxy.js');
+const ProductsLoader = require('./ProductsLoader.js');
+const CategoryTreeLoader = require('./CategoryTreeLoader.js');
+const LoaderProxy = require('./LoaderProxy.js');
 
 // This module contains 3 classes because they have cross/cyclic dependencies to each other
 // and it's not possible to have them in separate files because this is not supported by Javascript

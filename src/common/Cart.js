@@ -14,12 +14,12 @@
 
 'use strict';
 
-const { LoaderProxy } = require('./LoaderProxy.js');
+const LoaderProxy = require('./LoaderProxy.js');
 const { Product } = require('./Catalog.js');
-const { CartLoader } = require('./CartLoader.js');
-const { ProductLoader } = require('./ProductLoader.js');
-const { ProductsLoader } = require('./ProductsLoader.js');
-const { CategoryTreeLoader } = require('./CategoryTreeLoader.js');
+const CartLoader = require('./CartLoader.js');
+const ProductLoader = require('./ProductLoader.js');
+const ProductsLoader = require('./ProductsLoader.js');
+const CategoryTreeLoader = require('./CategoryTreeLoader.js');
 
 class Cart {
 
@@ -85,7 +85,7 @@ class Cart {
                     __typename: 'SimpleCartItem',
                     id: idx,
                     quantity: entry.quantity,
-                    product: productLoader.load(entry.sku)
+                    product: () => productLoader.load(entry.sku)
                         .then(data => new Product({
                             productData: data,
                             graphqlContext: this.graphqlContext,
@@ -99,4 +99,4 @@ class Cart {
     }
 }
 
-module.exports.Cart = Cart;
+module.exports = Cart;

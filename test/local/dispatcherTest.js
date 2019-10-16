@@ -18,9 +18,9 @@ const sinon = require('sinon');
 const assert = require('chai').assert;
 const expect = require('chai').expect;
 const mockRequire = require('mock-require');
-const { ProductsLoader } = require('../../src/common/ProductsLoader.js');
-const { CategoryTreeLoader } = require('../../src/common/CategoryTreeLoader.js');
-const { CartLoader } = require('../../src/common/CartLoader.js');
+const ProductsLoader = require('../../src/common/ProductsLoader.js');
+const CategoryTreeLoader = require('../../src/common/CategoryTreeLoader.js');
+const CartLoader = require('../../src/common/CartLoader.js');
 
 describe('Dispatcher Resolver', () => {
 
@@ -57,7 +57,7 @@ describe('Dispatcher Resolver', () => {
         console.error.restore();
     });
 
-    describe('Unit Tests', () => {
+    describe('Integration Tests', () => {
 
         let args = {
             url: 'https://mybackendserver.com/rest',

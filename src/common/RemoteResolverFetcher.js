@@ -49,4 +49,4 @@ class RemoteResolverFetcher {
     }
 }
 
-module.exports.RemoteResolverFetcher = RemoteResolverFetcher;
+module.exports = RemoteResolverFetcher;

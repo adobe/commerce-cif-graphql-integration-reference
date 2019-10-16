@@ -63,7 +63,6 @@ class CartLoader {
 
         // Each cart entry only has the sku of the product: the function CartItem.product()
         // demonstrates how each product will be fetched if they are being requested in the GraphQL query.
-
         return Promise.resolve({
             id: cartId,
             email: 'dummy@example.com',
@@ -89,4 +88,4 @@ class CartLoader {
     }
 }
 
-module.exports.CartLoader = CartLoader;
+module.exports = CartLoader;

@@ -76,4 +76,4 @@ class CategoryTreeLoader {
     }
 }
 
-module.exports.CategoryTreeLoader = CategoryTreeLoader;
+module.exports = CategoryTreeLoader;

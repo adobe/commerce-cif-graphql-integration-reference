@@ -111,4 +111,4 @@ class SchemaBuilder {
     }
 }
 
-module.exports.SchemaBuilder = SchemaBuilder;
+module.exports = SchemaBuilder;

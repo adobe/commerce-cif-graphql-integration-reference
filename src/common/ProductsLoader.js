@@ -134,4 +134,4 @@ class ProductsLoader {
     }
 }
 
-module.exports.ProductsLoader = ProductsLoader;
+module.exports = ProductsLoader;

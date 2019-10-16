@@ -17,7 +17,7 @@
 const sinon = require('sinon');
 const assert = require('chai').assert;
 const expect = require('chai').expect;
-const { CartLoader } = require('../../src/common/CartLoader.js');
+const CartLoader = require('../../src/common/CartLoader.js');
 
 // The cart resolver
 const resolve = require('../../src/remote/cartResolver.js').main;
@@ -35,7 +35,7 @@ describe('Cart Resolver', () => {
         console.error.restore();
     });
 
-    describe('Unit Tests', () => {
+    describe('Integration Tests', () => {
 
         let url = 'https://mybackendserver.com/rest';
 

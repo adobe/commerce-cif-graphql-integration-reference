@@ -16,8 +16,8 @@
 
 const magentoSchema = require('../resources/magento-schema-2.3.2.min.json');
 const { graphql } = require('graphql');
-const { SchemaBuilder } = require('../common/SchemaBuilder.js');
-const { Cart } = require('../common/Cart.js');
+const SchemaBuilder = require('../common/SchemaBuilder.js');
+const Cart = require('../common/Cart.js');
 
 let cachedSchema = null;
 

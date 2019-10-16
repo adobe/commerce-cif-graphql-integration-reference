@@ -19,10 +19,10 @@ const { makeRemoteExecutableSchema, introspectSchema, mergeSchemas } = require('
 const { graphql } = require('graphql');
 
 const { Products, CategoryTree } = require('../common/Catalog.js');
-const { ProductsLoader } = require('../common/ProductsLoader.js');
-const { CategoryTreeLoader } = require('../common/CategoryTreeLoader.js');
-const { SchemaBuilder } = require('../common/SchemaBuilder.js');
-const { RemoteResolverFetcher } = require('../common/RemoteResolverFetcher.js');
+const ProductsLoader = require('../common/ProductsLoader.js');
+const CategoryTreeLoader = require('../common/CategoryTreeLoader.js');
+const SchemaBuilder = require('../common/SchemaBuilder.js');
+const RemoteResolverFetcher = require('../common/RemoteResolverFetcher.js');
 
 let cachedSchema = null;
 

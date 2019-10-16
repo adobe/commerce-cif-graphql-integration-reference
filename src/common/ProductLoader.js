@@ -63,7 +63,6 @@ class ProductLoader {
 
         // Each cart entry only has the sku of the product: the function CartItem.product()
         // demonstrates how each product will be fetched if they are being requested in the GraphQL query.
-
         return Promise.resolve({
             sku: productSku,
             title: `Product #${productSku}`,
@@ -77,4 +76,4 @@ class ProductLoader {
     }
 }
 
-module.exports.ProductLoader = ProductLoader;
+module.exports = ProductLoader;

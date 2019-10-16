@@ -55,4 +55,4 @@ class LoaderProxy {
     }
 }
 
-module.exports.LoaderProxy = LoaderProxy;
+module.exports = LoaderProxy;
