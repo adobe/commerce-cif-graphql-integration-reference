@@ -1,0 +1,39 @@
+service: graphql-reference
+
+package:
+  individually: true
+  exclude:
+    - ./**
+
+provider:
+  name: openwhisk
+  runtime: nodejs:default
+  ignore_certs: true
+  service: graphql-reference
+
+plugins:
+  - serverless-openwhisk
+  - serverless-webpack
+
+resources:
+  packages:
+    graphql-reference:
+      parameters:
+
+functions:
+  dispatcher:
+    name: graphql-reference/dispatcher
+    handler: src/local/dispatcher.main
+    concurrency: 200
+    annotations:
+      web-export: true
+    parameters:
+      remoteSchemas: # Action with smaller order has "merge priority" in schema conflicts
+        cart:
+          order: 20
+          action: graphql-reference/cart
+
+  cart:
+    name: graphql-reference/cart
+    handler: src/remote/cartResolver.main
+    concurrency: 200
