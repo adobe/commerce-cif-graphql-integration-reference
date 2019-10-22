@@ -1,4 +1,8 @@
 version: 2.1
+
+orbs:
+  codecov: codecov/codecov@1.0.5
+
 jobs:
   build:
     docker:
@@ -23,6 +27,5 @@ jobs:
           path: test/results
       - store_artifacts:
           path: test/results
-      - run:
-          name: Upload code coverage
-          command: npm install -g codecov && codecov
+      - codecov/upload:
+          conf: .circleci/codecov.yml
