@@ -23,3 +23,6 @@ jobs:
           path: test/results
       - store_artifacts:
           path: test/results
+      - run:
+        name: Upload code coverage
+        command: npm install -g codecov && codecov
