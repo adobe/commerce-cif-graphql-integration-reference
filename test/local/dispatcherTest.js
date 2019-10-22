@@ -21,6 +21,7 @@ const mockRequire = require('mock-require');
 const ProductsLoader = require('../../src/common/ProductsLoader.js');
 const CategoryTreeLoader = require('../../src/common/CategoryTreeLoader.js');
 const CartLoader = require('../../src/common/CartLoader.js');
+const ProductLoader = require('../../src/common/ProductLoader.js');
 
 describe('Dispatcher Resolver', () => {
 
@@ -70,6 +71,7 @@ describe('Dispatcher Resolver', () => {
         };
 
         it('Basic products search', () => {
+            let searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
             args.query = '{products(search: "short", currentPage: 1){total_count,page_info{current_page,page_size},items{sku,name,description{html},price{regularPrice{amount{currency,value}}}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
@@ -93,10 +95,21 @@ describe('Dispatcher Resolver', () => {
                     assert.equal(price.currency, 'USD');
                     assert.equal(price.value, idx == 0 ? 12.34 : 56.78);
                 });
+
+                // Ensure the Products search function is only called once
+                assert(searchProducts.calledOnceWith({
+                    search: "short",
+                    pageSize: 20,
+                    currentPage: 1
+                }, args));
+
+            }).finally(() => {
+                searchProducts.restore();
             });
         });
 
         it('Basic category search', () => {
+            let getCategoryById = sinon.spy(CategoryTreeLoader.prototype, '__getCategoryById');
             args.query = '{category(id: "1"){id,name,description,children{id,name,description,children{id,name,description}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
@@ -119,10 +132,25 @@ describe('Dispatcher Resolver', () => {
                         assert.equal(subsubcategory.description, `Fetched category #1-${id}-${id2} from ${args.url}`);
                     });
                 });
+
+                // Ensure the category loading function is only called once for each category being fetched
+                assert.equal(getCategoryById.callCount, 7);
+                assert(getCategoryById.calledWith('1', args));
+                assert(getCategoryById.calledWith('1-1', args));
+                assert(getCategoryById.calledWith('1-2', args));
+                assert(getCategoryById.calledWith('1-1-1', args));
+                assert(getCategoryById.calledWith('1-1-2', args));
+                assert(getCategoryById.calledWith('1-2-1', args));
+                assert(getCategoryById.calledWith('1-2-2', args));
+
+            }).finally(() => {
+                getCategoryById.restore();
             });
         });
 
         it('Combined products and category search', () => {
+            let searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
+            let getCategoryById = sinon.spy(CategoryTreeLoader.prototype, '__getCategoryById');
             args.query = '{products(filter:{sku:{eq:"a-sku"}}, currentPage:1){items{sku,categories{id}}}, category(id: "1"){id,products{items{sku}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
@@ -144,10 +172,39 @@ describe('Dispatcher Resolver', () => {
                     let id = idx + 1;
                     assert.equal(item.sku, `product-${id}`);
                 });
+
+                // Ensure the Products search function is called once for the "search by sku"
+                // and once for the category products
+                assert.equal(searchProducts.callCount, 2);
+                assert(searchProducts.calledWith({
+                    filter: {
+                        sku: {
+                            eq: 'a-sku'
+                        }
+                    },
+                    pageSize: 20,
+                    currentPage: 1
+                }, args));
+                assert(searchProducts.calledWith({
+                    categoryId: "1",
+                    pageSize: 20,
+                    currentPage: 1
+                }, args));
+                
+                // Ensure the category loading function is only called once for each category being fetched
+                assert.equal(getCategoryById.callCount, 3);
+                assert(getCategoryById.calledWith('1', args));
+                assert(getCategoryById.calledWith('cat1', args));
+                assert(getCategoryById.calledWith('cat2', args));
+
+            }).finally(() => {
+                searchProducts.restore();
+                getCategoryById.restore();
             });
         });
 
         it('Products search by skus', () => {
+            let searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
             args.query = '{products(filter:{sku:{in:["a-sku", "b-sku"]}}, currentPage:1){items{sku}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
@@ -156,10 +213,27 @@ describe('Dispatcher Resolver', () => {
                 assert.equal(items.length, 2);
                 assert.equal(items[0].sku, 'a-sku');
                 assert.equal(items[1].sku, 'b-sku');
+
+                // Ensure the Products search function is called once
+                assert(searchProducts.calledOnceWith({
+                    filter: {
+                        sku: {
+                            in: ['a-sku', 'b-sku']
+                        }
+                    },
+                    pageSize: 20,
+                    currentPage: 1
+                }, args));
+
+            }).finally(() => {
+                searchProducts.restore();
             });
         });
 
         it('Query cart remote resolver', () => {
+            let searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
+            let getProductBySku = sinon.spy(ProductLoader.prototype, '__getProductBySku');
+            let getCartById = sinon.spy(CartLoader.prototype, '__getCartById');
             args.query = '{products(filter:{sku:{in:["a-sku", "b-sku"]}}, currentPage:1){items{sku}}, cart(cart_id:"abcd"){email,items{product{sku}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
@@ -179,6 +253,32 @@ describe('Dispatcher Resolver', () => {
                     let product = item.product;
                     assert.equal(product.sku, `product-${id}`);
                 });
+
+                // Ensure the Products search function is called once
+                assert(searchProducts.calledOnceWith({
+                    filter: {
+                        sku: {
+                            in: ['a-sku', 'b-sku']
+                        }
+                    },
+                    pageSize: 20,
+                    currentPage: 1
+                }, args));
+
+                // Ensure the cart loading function is only called once
+                // (we dont check the 'args' parameter because this is modified by graphql-tools)
+                assert(getCartById.calledOnceWith('abcd'));
+
+                // Ensure the product loading function is only called twice, once for each product sku
+                // (we dont check the 'args' parameter because this is modified by graphql-tools)
+                assert(getProductBySku.calledTwice);
+                assert(getProductBySku.calledWith('product-1'));
+                assert(getProductBySku.calledWith('product-2'));
+
+            }).finally(() => {
+                searchProducts.restore();
+                getProductBySku.restore();
+                getCartById.restore();
             });
         });
 

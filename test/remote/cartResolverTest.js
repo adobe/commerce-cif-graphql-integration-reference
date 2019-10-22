@@ -18,6 +18,7 @@ const sinon = require('sinon');
 const assert = require('chai').assert;
 const expect = require('chai').expect;
 const CartLoader = require('../../src/common/CartLoader.js');
+const ProductLoader = require('../../src/common/ProductLoader.js');
 
 // The cart resolver
 const resolve = require('../../src/remote/cartResolver.js').main;
@@ -37,13 +38,15 @@ describe('Cart Resolver', () => {
 
     describe('Integration Tests', () => {
 
-        let url = 'https://mybackendserver.com/rest';
+        let args = {
+            url: 'https://mybackendserver.com/rest'
+        };
 
         it('Basic cart request', () => {
-            return resolve({
-                query: '{cart(cart_id:"abcd"){email,prices{grand_total{currency,value}},items{id,quantity,product{sku,name,description{html},categories{name,description}}}}}',
-                url: url
-            }).then(result => {
+            let getCartById = sinon.spy(CartLoader.prototype, '__getCartById');
+            let getProductBySku = sinon.spy(ProductLoader.prototype, '__getProductBySku');
+            args.query = '{cart(cart_id:"abcd"){email,prices{grand_total{currency,value}},items{id,quantity,product{sku,name,description{html},categories{name,description}}}}}';
+            return resolve(args).then(result => {
                 assert.isUndefined(result.errors); // No GraphQL errors
 
                 let cart = result.data.cart;
@@ -63,24 +66,34 @@ describe('Cart Resolver', () => {
                     let product = item.product;
                     assert.equal(product.sku, `product-${id}`);
                     assert.equal(product.name, `Product #product-${id}`);
-                    assert.equal(product.description.html, `Fetched product #${product.sku} from ${url}`);
+                    assert.equal(product.description.html, `Fetched product #${product.sku} from ${args.url}`);
 
                     let categories = product.categories;
                     assert.equal(categories.length, 2);
                     categories.forEach((category, idx) => {
                         let id = idx + 1;
                         assert.equal(category.name, `Category #cat${id}`);
-                        assert.equal(category.description, `Fetched category #cat${id} from ${url}`);
+                        assert.equal(category.description, `Fetched category #cat${id} from ${args.url}`);
                     });
                 });
+
+                // Ensure the Cart loading function is only called once
+                assert(getCartById.calledOnceWith('abcd', args));
+
+                // Ensure the product loading function is only called twice, once for each product sku
+                assert(getProductBySku.calledTwice);
+                assert(getProductBySku.calledWith('product-1', args));
+                assert(getProductBySku.calledWith('product-2', args));
+
+            }).finally(() => {
+                getCartById.restore();
+                getProductBySku.restore();
             });
         });
 
         it('Mutation: create empty cart', () => {
-            return resolve({
-                query: 'mutation {createEmptyCart}',
-                url: url
-            }).then(result => {
+            args.query = 'mutation {createEmptyCart}';
+            return resolve(args).then(result => {
                 assert.isUndefined(result.errors); // No GraphQL errors
 
                 let response = result.data.createEmptyCart;
@@ -90,10 +103,8 @@ describe('Cart Resolver', () => {
 
         it('Error when fetching the cart data', () => {
             let stub = sinon.stub(CartLoader.prototype, '__getCartById').returns(Promise.reject('Connection failed'));
-            return resolve({
-                query: '{cart(cart_id:"abcd"){email}}',
-                url: url
-            }).then(result => {
+            args.query = '{cart(cart_id:"abcd"){email}}';
+            return resolve(args).then(result => {
                 assert.equal(result.errors.length, 1);
                 assert.equal(result.errors[0].message, 'Backend data is null');
                 expect(result.errors[0].path).to.eql(['cart', 'email']);
