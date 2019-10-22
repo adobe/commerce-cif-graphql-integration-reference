@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/adobe/commerce-cif-graphql-integration-reference.svg?style=svg)](https://circleci.com/gh/adobe/commerce-cif-graphql-integration-reference)
+
 # 3rd-Party GraphQL integration with AEM Commerce and CIF on Adobe I/O Runtime
 
 ## Introduction
