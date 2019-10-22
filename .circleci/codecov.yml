@@ -3,12 +3,12 @@ coverage:
     project:
       default:
         enabled: true
-        target: 70%
+        target: 80%
         threshold: null
         base: auto
     patch:
       default:
         enabled: true
-        target: 70%
+        target: 80%
         threshold: null
         base: auto
