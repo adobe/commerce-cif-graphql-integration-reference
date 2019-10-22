@@ -175,7 +175,7 @@ describe('Dispatcher Resolver', () => {
 
                 // Ensure the Products search function is called once for the "search by sku"
                 // and once for the category products
-                assert.equal(searchProducts.callCount, 2);
+                assert(searchProducts.calledTwice);
                 assert(searchProducts.calledWith({
                     filter: {
                         sku: {
