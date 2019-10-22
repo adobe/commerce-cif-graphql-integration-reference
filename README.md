@@ -38,9 +38,11 @@ Note that the loader and data classes in this project are developed in a way so 
 
 ## Architecture
 
-The following diagrams illustrate the architecture of this reference implementation. It shows how introspection is performed in order to build the final entire schema, and how a GraphQL data query is executed.
+The following diagram illustrates the architecture of this reference implementation. It shows how introspection is performed in order to build the final entire schema. Some part of the final schema is "provided" by the `cartResolver` action.
 
 ![GraphQL introspection](images/graphql-introspection.png)
+
+This second diagram illustrates how a GraphQL query is being executed. The `cart` part of the query is delegated to the `cartResolver`. All the JSON responses are merged by the `dispatcher` action in order to build the full response.
 
 ![GraphQL query execution](images/graphql-query-execution.png)
 
