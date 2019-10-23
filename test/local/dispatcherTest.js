@@ -26,6 +26,10 @@ const ProductLoader = require('../../src/common/ProductLoader.js');
 describe('Dispatcher Resolver', () => {
 
     let resolve;
+    let searchProducts;
+    let getProductBySku;
+    let getCategoryById;
+    let getCartById;
 
     before(() => {
         // Disable console debugging
@@ -58,6 +62,21 @@ describe('Dispatcher Resolver', () => {
         console.error.restore();
     });
 
+    beforeEach(() => {
+        // We "spy" all the loading functions
+        searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
+        getProductBySku = sinon.spy(ProductLoader.prototype, '__getProductBySku');
+        getCategoryById = sinon.spy(CategoryTreeLoader.prototype, '__getCategoryById');
+        getCartById = sinon.spy(CartLoader.prototype, '__getCartById');
+    })
+
+    afterEach(() => {
+        searchProducts.restore();
+        getProductBySku.restore();
+        getCategoryById.restore();
+        getCartById.restore();
+    });
+
     describe('Integration Tests', () => {
 
         let args = {
@@ -71,7 +90,6 @@ describe('Dispatcher Resolver', () => {
         };
 
         it('Basic products search', () => {
-            let searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
             args.query = '{products(search: "short", currentPage: 1){total_count,page_info{current_page,page_size},items{sku,name,description{html},price{regularPrice{amount{currency,value}}}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
@@ -103,13 +121,10 @@ describe('Dispatcher Resolver', () => {
                     currentPage: 1
                 }, args));
 
-            }).finally(() => {
-                searchProducts.restore();
             });
         });
 
         it('Basic category search', () => {
-            let getCategoryById = sinon.spy(CategoryTreeLoader.prototype, '__getCategoryById');
             args.query = '{category(id: "1"){id,name,description,children{id,name,description,children{id,name,description}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
@@ -143,14 +158,10 @@ describe('Dispatcher Resolver', () => {
                 assert(getCategoryById.calledWith('1-2-1', args));
                 assert(getCategoryById.calledWith('1-2-2', args));
 
-            }).finally(() => {
-                getCategoryById.restore();
             });
         });
 
         it('Combined products and category search', () => {
-            let searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
-            let getCategoryById = sinon.spy(CategoryTreeLoader.prototype, '__getCategoryById');
             args.query = '{products(filter:{sku:{eq:"a-sku"}}, currentPage:1){items{sku,categories{id}}}, category(id: "1"){id,products{items{sku}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
@@ -197,14 +208,10 @@ describe('Dispatcher Resolver', () => {
                 assert(getCategoryById.calledWith('cat1', args));
                 assert(getCategoryById.calledWith('cat2', args));
 
-            }).finally(() => {
-                searchProducts.restore();
-                getCategoryById.restore();
             });
         });
 
         it('Products search by skus', () => {
-            let searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
             args.query = '{products(filter:{sku:{in:["a-sku", "b-sku"]}}, currentPage:1){items{sku}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
@@ -225,15 +232,10 @@ describe('Dispatcher Resolver', () => {
                     currentPage: 1
                 }, args));
 
-            }).finally(() => {
-                searchProducts.restore();
             });
         });
 
         it('Query cart remote resolver', () => {
-            let searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
-            let getProductBySku = sinon.spy(ProductLoader.prototype, '__getProductBySku');
-            let getCartById = sinon.spy(CartLoader.prototype, '__getCartById');
             args.query = '{products(filter:{sku:{in:["a-sku", "b-sku"]}}, currentPage:1){items{sku}}, cart(cart_id:"abcd"){email,items{product{sku}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
@@ -275,46 +277,45 @@ describe('Dispatcher Resolver', () => {
                 assert(getProductBySku.calledWith('product-1'));
                 assert(getProductBySku.calledWith('product-2'));
 
-            }).finally(() => {
-                searchProducts.restore();
-                getProductBySku.restore();
-                getCartById.restore();
             });
         });
 
         it('Error when fetching the product data', () => {
-            let stub = sinon.stub(ProductsLoader.prototype, '__searchProducts').returns(Promise.reject('Connection failed'));
+            // Replace spy with stub
+            searchProducts.restore();
+            searchProducts = sinon.stub(ProductsLoader.prototype, '__searchProducts').returns(Promise.reject('Connection failed'));
+
             args.query = '{products(search: "short", currentPage: 1){total_count}}';
             return resolve(args).then(result => {
                 assert.equal(result.body.errors.length, 1);
                 assert.equal(result.body.errors[0].message, 'Backend data is null');
                 expect(result.body.errors[0].path).to.eql(['products', 'total_count']);
-            }).finally(() => {
-                stub.restore();
             });
         });
 
         it('Error when fetching the category data', () => {
-            let stub = sinon.stub(CategoryTreeLoader.prototype, '__getCategoryById').returns(Promise.reject('Connection failed'));
+            // Replace spy with stub
+            getCategoryById.restore();
+            getCategoryById = sinon.stub(CategoryTreeLoader.prototype, '__getCategoryById').returns(Promise.reject('Connection failed'));
+
             args.query = '{category(id: "1"){id}}';
             return resolve(args).then(result => {
                 assert.equal(result.body.errors.length, 1);
                 assert.equal(result.body.errors[0].message, 'Backend data is null');
                 expect(result.body.errors[0].path).to.eql(['category', 'id']);
-            }).finally(() => {
-                stub.restore();
             });
         });
 
         it('Error when fetching the cart data', () => {
-            let stub = sinon.stub(CartLoader.prototype, '__getCartById').returns(Promise.reject('Connection failed'));
+            // Replace spy with stub
+            getCartById.restore();
+            getCartById = sinon.stub(CartLoader.prototype, '__getCartById').returns(Promise.reject('Connection failed'));
+            
             args.query = '{cart(cart_id:"abcd"){email}}';
             return resolve(args).then(result => {
                 assert.equal(result.body.errors.length, 1);
                 assert.equal(result.body.errors[0].message, 'Backend data is null');
                 expect(result.body.errors[0].path).to.eql(['cart', 'email']);
-            }).finally(() => {
-                stub.restore();
             });
         });
 
