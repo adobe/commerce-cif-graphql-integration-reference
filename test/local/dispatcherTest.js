@@ -21,10 +21,15 @@ const mockRequire = require('mock-require');
 const ProductsLoader = require('../../src/common/ProductsLoader.js');
 const CategoryTreeLoader = require('../../src/common/CategoryTreeLoader.js');
 const CartLoader = require('../../src/common/CartLoader.js');
+const ProductLoader = require('../../src/common/ProductLoader.js');
 
 describe('Dispatcher Resolver', () => {
 
     let resolve;
+    let searchProducts;
+    let getProductBySku;
+    let getCategoryById;
+    let getCartById;
 
     before(() => {
         // Disable console debugging
@@ -55,6 +60,21 @@ describe('Dispatcher Resolver', () => {
     after(() => {
         console.debug.restore();
         console.error.restore();
+    });
+
+    beforeEach(() => {
+        // We "spy" all the loading functions
+        searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
+        getProductBySku = sinon.spy(ProductLoader.prototype, '__getProductBySku');
+        getCategoryById = sinon.spy(CategoryTreeLoader.prototype, '__getCategoryById');
+        getCartById = sinon.spy(CartLoader.prototype, '__getCartById');
+    })
+
+    afterEach(() => {
+        searchProducts.restore();
+        getProductBySku.restore();
+        getCategoryById.restore();
+        getCartById.restore();
     });
 
     describe('Integration Tests', () => {
@@ -93,6 +113,14 @@ describe('Dispatcher Resolver', () => {
                     assert.equal(price.currency, 'USD');
                     assert.equal(price.value, idx == 0 ? 12.34 : 56.78);
                 });
+
+                // Ensure the Products search function is only called once
+                assert(searchProducts.calledOnceWith({
+                    search: "short",
+                    pageSize: 20,
+                    currentPage: 1
+                }, args));
+
             });
         });
 
@@ -119,6 +147,17 @@ describe('Dispatcher Resolver', () => {
                         assert.equal(subsubcategory.description, `Fetched category #1-${id}-${id2} from ${args.url}`);
                     });
                 });
+
+                // Ensure the category loading function is only called once for each category being fetched
+                assert.equal(getCategoryById.callCount, 7);
+                assert(getCategoryById.calledWith('1', args));
+                assert(getCategoryById.calledWith('1-1', args));
+                assert(getCategoryById.calledWith('1-2', args));
+                assert(getCategoryById.calledWith('1-1-1', args));
+                assert(getCategoryById.calledWith('1-1-2', args));
+                assert(getCategoryById.calledWith('1-2-1', args));
+                assert(getCategoryById.calledWith('1-2-2', args));
+
             });
         });
 
@@ -144,6 +183,31 @@ describe('Dispatcher Resolver', () => {
                     let id = idx + 1;
                     assert.equal(item.sku, `product-${id}`);
                 });
+
+                // Ensure the Products search function is called once for the "search by sku"
+                // and once for the category products
+                assert(searchProducts.calledTwice);
+                assert(searchProducts.calledWith({
+                    filter: {
+                        sku: {
+                            eq: 'a-sku'
+                        }
+                    },
+                    pageSize: 20,
+                    currentPage: 1
+                }, args));
+                assert(searchProducts.calledWith({
+                    categoryId: "1",
+                    pageSize: 20,
+                    currentPage: 1
+                }, args));
+                
+                // Ensure the category loading function is only called once for each category being fetched
+                assert.equal(getCategoryById.callCount, 3);
+                assert(getCategoryById.calledWith('1', args));
+                assert(getCategoryById.calledWith('cat1', args));
+                assert(getCategoryById.calledWith('cat2', args));
+
             });
         });
 
@@ -156,6 +220,18 @@ describe('Dispatcher Resolver', () => {
                 assert.equal(items.length, 2);
                 assert.equal(items[0].sku, 'a-sku');
                 assert.equal(items[1].sku, 'b-sku');
+
+                // Ensure the Products search function is called once
+                assert(searchProducts.calledOnceWith({
+                    filter: {
+                        sku: {
+                            in: ['a-sku', 'b-sku']
+                        }
+                    },
+                    pageSize: 20,
+                    currentPage: 1
+                }, args));
+
             });
         });
 
@@ -179,42 +255,67 @@ describe('Dispatcher Resolver', () => {
                     let product = item.product;
                     assert.equal(product.sku, `product-${id}`);
                 });
+
+                // Ensure the Products search function is called once
+                assert(searchProducts.calledOnceWith({
+                    filter: {
+                        sku: {
+                            in: ['a-sku', 'b-sku']
+                        }
+                    },
+                    pageSize: 20,
+                    currentPage: 1
+                }, args));
+
+                // Ensure the cart loading function is only called once
+                // (we dont check the 'args' parameter because this is modified by graphql-tools)
+                assert(getCartById.calledOnceWith('abcd'));
+
+                // Ensure the product loading function is only called twice, once for each product sku
+                // (we dont check the 'args' parameter because this is modified by graphql-tools)
+                assert(getProductBySku.calledTwice);
+                assert(getProductBySku.calledWith('product-1'));
+                assert(getProductBySku.calledWith('product-2'));
+
             });
         });
 
         it('Error when fetching the product data', () => {
-            let stub = sinon.stub(ProductsLoader.prototype, '__searchProducts').returns(Promise.reject('Connection failed'));
+            // Replace spy with stub
+            searchProducts.restore();
+            searchProducts = sinon.stub(ProductsLoader.prototype, '__searchProducts').returns(Promise.reject('Connection failed'));
+
             args.query = '{products(search: "short", currentPage: 1){total_count}}';
             return resolve(args).then(result => {
                 assert.equal(result.body.errors.length, 1);
                 assert.equal(result.body.errors[0].message, 'Backend data is null');
                 expect(result.body.errors[0].path).to.eql(['products', 'total_count']);
-            }).finally(() => {
-                stub.restore();
             });
         });
 
         it('Error when fetching the category data', () => {
-            let stub = sinon.stub(CategoryTreeLoader.prototype, '__getCategoryById').returns(Promise.reject('Connection failed'));
+            // Replace spy with stub
+            getCategoryById.restore();
+            getCategoryById = sinon.stub(CategoryTreeLoader.prototype, '__getCategoryById').returns(Promise.reject('Connection failed'));
+
             args.query = '{category(id: "1"){id}}';
             return resolve(args).then(result => {
                 assert.equal(result.body.errors.length, 1);
                 assert.equal(result.body.errors[0].message, 'Backend data is null');
                 expect(result.body.errors[0].path).to.eql(['category', 'id']);
-            }).finally(() => {
-                stub.restore();
             });
         });
 
         it('Error when fetching the cart data', () => {
-            let stub = sinon.stub(CartLoader.prototype, '__getCartById').returns(Promise.reject('Connection failed'));
+            // Replace spy with stub
+            getCartById.restore();
+            getCartById = sinon.stub(CartLoader.prototype, '__getCartById').returns(Promise.reject('Connection failed'));
+            
             args.query = '{cart(cart_id:"abcd"){email}}';
             return resolve(args).then(result => {
                 assert.equal(result.body.errors.length, 1);
                 assert.equal(result.body.errors[0].message, 'Backend data is null');
                 expect(result.body.errors[0].path).to.eql(['cart', 'email']);
-            }).finally(() => {
-                stub.restore();
             });
         });
 
