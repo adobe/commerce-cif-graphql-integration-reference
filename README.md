@@ -70,7 +70,7 @@ To deploy the actions on the Adobe I/O Runtime platform, we use the [serverless]
 $ npm run deploy
 ```
 
-This will deploy the `graphql-reference/dispatcher` and `graphql-reference/cart` actions in your namespace. The dispatcher is a web action that is accessible with the URL `https://adobeioruntime.net/api/v1/web/NAMESPACE/graphql-reference/dispatcher`. To test the GraphQL endpoint, you can for example use the `GraphiQL` plugin in the Chrome browser. 
+This will deploy the `graphql-reference/dispatcher` and `graphql-reference/cart` actions in your namespace. The dispatcher is a web action that is accessible with the URL `https://adobeioruntime.net/api/v1/web/NAMESPACE/graphql-reference/dispatcher`. To test the GraphQL endpoint, you can for example use the `GraphQL` plugin in the Chrome browser. 
 
 ## Developing a real 3rd-party integration
 
