@@ -121,7 +121,7 @@ function resolve(args) {
  * This method processes the default Magento schema and returns the modified schema.
  * It demonstrates how it is possible to modify the Magento schema, for example to remove
  * all unimplemented fields, customize GraphQL types, and add new types and fields to the 
- * magento schema.
+ * default Magento schema.
  */
 function localSchema() {
 
