@@ -14,7 +14,7 @@
 
 'use strict';
 
-const { buildClientSchema, GraphQLSchema, GraphQLType } = require('graphql'); // eslint-disable-line no-unused-vars
+const { buildClientSchema, GraphQLSchema, GraphQLType, parse, extendSchema, introspectionQuery, graphqlSync } = require('graphql'); // eslint-disable-line no-unused-vars
 
 class SchemaBuilder {
 
@@ -108,6 +108,75 @@ class SchemaBuilder {
      */
     getType(typeName) {
         return this.schema.data.__schema.types.find(t => t.name == typeName);
+    }
+
+    /**
+     * @private
+     */
+    __toFieldType(fieldType, isList = false) {
+        if (isList) {
+            return 'LIST';
+        } else if (['String', 'Int', 'Float', 'Boolean', 'ID'].includes(fieldType)) {
+            return 'SCALAR';
+        } else {
+            let t = this.getType(fieldType);
+            return t ? t.kind : null;
+        }
+    }
+
+    /**
+     * @private
+     */
+    __toTypeDef(fieldType, isList = false) {
+        return {
+            kind: this.__toFieldType(fieldType, isList),
+            name: isList ? null : fieldType,
+            ofType: isList ? this.__toTypeDef(fieldType) : null
+        }
+    }
+
+    /**
+     * Adds a new field to an existing type. If the type is an interface, this method also adds the new field to all
+     * the types implementing this interface.
+     * 
+     * @param {String} typeName The type name, for example, 'ProductInterface'
+     * @param {String} name The name of the new field.
+     * @param {String} description The description for the new field.
+     * @param {String} fieldTypeName The type name of the new field, for example, 'String', 'Int', or 'CategoryTree'
+     * @param {Boolean} [isList] Set to true if the new field is an Array. In this case, fieldTypeName specifies the type of the elements of the array. 
+     */
+    addFieldToType(typeName, name, description, fieldTypeName, isList = false) {
+        let type = this.getType(typeName);
+        let newField = {
+            name: name,
+            description: description,
+            args: [],
+            type: this.__toTypeDef(fieldTypeName, isList),
+            isDeprecated: false,
+            deprecationReason: null
+        };
+        type.fields.push(newField);
+        type.fields.sort((a,b) => a.name.localeCompare(b.name));
+
+        if (type.kind == 'INTERFACE' && type.possibleTypes) {
+            type.possibleTypes.forEach(possibleType => {
+                let t = this.getType(possibleType.name);
+                t.fields.push(newField);
+                t.fields.sort((a,b) => a.name.localeCompare(b.name));
+            });
+        }
+    }
+
+    /**
+     * Extends the schema with the given SDL. This method modifies the schema currently being processed.
+     * 
+     * @param {String} sdl The SDL describing the schema extension(s).
+     */
+    extend(sdl) {
+        let ast = parse(sdl);
+        let graphQLSchema = buildClientSchema(this.schema.data);
+        let extendedGraphQLSchema = extendSchema(graphQLSchema, ast, {commentDescriptions: true});
+        this.schema = graphqlSync(extendedGraphQLSchema, introspectionQuery);
     }
 }
 

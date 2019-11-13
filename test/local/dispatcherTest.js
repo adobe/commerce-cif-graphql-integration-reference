@@ -280,6 +280,13 @@ describe('Dispatcher Resolver', () => {
             });
         });
 
+        it('Test that the custom "wishlist" and "ProductInterface" fields can be queried', () => {
+            args.query = '{wishlist(id:"whatever"){id,products{sku,rating,accessories{sku},country_of_origin}}}';
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors); // No GraphQL errors
+            });
+        });
+
         it('Error when fetching the product data', () => {
             // Replace spy with stub
             searchProducts.restore();

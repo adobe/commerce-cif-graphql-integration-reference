@@ -117,8 +117,15 @@ function resolve(args) {
     });
 }
 
+/**
+ * This method processes the default Magento schema and returns the modified schema.
+ * It demonstrates how it is possible to modify the Magento schema, for example to remove
+ * all unimplemented fields, customize GraphQL types, and add new types and fields to the 
+ * magento schema.
+ */
 function localSchema() {
 
+    // The local schema only implements the "products" and "category" fields of the Query root type
     let schemaBuilder = new SchemaBuilder(magentoSchema)
         .removeMutationType()
         .filterQueryFields(new Set(["products", "category"]));
@@ -141,6 +148,28 @@ function localSchema() {
     // Change CategoryTree.id from Int to String
     let categoryTreeType = schemaBuilder.getType('CategoryTree');
     categoryTreeType.fields.find(f => f.name == 'id').type.name = 'String';
+
+    // Add a new type and field under the Query root type
+    // Note that when adding a field to an interface, you must also add it to all its implementation types
+    // --> see the other examples below for a better method to add fields to interfaces
+    schemaBuilder.extend(`
+        extend type Query {
+            # Fetches a wishlist by id
+            wishlist(id: String!): Wishlist
+        }
+
+        type Wishlist {
+            # The wishlist id
+            id: String
+            # The products in the wishlist
+            products: [ProductInterface]
+        }
+    `);
+
+    // Add some fields to the ProductInterface type and all its implementations
+    schemaBuilder.addFieldToType('ProductInterface', 'rating', 'The rating of the product', 'String');
+    schemaBuilder.addFieldToType('ProductInterface', 'accessories', 'The accessories of the product', 'ProductInterface', true);
+    schemaBuilder.addFieldToType('ProductInterface', 'country_of_origin', 'The code of the country where the product is manufactured', 'CountryCodeEnum');
 
     return schemaBuilder.build(10);
 }
