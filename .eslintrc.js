@@ -41,7 +41,7 @@ module.exports = {
         'header'
     ],
     'parserOptions': {
-        'ecmaVersion': 6
+        'ecmaVersion': 2017
     },
     'extends': 'eslint:recommended',
     'rules': {

@@ -22,18 +22,23 @@ const ProductsLoader = require('../../src/common/ProductsLoader.js');
 const CategoryTreeLoader = require('../../src/common/CategoryTreeLoader.js');
 const CartLoader = require('../../src/common/CartLoader.js');
 const ProductLoader = require('../../src/common/ProductLoader.js');
+const fs = require('fs');
 
 describe('Dispatcher Resolver', () => {
 
     let resolve;
+    let cleanCachedSchema;
+
     let searchProducts;
     let getProductBySku;
     let getCategoryById;
     let getCartById;
+    let cachedFiles = new Set();
 
     before(() => {
         // Disable console debugging
         sinon.stub(console, 'debug');
+        sinon.stub(console, 'warn');
         sinon.stub(console, 'error');
 
         // Mock openwhisk client
@@ -53,13 +58,31 @@ describe('Dispatcher Resolver', () => {
             }
         });
 
+        // Mock aio-lib-state library, caching objects in files
+        mockRequire('@adobe/aio-lib-state', {
+            init: () => {
+                return {
+                    get: (key) => {
+                        return fs.existsSync(`test/${key}.cache`) ? JSON.parse(fs.readFileSync(`test/${key}.cache`)) : null;
+                    },
+                    put: (key, value) => {
+                        cachedFiles.add(`test/${key}.cache`);
+                        fs.writeFileSync(`test/${key}.cache`, JSON.stringify({value}));
+                    }
+                }
+            }
+        });
+
         // The main dispatcher resolver (will use the mock openwhisk client)
         resolve = require('../../src/local/dispatcher.js').main;
+        cleanCachedSchema = require('../../src/local/dispatcher.js').cleanCacheSchema;
     });
 
     after(() => {
         console.debug.restore();
+        console.warn.restore();
         console.error.restore();
+        cachedFiles.forEach(name => fs.unlinkSync(name));
     });
 
     beforeEach(() => {
@@ -158,6 +181,7 @@ describe('Dispatcher Resolver', () => {
                 assert(getCategoryById.calledWith('1-2-1', args));
                 assert(getCategoryById.calledWith('1-2-2', args));
 
+                cleanCachedSchema(); // This will enforce the cache loading via aio-lib-state in the next test
             });
         });
 
@@ -276,7 +300,6 @@ describe('Dispatcher Resolver', () => {
                 assert(getProductBySku.calledTwice);
                 assert(getProductBySku.calledWith('product-1'));
                 assert(getProductBySku.calledWith('product-2'));
-
             });
         });
 
