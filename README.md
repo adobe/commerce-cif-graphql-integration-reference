@@ -92,7 +92,7 @@ In order to illustrate these requirements, the `localSchema()` function in [disp
 
 ## Caching
 
-For performance reasons, the [dispatcher.js](src/local/dispatcher.js) implementation "caches" the GraphQL schema in a global variable, so that further WARM invocations of the same action can immediately reuse the schema previously built with schema stitching. The Adobe I/O Runtime platform indeed reuses existing `Node.js` containers when possible, so it is posible to "cache" data in global variables.
+For performance reasons, the [dispatcher.js](src/local/dispatcher.js) implementation "caches" the GraphQL schema in a global variable, so that further WARM invocations of the same action can immediately reuse the schema previously built with schema stitching. The Adobe I/O Runtime platform indeed reuses existing `Node.js` containers when possible, so it is possible to "cache" data in global variables.
 
 In addition, the dispatcher implementation also demonstrates the use of the [aio-lib-state](https://github.com/adobe/aio-lib-state) library in order to cache all the remote schemas in a cache maintained by the Adobe I/O platform. This cache is used a second-level caching layer when a COLD container is used. The benefit of this caching layer increases with the number of remote resolvers, and the lifetime of this cached data is currently one hour. This caching is activated/disabled by the `use-aio-cache` property set in [serverless.yml](serverless.yml). During development, we **strongly recommend** that this property is set to `false` to make sure that changes to the schema are immediately visible in the schema.
 
