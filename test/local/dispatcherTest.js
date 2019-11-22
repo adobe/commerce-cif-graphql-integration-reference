@@ -110,7 +110,7 @@ describe('Dispatcher Resolver', () => {
                     action: '../../src/remote/cartResolver.js'
                 }
             },
-            "use-aio-cache": true
+            "use-aio-cache": 3600
         };
 
         it('Basic products search', () => {

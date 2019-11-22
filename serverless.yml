@@ -28,7 +28,7 @@ functions:
     annotations:
       web-export: true
     parameters:
-      use-aio-cache: true
+      use-aio-cache: 3600 # number of seconds for caching; set to false or remove to disable caching
       remoteSchemas: # Action with smaller order has "merge priority" in schema conflicts
         cart:
           order: 20

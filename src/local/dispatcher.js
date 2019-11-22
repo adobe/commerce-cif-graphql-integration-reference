@@ -36,7 +36,7 @@ async function resolve(args) {
     let storeSchema = false; // If true, we will put the remote schemas in the aio-lib-state cache
 
     // If the schema is not cached, we try to get the remote schemas from the aio-lib-state cache
-    if (cachedSchema == null && args['use-aio-cache']) {
+    if (cachedSchema == null && Number.isInteger(args['use-aio-cache'])) {
         state = await libState.init();
         remoteResolvers = await fetchRemoteSchemasFromCache(state);
     }
@@ -45,7 +45,7 @@ async function resolve(args) {
     // we prepare the remote fetchers to build the executable remote schemas
     if (cachedSchema == null && args.remoteSchemas && remoteResolvers == null) {
         remoteResolvers = prepareRemoteSchemaFetchers(args.remoteSchemas);
-        storeSchema = args['use-aio-cache'];
+        storeSchema = Number.isInteger(args['use-aio-cache']);
     }
     
     // The schema is already available, we use a NOOP Promise for Promise.all()
@@ -80,8 +80,9 @@ async function resolve(args) {
                 });
 
                 if (state && cachedSchemas.length > 0) {
-                    console.debug('Trying to put schemas in aio-lib-state cache ...');
-                    await state.put('schemas', cachedSchemas, {ttl: 3600});
+                    let ttl = args['use-aio-cache'];
+                    console.debug(`Trying to put schemas in aio-lib-state cache with ttl:${ttl} ...`);
+                    await state.put('schemas', cachedSchemas, {ttl});
                 }
             }
 
