@@ -79,6 +79,22 @@ This repository provides a reference implementation that can be used as a starti
 * modify all the `__convertData` conversion methods in the data classes, to convert the data from the 3rd-party system into Magento GraphQL objects
 * modify and extend the `getter` methods in the data classes, to support all the fields not covered by the example integration
 * introduce new local and/or remote resolvers, to incrementally support more fields of the Magento GraphQL API
+* modify the GraphQL schema to only expose the implemented fields and any potential schema customization(s) and/or extension(s)
+
+## Schema customization and/or extension
+
+With GraphQL introspection, it is very easy for users to discover and browse a GraphQL schema in order to understand the types of queries it supports. Since the goal of the 3rd-party integration is to adapt the Magento GraphQL schema to "non-Magento" e-commerce platforms, it is clear that:
+* it is not realistic to expect that the entire Magento schema can be adapted at once
+* there might be incompabilities between the Magento GraphQL and a 3rd-party platform
+* it must be possible to extend the base Magento schema with custom attributes and fields
+
+In order to illustrate these requirements, the `localSchema()` function in [dispatcher.js](src/local/dispatcher.js) demonstrates a number of possible changes applied to the GraphQL schema. This is of course only an example, and a real implementation should either remove all the customizations if none if needed, or adapt the examples to satisfy the customizations and extensions required by the real integration. We however recommend that a real implementation should remove all the fields that it doesn't implement (at least for the top-level fields under the `Query` and `Mutation` root types), so that the schema only contains the parts of the Magento schema that are really implemented and supported.
+
+## Caching
+
+For performance reasons, the [dispatcher.js](src/local/dispatcher.js) implementation "caches" the GraphQL schema in a global variable, so that further WARM invocations of the same action can immediately reuse the schema previously built with schema stitching. The Adobe I/O Runtime platform indeed reuses existing `Node.js` containers when possible, so it is posible to "cache" data in global variables.
+
+In addition, the dispatcher implementation also demonstrates the use of the [aio-lib-state](https://github.com/adobe/aio-lib-state) library in order to cache all the remote schemas in a cache maintained by the Adobe I/O platform. This cache is used a second-level caching layer when a COLD container is used. The benefit of this caching layer increases with the number of remote resolvers, and the lifetime of this cached data is currently one hour. This caching is activated/disabled by the `use-aio-cache` property set in [serverless.yml](serverless.yml). During development, we **strongly recommend** that this property is set to `false` to make sure that changes to the schema are immediately visible in the schema.
 
 ### Contributing
 
