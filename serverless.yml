@@ -28,6 +28,7 @@ functions:
     annotations:
       web-export: true
     parameters:
+      url: https://a-dummy-url.com # Demonstrates how parameters can be passed to GraphQL resolvers
       remoteSchemas: # Action with smaller order has "merge priority" in schema conflicts
         cart:
           order: 20

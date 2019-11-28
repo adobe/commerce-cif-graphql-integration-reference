@@ -53,7 +53,7 @@ class ProductsLoader {
      * @param {Object} params An object with the search parameters defined by the Magento GraphQL "products" field.
      * @param {String} [params.search] The "search" argument of the GraphQL "products" field.
      * @param {String} [params.filter] The "filter" argument of the GraphQL "products" field.
-     * @param {String} [params.categoryId] An optional category id, to get all the products if a given category.
+     * @param {number} [params.categoryId] An optional category id (integer), to get all the products if a given category.
      * @param {Integer} params.currentPage The "currentPage" argument of the GraphQL "products" field.
      * @param {Integer} params.pageSize The "pageSize" argument of the GraphQL "products" field.
      * @param {Object} actionParameters Some parameters of the I/O action itself (e.g. backend server URL, authentication info, etc)
@@ -78,7 +78,7 @@ class ProductsLoader {
                             currency: 'USD',
                             amount: 12.34
                         },
-                        categoryIds: [ 'cat1', 'cat2']
+                        categoryIds: [1, 2]
                     },
                     {
                         sku: 'product-2',
@@ -88,26 +88,27 @@ class ProductsLoader {
                             currency: 'USD',
                             amount: 56.78
                         },
-                        categoryIds: [ 'cat2', 'cat3']
+                        categoryIds: [2, 3]
                     }
                 ]
             });
-        } else if (params.filter && params.filter.sku) { // Get a product by sku
-            if (params.filter.sku.eq) {
+        } else if (params.filter && (params.filter.sku || params.filter.url_key)) { // Get a product by sku or url_key
+            if ((params.filter.sku && params.filter.sku.eq) || (params.filter.url_key && params.filter.url_key.eq)) {
+                let key = params.filter.sku ? params.filter.sku.eq : params.filter.url_key.eq;
                 return Promise.resolve({
                     total: 1,
                     offset: params.currentPage * params.pageSize,
                     limit: params.pageSize,
                     products: [
                         {
-                            sku: params.filter.sku.eq,
-                            title: `Product #${params.filter.sku.eq}`,
-                            description: `Fetched product #${params.filter.sku.eq} from ${actionParameters.url}`,
+                            sku: key,
+                            title: `Product #${key}`,
+                            description: `Fetched product #${key} from ${actionParameters.url}`,
                             price: {
                                 currency: 'USD',
                                 amount: 12.34
                             },
-                            categoryIds: [ 'cat1', 'cat2']
+                            categoryIds: [1, 2]
                         }
                     ]
                 });
@@ -125,7 +126,7 @@ class ProductsLoader {
                                 currency: 'USD',
                                 amount: 12.34
                             },
-                            categoryIds: [ 'cat1', 'cat2']
+                            categoryIds: [1, 2]
                         }
                     })
                 });

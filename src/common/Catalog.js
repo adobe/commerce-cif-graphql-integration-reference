@@ -60,6 +60,8 @@ class CategoryTree {
     __convertData(data) {
         return {
             id: data.id,
+            position: data.id,
+            url_path: data.slug,
             name: data.title,
             description: data.description
         };
@@ -217,6 +219,7 @@ class Product {
     __convertData(data) {
         return {
             sku: data.sku,
+            url_key: data.sku,
             name: data.title,
             description: {
                 html: data.description
@@ -228,7 +231,24 @@ class Product {
                         value: data.price.amount
                     }
                 }
-            }
+            },
+            small_image: {
+                url: `${this.actionParameters.url}/images/small/${data.sku}.jpg` // Dummy
+            },
+            image: {
+                url: `${this.actionParameters.url}/images/normal/${data.sku}.jpg` // Dummy
+            },
+            thumbnail: {
+                url: `${this.actionParameters.url}/images/thumb/${data.sku}.jpg` // Dummy
+            },
+            media_gallery_entries: [
+                {
+                    file: `${this.actionParameters.url}/images/normal/${data.sku}.jpg`, // Dummy
+                    disabled: false,
+                    media_type: 'image',
+                    position: 0
+                }
+            ]
         }
     }
 }
