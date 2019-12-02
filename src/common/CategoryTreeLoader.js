@@ -55,7 +55,7 @@ class CategoryTreeLoader {
      * in order to fetch a category based on the category id. This method returns a Promise,
      * for example to simulate some HTTP REST call being performed to the 3rd-party commerce system.
      * 
-     * @param {String} categoryId The category id.
+     * @param {Number} categoryId The category id (integer).
      * @param {Object} actionParameters Some parameters of the I/O action itself (e.g. backend server URL, authentication info, etc)
      * @returns {Promise} A Promise with the category data.
      */
@@ -69,10 +69,29 @@ class CategoryTreeLoader {
 
         return Promise.resolve({
             id: categoryId,
+            slug: this.__toSlug(categoryId),
             title: `Category #${categoryId}`,
             description: `Fetched category #${categoryId} from ${actionParameters.url}`,
-            subcategories: [ `${categoryId}-1`, `${categoryId}-2`]
+            subcategories: [categoryId * 10 + 1, categoryId * 10 + 2]
         });
+    }
+
+    // For a given category id, builds a dummy url_path
+    // Example for category id 221 --> "2/22/221"
+    __toSlug(categoryId) {
+        if (categoryId < 10) {
+            return new String(categoryId);
+        }
+
+        let previous = 0;
+        return new String(categoryId)
+            .split('')
+            .map(s => parseInt(s))
+            .map(i => {
+                previous = (previous * 10) + i;
+                return previous;
+            })
+            .join('/');
     }
 }
 

@@ -114,7 +114,7 @@ describe('Dispatcher Resolver', () => {
         };
 
         it('Basic products search', () => {
-            args.query = '{products(search: "short", currentPage: 1){total_count,page_info{current_page,page_size},items{sku,name,description{html},price{regularPrice{amount{currency,value}}}}}}';
+            args.query = '{products(search:"short", currentPage:1){total_count,page_info{current_page,page_size},items{sku,name,description{html},price{regularPrice{amount{currency,value}}}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
 
@@ -149,95 +149,101 @@ describe('Dispatcher Resolver', () => {
         });
 
         it('Basic category search', () => {
-            args.query = '{category(id: "1"){id,name,description,children{id,name,description,children{id,name,description}}}}';
+            args.query = '{category(id:1){id,name,description,children{id,name,description,children{id,name,description}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
 
                 let category = result.body.data.category;
-                assert.equal(category.id, '1');
+                assert.equal(category.id, 1);
                 assert.equal(category.name, 'Category #1');
 
                 let children = category.children;
                 assert.equal(children.length, 2);
                 children.forEach((subcategory, idx) => {
-                    let id = idx + 1;
-                    assert.equal(subcategory.name, `Category #1-${id}`);
-                    assert.equal(subcategory.description, `Fetched category #1-${id} from ${args.url}`);
+                    let id = category.id * 10 + idx + 1;
+                    assert.equal(subcategory.name, `Category #${id}`);
+                    assert.equal(subcategory.description, `Fetched category #${id} from ${args.url}`);
                     let subchildren = subcategory.children;
                     assert.equal(subchildren.length, 2);
                     subchildren.forEach((subsubcategory, idx2) => {
-                        let id2 = idx2 + 1;
-                        assert.equal(subsubcategory.name, `Category #1-${id}-${id2}`);
-                        assert.equal(subsubcategory.description, `Fetched category #1-${id}-${id2} from ${args.url}`);
+                        let id2 = id * 10 + idx2 + 1;
+                        assert.equal(subsubcategory.name, `Category #${id2}`);
+                        assert.equal(subsubcategory.description, `Fetched category #${id2} from ${args.url}`);
                     });
                 });
 
                 // Ensure the category loading function is only called once for each category being fetched
                 assert.equal(getCategoryById.callCount, 7);
-                assert(getCategoryById.calledWith('1', args));
-                assert(getCategoryById.calledWith('1-1', args));
-                assert(getCategoryById.calledWith('1-2', args));
-                assert(getCategoryById.calledWith('1-1-1', args));
-                assert(getCategoryById.calledWith('1-1-2', args));
-                assert(getCategoryById.calledWith('1-2-1', args));
-                assert(getCategoryById.calledWith('1-2-2', args));
+                assert(getCategoryById.calledWith(1, args));
+                assert(getCategoryById.calledWith(11, args));
+                assert(getCategoryById.calledWith(12, args));
+                assert(getCategoryById.calledWith(111, args));
+                assert(getCategoryById.calledWith(112, args));
+                assert(getCategoryById.calledWith(121, args));
+                assert(getCategoryById.calledWith(122, args));
 
                 cleanCachedSchema(); // This will enforce the cache loading via aio-lib-state in the next test
             });
         });
 
-        it('Combined products and category search', () => {
-            args.query = '{products(filter:{sku:{eq:"a-sku"}}, currentPage:1){items{sku,categories{id}}}, category(id: "1"){id,products{items{sku}}}}';
-            return resolve(args).then(result => {
-                assert.isUndefined(result.body.errors); // No GraphQL errors
+        // We "parameterized" the next test, once searching by sku and once by url_key
+        let eqTests = [
+            {eq: 'sku', value: 'a-sku'},
+            {eq: 'url_key', value: 'a-slug'},
+        ];
 
-                let items = result.body.data.products.items;
-                assert.equal(items.length, 1);
-                assert.equal(items[0].sku, 'a-sku');
-                
-                let categories = items[0].categories;
-                assert.equal(categories.length, 2);
-                categories.forEach((category, idx) => {
-                    let id = idx + 1;
-                    assert.equal(category.id, `cat${id}`);
+        eqTests.forEach(test => {
+            it(`Combined products filter by ${test.eq} and category search`, () => {
+                args.query = `{products(filter:{${test.eq}:{eq:"${test.value}"}}, currentPage:1){items{sku,url_key,categories{id}}}, category(id:1){id,products{items{sku}}}}`;
+                return resolve(args).then(result => {
+                    assert.isUndefined(result.body.errors); // No GraphQL errors
+
+                    let items = result.body.data.products.items;
+                    assert.equal(items.length, 1);
+                    assert.equal(items[0].sku, test.value);
+                    assert.equal(items[0].url_key, test.value);
+                    
+                    let categories = items[0].categories;
+                    assert.equal(categories.length, 2);
+                    categories.forEach((category, idx) => {
+                        let id = idx + 1;
+                        assert.equal(category.id, id);
+                    });
+
+                    let products = result.body.data.category.products;
+                    assert.equal(products.items.length, 2);
+                    products.items.forEach((item, idx) => {
+                        let id = idx + 1;
+                        assert.equal(item.sku, `product-${id}`);
+                    });
+
+                    // Ensure the Products search function is called once for the "search by (sku | url_key)"
+                    // and once for the category products
+                    let filter = {};
+                    filter[test.eq] = {eq: test.value};
+
+                    assert(searchProducts.calledTwice);
+                    assert(searchProducts.calledWith({
+                        filter,
+                        pageSize: 20,
+                        currentPage: 1
+                    }, args));
+                    assert(searchProducts.calledWith({
+                        categoryId: 1,
+                        pageSize: 20,
+                        currentPage: 1
+                    }, args));
+                    
+                    // Ensure the category loading function is only called once for each category being fetched
+                    assert.equal(getCategoryById.callCount, 2);
+                    assert(getCategoryById.calledWith(1, args));
+                    assert(getCategoryById.calledWith(2, args));
                 });
-
-                let products = result.body.data.category.products;
-                assert.equal(products.items.length, 2);
-                products.items.forEach((item, idx) => {
-                    let id = idx + 1;
-                    assert.equal(item.sku, `product-${id}`);
-                });
-
-                // Ensure the Products search function is called once for the "search by sku"
-                // and once for the category products
-                assert(searchProducts.calledTwice);
-                assert(searchProducts.calledWith({
-                    filter: {
-                        sku: {
-                            eq: 'a-sku'
-                        }
-                    },
-                    pageSize: 20,
-                    currentPage: 1
-                }, args));
-                assert(searchProducts.calledWith({
-                    categoryId: "1",
-                    pageSize: 20,
-                    currentPage: 1
-                }, args));
-                
-                // Ensure the category loading function is only called once for each category being fetched
-                assert.equal(getCategoryById.callCount, 3);
-                assert(getCategoryById.calledWith('1', args));
-                assert(getCategoryById.calledWith('cat1', args));
-                assert(getCategoryById.calledWith('cat2', args));
-
             });
         });
 
-        it('Products search by skus', () => {
-            args.query = '{products(filter:{sku:{in:["a-sku", "b-sku"]}}, currentPage:1){items{sku}}}';
+        it('Products search by skus with store config', () => {
+            args.query = '{products(filter:{sku:{in:["a-sku", "b-sku"]}}, currentPage:1){items{sku}},storeConfig{secure_base_media_url}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
 
@@ -245,6 +251,8 @@ describe('Dispatcher Resolver', () => {
                 assert.equal(items.length, 2);
                 assert.equal(items[0].sku, 'a-sku');
                 assert.equal(items[1].sku, 'b-sku');
+
+                assert.equal(result.body.data.storeConfig.secure_base_media_url, args.url + '/images');
 
                 // Ensure the Products search function is called once
                 assert(searchProducts.calledOnceWith({
@@ -329,7 +337,7 @@ describe('Dispatcher Resolver', () => {
             getCategoryById.restore();
             getCategoryById = sinon.stub(CategoryTreeLoader.prototype, '__getCategoryById').returns(Promise.reject('Connection failed'));
 
-            args.query = '{category(id: "1"){id}}';
+            args.query = '{category(id:1){id}}';
             return resolve(args).then(result => {
                 assert.equal(result.body.errors.length, 1);
                 assert.equal(result.body.errors[0].message, 'Backend data is null');

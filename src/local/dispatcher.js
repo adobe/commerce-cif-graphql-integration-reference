@@ -122,6 +122,11 @@ async function resolve(args) {
                     categoryTreeLoader: categoryTreeLoader,
                     productsLoader: productsLoader
                 });
+            },
+            storeConfig: () => {
+                return {
+                    secure_base_media_url: `${args.url}/images`
+                }
             }
         }; 
 
@@ -199,7 +204,7 @@ function localSchema() {
     // The local schema only implements the "products" and "category" fields of the Query root type
     let schemaBuilder = new SchemaBuilder(magentoSchema)
         .removeMutationType()
-        .filterQueryFields(new Set(["products", "category"]));
+        .filterQueryFields(new Set(["products", "category", "storeConfig"]));
 
     let queryRootType = schemaBuilder.getType('Query');
 
@@ -208,17 +213,7 @@ function localSchema() {
     productsField.args = productsField.args.filter(a => a.name != 'sort');
     // Remove all fields from ProductFilterInput except "sku"
     let productFilterInput = schemaBuilder.getType('ProductFilterInput');
-    productFilterInput.inputFields = productFilterInput.inputFields.filter(f => f.name == 'sku');
-
-    let categoryField = queryRootType.fields.find(f => f.name == 'category');
-    // Change category(id: Int) to category(id: String)
-    categoryField.args[0].type.name = 'String';
-    // Change CategoryInterface.id from Int to String
-    let categoryInterfaceType = schemaBuilder.getType('CategoryInterface');
-    categoryInterfaceType.fields.find(f => f.name == 'id').type.name = 'String';
-    // Change CategoryTree.id from Int to String
-    let categoryTreeType = schemaBuilder.getType('CategoryTree');
-    categoryTreeType.fields.find(f => f.name == 'id').type.name = 'String';
+    productFilterInput.inputFields = productFilterInput.inputFields.filter(f => f.name == 'sku' || f.name == 'url_key');
 
     // Add a new type and field under the Query root type
     // Note that when adding a field to an interface, you must also add it to all its implementation types
