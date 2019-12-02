@@ -22,9 +22,13 @@ module.exports = {
     devtool: 'source-map',
     target: 'node',
     stats: 'minimal',
+    mode: 'development',
     output: {
         libraryTarget: 'commonjs',
         path: path.resolve(__dirname, '.webpack'),
         filename: '[name].js'
+    },
+    optimization: {
+        minimize: false // Azure SDK in aio-lib-state fails when minified
     }
 };

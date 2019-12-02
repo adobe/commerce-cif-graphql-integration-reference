@@ -29,6 +29,7 @@ functions:
       web-export: true
     parameters:
       url: https://a-dummy-url.com # Demonstrates how parameters can be passed to GraphQL resolvers
+      use-aio-cache: 3600 # number of seconds for caching; set to false or remove to disable caching
       remoteSchemas: # Action with smaller order has "merge priority" in schema conflicts
         cart:
           order: 20
