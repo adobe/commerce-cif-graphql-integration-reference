@@ -3,6 +3,21 @@
 
 # 3rd-Party GraphQL integration with AEM Commerce and CIF on Adobe I/O Runtime
 
+## Pre-requisites
+
+Working on 3rd-party integration requires that you are **absolutely** familiar with the following pre-requisites.
+* GraphQL: how schemas are defined, what resolvers are and how to write resolvers
+    * GraphQL basics: https://graphql.org/learn/
+    * GraphQL schema: https://graphql.org/learn/schema/
+    * GraphQL resolvers: https://graphql.org/learn/execution/
+* Make sure you also get used to schema introspection, and how to write and test GraphQL queries
+    * GraphQL introspection: https://graphql.org/learn/introspection/
+    * Tools: install the ChromeiQL/GraphiQL extension for the Chrome browser
+* Get familiar with the Magento GraphQL schema and the types of queries you can make
+    * Magento GraphQL documentation: https://devdocs.magento.com/guides/v2.3/graphql/index.html
+
+You can also read our [Medium article](https://medium.com/adobetech/serverless-graphql-on-adobe-i-o-runtime-e221d2a8e215) to get an overall description of the design of the 3rd-party GraphQL integration with AEM Commerce.
+
 ## Introduction
 
 The [CIF (Commerce Integration Framework) GraphQL connector](https://github.com/adobe/commerce-cif-connector) and the [AEM CIF Core Components](https://github.com/adobe/aem-core-cif-components) offer authoring and frontend integration between AEM (Adobe Experience Manager) and Magento. This integration is based on the [Magento GraphQL API](https://devdocs.magento.com/guides/v2.3/graphql/index.html) which offers a very flexible and efficient integration point between AEM and Magento.
