@@ -39,3 +39,12 @@ functions:
     name: graphql-reference/cart
     handler: src/remote/cartResolver.main
     concurrency: 200
+
+  # This deploys a GraphQL introspection endpoint that includes all the Magento types and fields
+  # used by the AEM/Magento integration.
+  cif-schema:
+    name: graphql-reference/cif-schema
+    handler: src/documentation/introspection.main
+    concurrency: 200
+    annotations:
+      web-export: true
