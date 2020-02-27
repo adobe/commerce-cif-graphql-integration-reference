@@ -14,7 +14,7 @@
 
 'use strict';
 
-const magentoSchema = require('../resources/magento-schema-2.3.2.min.json');
+const magentoSchema = require('../resources/magento-schema-2.3.4.min.json');
 const { makeRemoteExecutableSchema, introspectSchema, mergeSchemas } = require('graphql-tools');
 const { graphql, printSchema } = require('graphql');
 const libState = require('@adobe/aio-lib-state');
@@ -220,14 +220,14 @@ function localSchema() {
     // --> see the other examples below for a better method to add fields to interfaces
     schemaBuilder.extend(`
         extend type Query {
-            # Fetches a wishlist by id
-            wishlist(id: String!): Wishlist
+            # Fetches a shoppinglist by id
+            shoppinglist(id: String!): Shoppinglist
         }
 
-        type Wishlist {
-            # The wishlist id
+        type Shoppinglist {
+            # The shoppinglist id
             id: String
-            # The products in the wishlist
+            # The products in the shoppinglist
             products: [ProductInterface]
         }
     `);
