@@ -16,6 +16,7 @@
 
 const assert = require('chai').assert;
 const fs = require('fs');
+const path = require('path');
 const magentoSchema = require('../../src/resources/magento-schema-2.3.4.min.json');
 const SchemaPruner = require('../../src/documentation/SchemaPruner.js');
 
@@ -26,7 +27,7 @@ describe('Schema Pruner', () => {
         // This test uses a few CIF queries selected to cover all parsing cases
 
         it('Prune schema with GraphQL queries', () => {
-            let data = fs.readFileSync(__dirname + '/../resources/graphql-queries.graphql', 'UTF-8');
+            let data = fs.readFileSync(path.join(__dirname, '../resources/graphql-queries.graphql'), 'UTF-8');
             let schemaPruner = new SchemaPruner(magentoSchema);
             let lines = data.split(/\r?\n/);
             lines.forEach(line => {

@@ -18,6 +18,7 @@ const magentoSchema = require('../resources/magento-schema-2.3.4.min.json');
 const SchemaPruner = require('./SchemaPruner.js');
 const gitClone = require('git-clone');
 const fs = require('fs');
+const path = require('path');
 
 /**
  * This function checks out the commerce-cif-connector and aem-core-cif-components github repositories.
@@ -34,12 +35,12 @@ function generate() {
 
     gitClone('https://github.com/adobe/commerce-cif-connector.git', 'repos/commerce-cif-connector', {shallow: true}, () => {
         gitClone('https://github.com/adobe/aem-core-cif-components.git', 'repos/aem-core-cif-components', {shallow: true}), () => {
-            pruneFile(schemaPruner, __dirname + '/../../repos/commerce-cif-connector/bundles/cif-connector-graphql/src/test/resources/test-queries/graphql-requests.log');
-            pruneFile(schemaPruner, __dirname + '/../../repos/aem-core-cif-components/bundles/core/src/test/resources/test-queries/graphql-requests.log');
-            pruneFolder(schemaPruner, __dirname + '/../../repos/aem-core-cif-components/react-components/src/queries');
+            pruneFile(schemaPruner, path.join(__dirname, '../../repos/commerce-cif-connector/bundles/cif-connector-graphql/src/test/resources/test-queries/graphql-requests.log'));
+            pruneFile(schemaPruner, path.join(__dirname, '../../repos/aem-core-cif-components/bundles/core/src/test/resources/test-queries/graphql-requests.log'));
+            pruneFolder(schemaPruner, path.join(__dirname, '../../repos/aem-core-cif-components/react-components/src/queries'));
 
             let prunedSchema = schemaPruner.prune();
-            fs.writeFileSync(__dirname + '/../resources/magento-schema-2.3.4.pruned.json', JSON.stringify(prunedSchema, null, 2));
+            fs.writeFileSync(path.join(__dirname, '../resources/magento-schema-2.3.4.pruned.json', JSON.stringify(prunedSchema, null, 2)));
         };
     });
 }
@@ -59,7 +60,7 @@ function pruneFile(schemaPruner, path) {
 function pruneFolder(schemaPruner, path) {
     let files = fs.readdirSync(path);
     files.forEach(file => {
-        let query = fs.readFileSync(path + '/' + file, 'UTF-8');
+        let query = fs.readFileSync(path.join(path, file), 'UTF-8');
         schemaPruner.process(query);
     })
 }
