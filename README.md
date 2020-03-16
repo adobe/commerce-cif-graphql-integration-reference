@@ -37,6 +37,7 @@ All code is organized in the `src` folder.
 ```
 src
 ├── common
+├── documentation
 ├── local
    ├── dispatcher
 ├── remote
@@ -44,6 +45,8 @@ src
 ```
 
 The `common` folder contains all the code that fetches and converts 3rd-party data into the GraphQL format. These classes can be used either by the local dispatcher action or by remote resolvers.
+
+The `documentation` folder contains some code that is used to generate a subset of the Magento schema that covers all the queries required by the CIF integration. This is **not** used by the resolvers, see the [Schema documentation](#schema-documentation) section below.
 
 ### Local vs. remote resolvers
 
@@ -103,7 +106,15 @@ With GraphQL introspection, it is very easy for users to discover and browse a G
 * there might be incompabilities between the Magento GraphQL and a 3rd-party platform
 * it must be possible to extend the base Magento schema with custom attributes and fields
 
-In order to illustrate these requirements, the `localSchema()` function in [dispatcher.js](src/local/dispatcher.js) demonstrates a number of possible changes applied to the GraphQL schema. This is of course only an example, and a real implementation should either remove all the customizations if none if needed, or adapt the examples to satisfy the customizations and extensions required by the real integration. We however recommend that a real implementation should remove all the fields that it doesn't implement (at least for the top-level fields under the `Query` and `Mutation` root types), so that the schema only contains the parts of the Magento schema that are really implemented and supported.
+In order to illustrate these requirements, the `localSchema()` function in [dispatcher.js](src/local/dispatcher.js) demonstrates a number of possible changes applied to the GraphQL schema. This is of course only an example, and a real implementation should either remove all the customizations if none is needed, or adapt the examples to satisfy the customizations and extensions required by the real integration. We however recommend that a real implementation should remove all the fields that it doesn't implement (at least for the top-level fields under the `Query` and `Mutation` root types), so that the schema only contains the parts of the Magento schema that are really implemented and supported.
+
+## Schema documentation
+
+As stated in the previous section, GraphQL introspection allows users to discover and browse a GraphQL schema in order to understand the types of queries it supports. When implementing a 3rd-party integration and because the Magento schema is large, it is important that one understands the parts of the Magento schema that are actually used by the CIF connector and components. To document this, we have implemented a tool that uses the GraphQL queries used by the CIF connector and components in order to create the subset of the Magento schema that MUST be implemented in order to support the CIF connector and components.
+
+This "pruned" schema is automatically generated and included in this repository. If needed, one can regenerate it by running `npm run doc`. Note that this requires that you have the [jq](https://github.com/stedolan/jq) tool installed on your machine.
+
+To introspect this schema, it is automatically deployed when running `npm run deploy` in a web action called `cif-schema`. Using a GraphQL introspection tool like `GraphiQL`, one can then easily browse the pruned schema at the `https://adobeioruntime.net/api/v1/web/NAMESPACE/graphql-reference/cif-schema` URL. This action only supports introspection, so you cannot execute any query. It however documents all the fields and types that are currently being used by the CIF connector and components.
 
 ## Caching
 

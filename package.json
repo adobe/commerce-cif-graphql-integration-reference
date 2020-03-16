@@ -11,7 +11,8 @@
     "test-cov": "nyc npm run unit && npm run lcov-report",
     "lcov-report": "nyc report --reporter=lcov",
     "unit": "mocha test/**/*Test.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-unit.json",
-    "deploy": "serverless deploy"
+    "deploy": "serverless deploy",
+    "doc": "node src/documentation/generate.js && jq -c . < src/resources/magento-schema-2.3.4.pruned.json > src/resources/magento-schema-2.3.4.pruned.min.json"
   },
   "dependencies": {
     "dataloader": "^1.4.0",
@@ -33,14 +34,16 @@
     "sinon": "^7.5.0",
     "chai": "^4.2.0",
     "nyc": "^14.1.1",
-    "mock-require": "^3.0.3"
+    "mock-require": "^3.0.3",
+    "git-clone": "0.1.0"
   },
   "nyc": {
     "include": [
       "src/**"
     ],
     "exclude": [
-      "src/resources"
+      "src/resources",
+      "src/documentation/generate.js"
     ],
     "check-coverage": true,
     "per-file": false,
