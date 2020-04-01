@@ -329,9 +329,13 @@ describe('Dispatcher Resolver', () => {
                     assert.equal(item.sku, `product-${id}`);
                     assert.equal(item.name, `Product #${id}`);
 
-                    let price = item.price_range.minimum_price.final_price;
-                    assert.equal(price.currency, 'USD');
-                    assert.equal(price.value, idx == 0 ? 12.34 : 56.78);
+                    let finalPrice = item.price_range.minimum_price.final_price;
+                    assert.equal(finalPrice.currency, 'USD');
+                    assert.equal(finalPrice.value, idx == 0 ? 12.34 : 56.78);
+
+                    let regularPrice = item.price_range.minimum_price.regular_price;
+                    assert.equal(regularPrice.currency, 'USD');
+                    assert.equal(regularPrice.value, idx == 0 ? 12.34 : 56.78);
                 });
             });
         });
