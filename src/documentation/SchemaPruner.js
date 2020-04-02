@@ -129,14 +129,34 @@ class SchemaPruner {
                         this.__extractArgument(type, arg);
                     });
                 }
-                if (argument.value.values) { // Arguments can also be arrays
+                else if (argument.value.values) { // Arguments can also be arrays
                     argument.value.values.forEach(value => {
                         value.fields.forEach(arg => {
                             this.__extractArgument(type, arg);
                         });
                     });
+                } else {
+                    // We don't know what fields should be kept so we add them all
+                    // This happens for parameterized queries with object arguments
+                    type.inputFields.forEach(f => {
+                        this.__extractInputField(type, f);
+                    });
                 }
             }
+        }
+    }
+
+    __extractInputField(type, inputField) {
+        // console.debug('Adding input field ' + type.name + '.' + inputField.name);
+        this.__addToTypeFields(type.name, inputField.name);
+        let inputFieldType = this.__getFieldType(inputField);
+        if (inputFieldType.kind == 'INPUT_OBJECT') {
+            let type = this.__getType(inputFieldType.name);
+            // We don't know what fields should be kept so we add them all
+            // This happens for parameterized queries with object arguments
+            type.inputFields.forEach(f => {
+                this.__extractInputField(type, f);
+            });
         }
     }
 
