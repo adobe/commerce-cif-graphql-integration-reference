@@ -336,6 +336,10 @@ describe('Dispatcher Resolver', () => {
                     let regularPrice = item.price_range.minimum_price.regular_price;
                     assert.equal(regularPrice.currency, 'USD');
                     assert.equal(regularPrice.value, idx == 0 ? 12.34 : 56.78);
+
+                    let discount = item.price_range.minimum_price.discount;
+                    assert.equal(discount.amount_off, 0);
+                    assert.equal(discount.percent_off, 0);
                 });
             });
         });

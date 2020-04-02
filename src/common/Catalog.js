@@ -241,6 +241,10 @@ class Product {
                     regular_price: {
                         currency: data.price.currency,
                         value: data.price.amount
+                    },
+                    discount: {
+                        amount_off: 0,
+                        percent_off: 0
                     }
                 }
             },
