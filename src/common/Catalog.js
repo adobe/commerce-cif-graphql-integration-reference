@@ -232,6 +232,22 @@ class Product {
                     }
                 }
             },
+            price_range: {
+                minimum_price: {
+                    final_price: {
+                        currency: data.price.currency,
+                        value: data.price.amount
+                    },
+                    regular_price: {
+                        currency: data.price.currency,
+                        value: data.price.amount
+                    },
+                    discount: {
+                        amount_off: 0,
+                        percent_off: 0
+                    }
+                }
+            },
             small_image: {
                 url: `${this.actionParameters.url}/images/small/${data.sku}.jpg` // Dummy
             },

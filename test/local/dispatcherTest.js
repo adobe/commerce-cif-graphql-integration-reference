@@ -114,7 +114,7 @@ describe('Dispatcher Resolver', () => {
         };
 
         it('Basic products search', () => {
-            args.query = '{products(search:"short", currentPage:1){total_count,page_info{current_page,page_size},items{sku,name,description{html},price{regularPrice{amount{currency,value}}}}}}';
+            args.query = '{products(search:"short", currentPage:1){total_count,page_info{current_page,page_size},items{__typename,sku,name,description{html},price{regularPrice{amount{currency,value}}}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
 
@@ -129,6 +129,7 @@ describe('Dispatcher Resolver', () => {
                 assert.equal(items.length, 2);
                 items.forEach((item, idx) => {
                     let id = idx + 1;
+                    assert.equal(item.__typename, 'SimpleProduct');
                     assert.equal(item.sku, `product-${id}`);
                     assert.equal(item.name, `Product #${id}`);
                     assert.equal(item.description.html, `Fetched product #${id} from ${args.url}`);
@@ -309,6 +310,37 @@ describe('Dispatcher Resolver', () => {
                 assert(getProductBySku.calledTwice);
                 assert(getProductBySku.calledWith('product-1'));
                 assert(getProductBySku.calledWith('product-2'));
+            });
+        });
+
+        it('Basic category products', () => {
+            args.query = '{category(id:211){id,description,name,image,product_count,products(currentPage:1,pageSize:6){items{__typename,id,sku,name,small_image{url},url_key,price_range{minimum_price{regular_price{value,currency},final_price{value,currency},discount{amount_off,percent_off}}},... on ConfigurableProduct{price_range{maximum_price{regular_price{value,currency},final_price{value,currency},discount{amount_off,percent_off}}}}},total_count}}}';
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors); // No GraphQL errors
+
+                let products = result.body.data.category.products;
+                assert.equal(products.total_count, 2);             
+
+                let items = products.items;
+                assert.equal(items.length, 2);
+                items.forEach((item, idx) => {
+                    let id = idx + 1;
+                    assert.equal(item.__typename, 'SimpleProduct');
+                    assert.equal(item.sku, `product-${id}`);
+                    assert.equal(item.name, `Product #${id}`);
+
+                    let finalPrice = item.price_range.minimum_price.final_price;
+                    assert.equal(finalPrice.currency, 'USD');
+                    assert.equal(finalPrice.value, idx == 0 ? 12.34 : 56.78);
+
+                    let regularPrice = item.price_range.minimum_price.regular_price;
+                    assert.equal(regularPrice.currency, 'USD');
+                    assert.equal(regularPrice.value, idx == 0 ? 12.34 : 56.78);
+
+                    let discount = item.price_range.minimum_price.discount;
+                    assert.equal(discount.amount_off, 0);
+                    assert.equal(discount.percent_off, 0);
+                });
             });
         });
 
