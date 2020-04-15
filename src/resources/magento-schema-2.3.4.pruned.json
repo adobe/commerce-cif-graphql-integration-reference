@@ -65,6 +65,33 @@
               "deprecationReason": "Use 'categoryList' query instead of 'category' query"
             },
             {
+              "name": "categoryList",
+              "description": "Returns an array of categories based on the specified filters.",
+              "args": [
+                {
+                  "name": "filters",
+                  "description": "Identifies which Category filter inputs to search for and return.",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "CategoryFilterInput",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CategoryTree",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "countries",
               "description": "The countries query provides information for all countries.",
               "args": [],
@@ -88,6 +115,22 @@
                 "kind": "OBJECT",
                 "name": "Customer",
                 "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "customerCart",
+              "description": "Returns information about the customer shopping cart",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Cart",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -241,6 +284,38 @@
               "deprecationReason": null
             },
             {
+              "name": "id",
+              "description": "The ID of the cart.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "is_virtual",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "items",
               "description": null,
               "args": [],
@@ -295,6 +370,22 @@
                     "name": "ShippingCartAddress",
                     "ofType": null
                   }
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "total_quantity",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
                 }
               },
               "isDeprecated": false,
@@ -2192,6 +2283,16 @@
                 "ofType": null
               },
               "defaultValue": null
+            },
+            {
+              "name": "relevance",
+              "description": "Sort by the search relevance score (default).",
+              "type": {
+                "kind": "ENUM",
+                "name": "SortEnum",
+                "ofType": null
+              },
+              "defaultValue": null
             }
           ],
           "interfaces": null,
@@ -3215,6 +3316,18 @@
               "deprecationReason": null
             },
             {
+              "name": "url_key",
+              "description": "The url key assigned to the category.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "url_path",
               "description": "The url path assigned to the category.",
               "args": [],
@@ -3235,6 +3348,27 @@
               "ofType": null
             }
           ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "CategoryFilterInput",
+          "description": "CategoryFilterInput defines the filters to be used in the search. A filter contains at least one attribute, a comparison operator, and the value that is being searched for.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "name",
+              "description": "Filter by the display name of the category.",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "FilterMatchTypeInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
           "enumValues": null,
           "possibleTypes": null
         },
@@ -3265,6 +3399,27 @@
                   "name": "String",
                   "ofType": null
                 }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "FilterMatchTypeInput",
+          "description": "Defines a filter that performs a fuzzy search.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "match",
+              "description": "One or more words to filter on",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               },
               "defaultValue": null
             }
@@ -5177,6 +5332,29 @@
               "deprecationReason": null
             },
             {
+              "name": "addVirtualProductsToCart",
+              "description": null,
+              "args": [
+                {
+                  "name": "input",
+                  "description": "",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "AddVirtualProductsToCartInput",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "AddVirtualProductsToCartOutput",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "applyCouponToCart",
               "description": null,
               "args": [
@@ -5332,6 +5510,51 @@
                 "kind": "OBJECT",
                 "name": "CustomerToken",
                 "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "mergeCarts",
+              "description": "Merges the source cart into the destination cart",
+              "args": [
+                {
+                  "name": "source_cart_id",
+                  "description": "",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "destination_cart_id",
+                  "description": "",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "String",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Cart",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -5563,6 +5786,45 @@
         },
         {
           "kind": "INPUT_OBJECT",
+          "name": "CustomizableOptionInput",
+          "description": "",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "id",
+              "description": "",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "value_string",
+              "description": "",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
           "name": "CartItemInput",
           "description": "",
           "fields": null,
@@ -5650,6 +5912,20 @@
           "fields": null,
           "inputFields": [
             {
+              "name": "customizable_options",
+              "description": "",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "CustomizableOptionInput",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
               "name": "data",
               "description": "",
               "type": {
@@ -5671,6 +5947,115 @@
         {
           "kind": "OBJECT",
           "name": "AddSimpleProductsToCartOutput",
+          "description": "",
+          "fields": [
+            {
+              "name": "cart",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Cart",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "AddVirtualProductsToCartInput",
+          "description": "",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "cart_id",
+              "description": "",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "cart_items",
+              "description": "",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "VirtualProductCartItemInput",
+                    "ofType": null
+                  }
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "VirtualProductCartItemInput",
+          "description": "",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "customizable_options",
+              "description": "",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "CustomizableOptionInput",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "data",
+              "description": "",
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "CartItemInput",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "AddVirtualProductsToCartOutput",
           "description": "",
           "fields": [
             {
@@ -7358,6 +7743,326 @@
               "deprecationReason": ""
             }
           ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "GroupedProduct",
+          "description": "GroupedProduct defines a grouped product",
+          "fields": [
+            {
+              "name": "categories",
+              "description": "The categories assigned to a product.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "CategoryInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "created_at",
+              "description": "Timestamp indicating when the product was created.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "crosssell_products",
+              "description": "Crosssell Products",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "ProductInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "description",
+              "description": "Detailed information about the product. The value can include simple HTML tags.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ComplexTextValue",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": "The ID number assigned to the product.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "image",
+              "description": "The relative path to the main image on the product page.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductImage",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "items",
+              "description": "An array containing grouped product items",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "GroupedProductItem",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "media_gallery_entries",
+              "description": "An array of MediaGalleryEntry objects.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "MediaGalleryEntry",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": true,
+              "deprecationReason": "Use product's `media_gallery` instead"
+            },
+            {
+              "name": "name",
+              "description": "The product name. Customers use this name to identify the product.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "price",
+              "description": "A ProductPrices object, indicating the price of an item.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductPrices",
+                "ofType": null
+              },
+              "isDeprecated": true,
+              "deprecationReason": "Use price_range for product price information."
+            },
+            {
+              "name": "price_range",
+              "description": "A PriceRange object, indicating the range of prices for the product",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PriceRange",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "related_products",
+              "description": "Related Products",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "ProductInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "sku",
+              "description": "A number or code assigned to a product to identify the product, options, price, and manufacturer.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "small_image",
+              "description": "The relative path to the small image, which is used on catalog pages.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductImage",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "stock_status",
+              "description": "Stock status of the product",
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "ProductStockStatus",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "thumbnail",
+              "description": "The relative path to the product's thumbnail image.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductImage",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": "Timestamp indicating when the product was updated.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "upsell_products",
+              "description": "Upsell Products",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "ProductInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "url_key",
+              "description": "The part of the URL that identifies the product",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "ProductInterface",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "GroupedProductItem",
+          "description": "GroupedProductItem contains information about an individual grouped product item",
+          "fields": [
+            {
+              "name": "position",
+              "description": "The relative position of this item compared to the other group items",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "product",
+              "description": "The ProductInterface object, which contains details about this product option",
+              "args": [],
+              "type": {
+                "kind": "INTERFACE",
+                "name": "ProductInterface",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "qty",
+              "description": "The quantity of this grouped product item",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
           "possibleTypes": null
         },
         {

@@ -34,20 +34,20 @@ function generate() {
     let schemaPruner = new SchemaPruner(magentoSchema);
 
     gitClone('https://github.com/adobe/commerce-cif-connector.git', 'repos/commerce-cif-connector', {shallow: true}, () => {
-        gitClone('https://github.com/adobe/aem-core-cif-components.git', 'repos/aem-core-cif-components', {shallow: true}), () => {
+        gitClone('https://github.com/adobe/aem-core-cif-components.git', 'repos/aem-core-cif-components', {shallow: true}, () => {
             pruneFile(schemaPruner, path.join(__dirname, '../../repos/commerce-cif-connector/bundles/cif-connector-graphql/src/test/resources/test-queries/graphql-requests.log'));
             pruneFile(schemaPruner, path.join(__dirname, '../../repos/aem-core-cif-components/bundles/core/src/test/resources/test-queries/graphql-requests.log'));
             pruneFolder(schemaPruner, path.join(__dirname, '../../repos/aem-core-cif-components/react-components/src/queries'));
 
             let prunedSchema = schemaPruner.prune();
-            fs.writeFileSync(path.join(__dirname, '../resources/magento-schema-2.3.4.pruned.json', JSON.stringify(prunedSchema, null, 2)));
-        };
+            fs.writeFileSync(path.join(__dirname, '../resources/magento-schema-2.3.4.pruned.json'), JSON.stringify(prunedSchema, null, 2));
+        });
     });
 }
 
 // The file contains multiple single-line queries
-function pruneFile(schemaPruner, path) {
-    let data = fs.readFileSync(path, 'UTF-8');
+function pruneFile(schemaPruner, filepath) {
+    let data = fs.readFileSync(filepath, 'UTF-8');
     let lines = data.split(/\r?\n/);
     lines.forEach(line => {
         if (line.trim().length > 0) {
@@ -57,10 +57,10 @@ function pruneFile(schemaPruner, path) {
 }
 
 // The folder contains multiple files with each file containing a single query
-function pruneFolder(schemaPruner, path) {
-    let files = fs.readdirSync(path);
+function pruneFolder(schemaPruner, folderpath) {
+    let files = fs.readdirSync(folderpath);
     files.forEach(file => {
-        let query = fs.readFileSync(path.join(path, file), 'UTF-8');
+        let query = fs.readFileSync(path.join(folderpath, file), 'UTF-8');
         schemaPruner.process(query);
     })
 }
