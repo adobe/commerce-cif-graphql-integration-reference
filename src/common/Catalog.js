@@ -61,9 +61,11 @@ class CategoryTree {
         return {
             id: data.id,
             position: data.id,
+            url_key: data.id,
             url_path: data.slug,
             name: data.title,
-            description: data.description
+            description: data.description,
+            product_count: 2
         };
     }
 

@@ -72,7 +72,7 @@ class CategoryTreeLoader {
             slug: this.__toSlug(categoryId),
             title: `Category #${categoryId}`,
             description: `Fetched category #${categoryId} from ${actionParameters.url}`,
-            subcategories: [categoryId * 10 + 1, categoryId * 10 + 2]
+            subcategories: new String(categoryId).length < 3 ? [categoryId * 10 + 1, categoryId * 10 + 2] : []
         });
     }
 
