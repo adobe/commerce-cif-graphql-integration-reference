@@ -307,6 +307,14 @@ describe('Dispatcher Resolver', () => {
             });
         });
 
+        it('customAttributeMetadata: is in schema but always returns null', () => {
+            args.query = '{customAttributeMetadata(attributes:[{attribute_code:"name",entity_type:"4"},{attribute_code:"price",entity_type:"4"}]){items{attribute_code,attribute_type,input_type}}}';
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors); // No GraphQL errors
+                assert.isNull(result.body.data.customAttributeMetadata);
+            });
+        });
+
         it('Query cart remote resolver', () => {
             args.query = '{products(filter:{sku:{in:["a-sku", "b-sku"]}}, currentPage:1){items{sku}}, cart(cart_id:"abcd"){email,items{product{sku}}}}';
             return resolve(args).then(result => {

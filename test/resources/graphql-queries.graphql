@@ -2,6 +2,8 @@
 
 {category(id:2){id,name,url_path,position,children{id,name,url_path,position,children{id,name,url_path,position,children{id,name,url_path,position,children{id,name,url_path,position,children{id,name,url_path,position}}}}}}}
 
+{customAttributeMetadata(attributes:[]){items{attribute_code,attribute_type,input_type}}}
+
 mutation createAccount($email:String,$firstname:String,$lastname:String,$password:String){createCustomer(input:{email:$email,firstname:$firstname,lastname:$lastname,password:$password}){customer{email,firstname,lastname}}}
 
 mutation($cartId:String!,$sku:String!,$quantity:Float!){addSimpleProductsToCart(input:{cart_id:$cartId,cart_items:[{data:{quantity:$quantity,sku:$sku}}]}){cart{items{id,quantity,product{name}}}}}
