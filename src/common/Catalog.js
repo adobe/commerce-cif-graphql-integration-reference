@@ -91,6 +91,16 @@ class CategoryTree {
         });
     }
 
+    // children_count is a String in the Magento schema
+    get children_count() {
+        return this.__load().then(() => {
+            if (!this.data.subcategories || this.data.subcategories.length == 0) {
+                return "0";
+            }
+            return this.data.subcategories.length.toString(); 
+        });
+    }
+
     // Getters cannot have arguments, so we define a function
     products(params) {
         // We don't need to call this.__load() here because only fetching the products
@@ -220,6 +230,7 @@ class Product {
 
     __convertData(data) {
         return {
+            id: 1, // dummy id
             sku: data.sku,
             url_key: data.sku,
             name: data.title,

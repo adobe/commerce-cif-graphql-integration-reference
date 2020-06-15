@@ -124,7 +124,7 @@ async function resolve(args) {
                 });
             },
             categoryList: (params, context) => { // returns an Array of categories
-                let categoryId = params.filters.ids ? params.filters.ids.eq : params.filters.url_key.eq;
+                let categoryId = params.filters.ids ? params.filters.ids.eq : (params.filters.url_key ? params.filters.url_key.eq : 1);
                 return [new CategoryTree({
                     categoryId: categoryId,
                     graphqlContext: context,
@@ -219,12 +219,7 @@ function localSchema() {
         .removeMutationType()
         .filterQueryFields(new Set(["products", "category", "storeConfig", "customAttributeMetadata", "categoryList"]));
 
-    let queryRootType = schemaBuilder.getType('Query');
-
-    // Remove "sort" unimplemented args of the "products" field
-    let productsField = queryRootType.fields.find(f => f.name == 'products');
-    productsField.args = productsField.args.filter(a => a.name != 'sort');
-    // Remove all fields from ProductFilterInput except "sku"
+    // Remove all fields from ProductFilterInput except "sku" and "url_key"
     let productFilterInput = schemaBuilder.getType('ProductFilterInput');
     productFilterInput.inputFields = productFilterInput.inputFields.filter(f => f.name == 'sku' || f.name == 'url_key');
 

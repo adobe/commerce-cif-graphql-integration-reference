@@ -188,7 +188,7 @@ describe('Dispatcher Resolver', () => {
         });
 
         it('Category tree query - CIF version = 1.0.0', () => {
-            args.query = '{categoryList(filters:{ids:{eq:"1"}}){id,name,description,children{id,name,description,children{id,name,description}}}}';
+            args.query = '{categoryList(filters:{ids:{eq:"1"}}){id,name,description,children_count,children{id,name,description,,children_count,children{id,name,description,children_count,children{id}}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
 
@@ -197,17 +197,21 @@ describe('Dispatcher Resolver', () => {
                 assert.equal(category.name, 'Category #1');
 
                 let children = category.children;
+                assert.equal(category.children_count, "2"); // children_count is a String in the Magento schema
                 assert.equal(children.length, 2);
                 children.forEach((subcategory, idx) => {
                     let id = category.id * 10 + idx + 1;
                     assert.equal(subcategory.name, `Category #${id}`);
                     assert.equal(subcategory.description, `Fetched category #${id} from ${args.url}`);
                     let subchildren = subcategory.children;
+                    assert.equal(category.children_count, "2");
                     assert.equal(subchildren.length, 2);
                     subchildren.forEach((subsubcategory, idx2) => {
                         let id2 = id * 10 + idx2 + 1;
                         assert.equal(subsubcategory.name, `Category #${id2}`);
                         assert.equal(subsubcategory.description, `Fetched category #${id2} from ${args.url}`);
+                        assert.equal(subsubcategory.children_count, "0");
+                        assert.equal(subsubcategory.children.length, 0);
                     });
                 });
 
@@ -420,6 +424,22 @@ describe('Dispatcher Resolver', () => {
                 });
 
                 assert.isNull(products.aggregations); // Not supported by example integration
+            });
+        });
+
+        it('Products search in picker', () => {
+            args.query = '{products(search:"test",sort:{relevance:DESC},currentPage:1,pageSize:20){items{__typename,id,sku,name,url_key,updated_at,thumbnail{url}}}}';
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors); // No GraphQL errors
+                assert.equal(result.body.data.products.items.length, 2);             
+            });
+        });
+
+        it('Category search in picker', () => {
+            args.query = '{categoryList(filters:{name:{match:"test"}}){id,name,url_path,url_key}}';
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors); // No GraphQL errors
+                assert.equal(result.body.data.categoryList.length, 1);             
             });
         });
 
