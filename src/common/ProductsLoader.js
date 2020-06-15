@@ -64,7 +64,7 @@ class ProductsLoader {
         // This method returns a Promise, for example to simulate some HTTP REST call being performed
         // to the 3rd-party commerce system.
 
-        if (params.search || params.categoryId || (params.filter && params.filter.category_id)) { // Text search or fetching of the products of a category
+        if (params.search || params.categoryId || (params.filter && (params.filter.category_id || params.filter.price))) { // Text search or fetching of the products of a category
             return Promise.resolve({
                 total: 2,
                 offset: params.currentPage * params.pageSize,

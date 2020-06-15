@@ -443,6 +443,14 @@ describe('Dispatcher Resolver', () => {
             });
         });
 
+        it('Products search in AEM Assets panel', () => {
+            args.query = '{products(filter:{price:{from:""}},sort:{relevance:DESC},currentPage:1,pageSize:20){items{__typename,id,sku,name,url_key,updated_at,thumbnail{url}}}}';
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors); // No GraphQL errors
+                assert.equal(result.body.data.products.items.length, 2);             
+            });
+        });
+
         it('Test that the custom "shoppinglist" and "ProductInterface" fields can be queried', () => {
             args.query = '{shoppinglist(id:"whatever"){id,products{sku,rating,accessories{sku},country_of_origin}}}';
             return resolve(args).then(result => {
