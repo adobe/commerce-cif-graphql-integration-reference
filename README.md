@@ -66,7 +66,7 @@ This second diagram illustrates how a GraphQL query is being executed. The `cart
 
 ## How to build, test, and deploy
 
-### Versioning
+### Versioning
 
 The code in this repository is not released in NPM because it is not meant to be reused as a dependency in some other project. However, we add git tags in the format `cif-x.y.z` to label the commit where, for example, the code is compatible with version `1.0.0` of the CIF components and connector. This should hopefully help developers to follow and identify the changes required by each new CIF release in order to integrate with a 3rd-party commerce platform. 
 
