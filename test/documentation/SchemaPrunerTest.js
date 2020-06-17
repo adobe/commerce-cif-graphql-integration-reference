@@ -38,7 +38,7 @@ describe('Schema Pruner', () => {
             let schema = schemaPruner.prune();
 
             let queryType = schema.data.__schema.types.find(t => t.name == 'Query');
-            assert.equal(queryType.fields.length, 2); // products and category
+            assert.equal(queryType.fields.length, 3); // products, category, and customAttributeMetadata
 
             let mutationType = schema.data.__schema.types.find(t => t.name == 'Mutation');
             assert.equal(mutationType.fields.length, 2); // createCustomer and addSimpleProductsToCart

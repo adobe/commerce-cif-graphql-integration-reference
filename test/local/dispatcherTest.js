@@ -149,7 +149,7 @@ describe('Dispatcher Resolver', () => {
             });
         });
 
-        it('Basic category search', () => {
+        it('Category tree query - CIF version < 1.0.0', () => {
             args.query = '{category(id:1){id,name,description,children{id,name,description,children{id,name,description}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
@@ -176,6 +176,48 @@ describe('Dispatcher Resolver', () => {
                 // Ensure the category loading function is only called once for each category being fetched
                 assert.equal(getCategoryById.callCount, 7);
                 assert(getCategoryById.calledWith(1, args));
+                assert(getCategoryById.calledWith(11, args));
+                assert(getCategoryById.calledWith(12, args));
+                assert(getCategoryById.calledWith(111, args));
+                assert(getCategoryById.calledWith(112, args));
+                assert(getCategoryById.calledWith(121, args));
+                assert(getCategoryById.calledWith(122, args));
+
+                cleanCachedSchema(); // This will enforce the cache loading via aio-lib-state in the next test
+            });
+        });
+
+        it('Category tree query - CIF version = 1.0.0', () => {
+            args.query = '{categoryList(filters:{ids:{eq:"1"}}){id,name,description,children_count,children{id,name,description,,children_count,children{id,name,description,children_count,children{id}}}}}';
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors); // No GraphQL errors
+
+                let category = result.body.data.categoryList[0];
+                assert.equal(category.id, 1);
+                assert.equal(category.name, 'Category #1');
+
+                let children = category.children;
+                assert.equal(category.children_count, "2"); // children_count is a String in the Magento schema
+                assert.equal(children.length, 2);
+                children.forEach((subcategory, idx) => {
+                    let id = category.id * 10 + idx + 1;
+                    assert.equal(subcategory.name, `Category #${id}`);
+                    assert.equal(subcategory.description, `Fetched category #${id} from ${args.url}`);
+                    let subchildren = subcategory.children;
+                    assert.equal(category.children_count, "2");
+                    assert.equal(subchildren.length, 2);
+                    subchildren.forEach((subsubcategory, idx2) => {
+                        let id2 = id * 10 + idx2 + 1;
+                        assert.equal(subsubcategory.name, `Category #${id2}`);
+                        assert.equal(subsubcategory.description, `Fetched category #${id2} from ${args.url}`);
+                        assert.equal(subsubcategory.children_count, "0");
+                        assert.equal(subsubcategory.children.length, 0);
+                    });
+                });
+
+                // Ensure the category loading function is only called once for each category being fetched
+                assert.equal(getCategoryById.callCount, 7);
+                assert(getCategoryById.calledWith("1", args));
                 assert(getCategoryById.calledWith(11, args));
                 assert(getCategoryById.calledWith(12, args));
                 assert(getCategoryById.calledWith(111, args));
@@ -269,6 +311,14 @@ describe('Dispatcher Resolver', () => {
             });
         });
 
+        it('customAttributeMetadata: is in schema but always returns null', () => {
+            args.query = '{customAttributeMetadata(attributes:[{attribute_code:"name",entity_type:"4"},{attribute_code:"price",entity_type:"4"}]){items{attribute_code,attribute_type,input_type}}}';
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors); // No GraphQL errors
+                assert.isNull(result.body.data.customAttributeMetadata);
+            });
+        });
+
         it('Query cart remote resolver', () => {
             args.query = '{products(filter:{sku:{in:["a-sku", "b-sku"]}}, currentPage:1){items{sku}}, cart(cart_id:"abcd"){email,items{product{sku}}}}';
             return resolve(args).then(result => {
@@ -313,7 +363,7 @@ describe('Dispatcher Resolver', () => {
             });
         });
 
-        it('Basic category products', () => {
+        it('Category products - CIF version < 1.0.0', () => {
             args.query = '{category(id:211){id,description,name,image,product_count,products(currentPage:1,pageSize:6){items{__typename,id,sku,name,small_image{url},url_key,price_range{minimum_price{regular_price{value,currency},final_price{value,currency},discount{amount_off,percent_off}}},... on ConfigurableProduct{price_range{maximum_price{regular_price{value,currency},final_price{value,currency},discount{amount_off,percent_off}}}}},total_count}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
@@ -344,6 +394,63 @@ describe('Dispatcher Resolver', () => {
             });
         });
 
+        it('Category products - CIF version = 1.0.0', () => {
+            args.query = '{products(currentPage:1,pageSize:6,filter:{category_id:{eq:"211"}}){total_count,items{__typename,id,sku,name,small_image{url},url_key,price_range{minimum_price{regular_price{value,currency},final_price{value,currency},discount{amount_off,percent_off}}},... on ConfigurableProduct{price_range{maximum_price{regular_price{value,currency},final_price{value,currency},discount{amount_off,percent_off}}}}},aggregations{options{count,label,value},attribute_code,count,label}}}';
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors); // No GraphQL errors
+
+                let products = result.body.data.products;
+                assert.equal(products.total_count, 2);             
+
+                let items = products.items;
+                assert.equal(items.length, 2);
+                items.forEach((item, idx) => {
+                    let id = idx + 1;
+                    assert.equal(item.__typename, 'SimpleProduct');
+                    assert.equal(item.sku, `product-${id}`);
+                    assert.equal(item.name, `Product #${id}`);
+
+                    let finalPrice = item.price_range.minimum_price.final_price;
+                    assert.equal(finalPrice.currency, 'USD');
+                    assert.equal(finalPrice.value, idx == 0 ? 12.34 : 56.78);
+
+                    let regularPrice = item.price_range.minimum_price.regular_price;
+                    assert.equal(regularPrice.currency, 'USD');
+                    assert.equal(regularPrice.value, idx == 0 ? 12.34 : 56.78);
+
+                    let discount = item.price_range.minimum_price.discount;
+                    assert.equal(discount.amount_off, 0);
+                    assert.equal(discount.percent_off, 0);
+                });
+
+                assert.isNull(products.aggregations); // Not supported by example integration
+            });
+        });
+
+        it('Products search in picker', () => {
+            args.query = '{products(search:"test",sort:{relevance:DESC},currentPage:1,pageSize:20){items{__typename,id,sku,name,url_key,updated_at,thumbnail{url}}}}';
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors); // No GraphQL errors
+                assert.equal(result.body.data.products.items.length, 2);             
+            });
+        });
+
+        it('Category search in picker', () => {
+            args.query = '{categoryList(filters:{name:{match:"test"}}){id,name,url_path,url_key}}';
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors); // No GraphQL errors
+                assert.equal(result.body.data.categoryList.length, 1);             
+            });
+        });
+
+        it('Products search in AEM Assets panel', () => {
+            args.query = '{products(filter:{price:{from:""}},sort:{relevance:DESC},currentPage:1,pageSize:20){items{__typename,id,sku,name,url_key,updated_at,thumbnail{url}}}}';
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors); // No GraphQL errors
+                assert.equal(result.body.data.products.items.length, 2);             
+            });
+        });
+
         it('Test that the custom "shoppinglist" and "ProductInterface" fields can be queried', () => {
             args.query = '{shoppinglist(id:"whatever"){id,products{sku,rating,accessories{sku},country_of_origin}}}';
             return resolve(args).then(result => {
@@ -351,7 +458,7 @@ describe('Dispatcher Resolver', () => {
             });
         });
 
-        it('Error when fetching the product data', () => {
+        it('Error when fetching the products data', () => {
             // Replace spy with stub
             searchProducts.restore();
             searchProducts = sinon.stub(ProductsLoader.prototype, '__searchProducts').returns(Promise.reject('Connection failed'));
@@ -361,6 +468,21 @@ describe('Dispatcher Resolver', () => {
                 assert.equal(result.body.errors.length, 1);
                 assert.equal(result.body.errors[0].message, 'Backend data is null');
                 expect(result.body.errors[0].path).to.eql(['products', 'total_count']);
+            });
+        });
+
+        it('Error when fetching the product data', () => {
+            // Replace spy with stub
+            getProductBySku.restore();
+            getProductBySku = sinon.stub(ProductLoader.prototype, '__getProductBySku').returns(Promise.reject('Connection failed'));
+
+            args.query = '{cart(cart_id:"abcd"){email,items{product{sku}}}}';
+            return resolve(args).then(result => {
+                assert.equal(result.body.errors.length, 2);
+                assert.equal(result.body.errors[0].message, 'Backend data is null');
+                expect(result.body.errors[0].path).to.eql(['cart', 'items', 0, 'product', 'sku']);
+                assert.equal(result.body.errors[1].message, 'Backend data is null');
+                expect(result.body.errors[1].path).to.eql(['cart', 'items', 1, 'product', 'sku']);
             });
         });
 

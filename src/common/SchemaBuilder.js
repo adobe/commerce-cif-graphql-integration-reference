@@ -38,14 +38,12 @@ class SchemaBuilder {
 
         // Remove "Query" root type if it doesn't have any field
         if (queryRootType && queryRootType.fields.length == 0) {
-            delete this.schema.data.__schema.queryType;
-            this.schema.data.__schema.types = this.schema.data.__schema.types.filter(t => t.name != 'Query');
+            this.removeQueryType();
         }
 
         // Remove "Mutation" root type if it doesn't have any field
         if (mutationRootType && mutationRootType.fields.length == 0) {
-            delete this.schema.data.__schema.mutationType;
-            this.schema.data.__schema.types = this.schema.data.__schema.types.filter(t => t.name != 'Mutation');
+            this.removeMutationType();
         }
 
         let clientSchema = buildClientSchema(this.schema.data);

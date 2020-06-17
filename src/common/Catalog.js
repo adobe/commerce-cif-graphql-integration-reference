@@ -61,9 +61,11 @@ class CategoryTree {
         return {
             id: data.id,
             position: data.id,
+            url_key: data.id,
             url_path: data.slug,
             name: data.title,
-            description: data.description
+            description: data.description,
+            product_count: 2
         };
     }
 
@@ -86,6 +88,16 @@ class CategoryTree {
                     productsLoader: this.productsLoader
                 })
             );
+        });
+    }
+
+    // children_count is a String in the Magento schema
+    get children_count() {
+        return this.__load().then(() => {
+            if (!this.data.subcategories || this.data.subcategories.length == 0) {
+                return "0";
+            }
+            return this.data.subcategories.length.toString(); 
         });
     }
 
@@ -218,6 +230,7 @@ class Product {
 
     __convertData(data) {
         return {
+            id: 1, // dummy id
             sku: data.sku,
             url_key: data.sku,
             name: data.title,

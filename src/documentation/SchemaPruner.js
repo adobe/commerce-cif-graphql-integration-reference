@@ -73,14 +73,25 @@ class SchemaPruner {
                         // console.debug('Looking for argument ' + parentType.name + '.' + sel.name.value + '.' + arg.name.value);
                         let key = parentType.name + '.' + sel.name.value;
                         this.__addToTypeFields(key, arg.name.value);
-                        let argField = field.args.find(f => f.name == arg.name.value);
-                        if (argField) {
-                            let argFieldType = this.__getFieldType(argField);
-                            if (argFieldType.kind == 'INPUT_OBJECT') {
-                                let type = this.__getType(argFieldType.name);
-                                arg.value.fields.forEach(f => {
-                                    this.__extractArgument(type, f);
-                                });
+                        if (field) {
+                            let argField = field.args.find(f => f.name == arg.name.value);
+                            if (argField) {
+                                let argFieldType = this.__getFieldType(argField);
+                                if (argFieldType.kind == 'INPUT_OBJECT') {
+                                    let type = this.__getType(argFieldType.name);
+                                    if (arg.value.fields) {
+                                        arg.value.fields.forEach(f => {
+                                            this.__extractArgument(type, f);
+                                        });
+                                    }
+                                    else if (arg.value.values) { // Arguments can also be arrays
+                                        arg.value.values.forEach(value => {
+                                            value.fields.forEach(arg2 => {
+                                                this.__extractArgument(type, arg2);
+                                            });
+                                        });
+                                    }
+                                }
                             }
                         }
                     });

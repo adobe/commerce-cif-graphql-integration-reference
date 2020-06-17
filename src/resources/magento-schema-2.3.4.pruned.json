@@ -108,6 +108,41 @@
               "deprecationReason": null
             },
             {
+              "name": "customAttributeMetadata",
+              "description": "The customAttributeMetadata query returns the attribute type, given an attribute code and entity type",
+              "args": [
+                {
+                  "name": "attributes",
+                  "description": "",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "LIST",
+                      "name": null,
+                      "ofType": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                          "kind": "INPUT_OBJECT",
+                          "name": "AttributeInput",
+                          "ofType": null
+                        }
+                      }
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "CustomAttributeMetadata",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "customer",
               "description": "The customer query returns information about a customer account",
               "args": [],
@@ -3358,11 +3393,31 @@
           "fields": null,
           "inputFields": [
             {
+              "name": "ids",
+              "description": "Filter by category ID that uniquely identifies the category.",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "FilterEqualTypeInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
               "name": "name",
               "description": "Filter by the display name of the category.",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "FilterMatchTypeInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "url_key",
+              "description": "Filter by the part of the URL that identifies the category",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "FilterEqualTypeInput",
                 "ofType": null
               },
               "defaultValue": null
@@ -3510,6 +3565,111 @@
             {
               "name": "name",
               "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "AttributeInput",
+          "description": "AttributeInput specifies the attribute_code and entity_type to search",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "attribute_code",
+              "description": "The unique identifier for an attribute code. This value should be in lowercase letters without spaces.",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "entity_type",
+              "description": "The type of entity that defines the attribute",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "CustomAttributeMetadata",
+          "description": "CustomAttributeMetadata defines an array of attribute_codes and entity_types",
+          "fields": [
+            {
+              "name": "items",
+              "description": "An array of attributes",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Attribute",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Attribute",
+          "description": "Attribute contains the attribute_type of the specified attribute_code and entity_type",
+          "fields": [
+            {
+              "name": "attribute_code",
+              "description": "The unique identifier for an attribute code. This value should be in lowercase letters without spaces.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "attribute_type",
+              "description": "The data type of the attribute",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "input_type",
+              "description": "The frontend input type of the attribute",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -5189,6 +5349,22 @@
           "description": "The Products object is the top-level object returned in a product search.",
           "fields": [
             {
+              "name": "aggregations",
+              "description": "Layered navigation aggregations.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Aggregation",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "items",
               "description": "An array of products that match the specified search criteria.",
               "args": [],
@@ -5198,6 +5374,136 @@
                 "ofType": {
                   "kind": "INTERFACE",
                   "name": "ProductInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "total_count",
+              "description": "The number of products returned.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "Aggregation",
+          "description": "A bucket that contains information for each filterable option (such as price, category ID, and custom attributes).",
+          "fields": [
+            {
+              "name": "attribute_code",
+              "description": "Attribute code of the aggregation group.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "count",
+              "description": "The number of options in the aggregation group.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "label",
+              "description": "The aggregation display name.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "options",
+              "description": "Array of options for the aggregation.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "AggregationOption",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "AggregationOption",
+          "description": "",
+          "fields": [
+            {
+              "name": "count",
+              "description": "The number of items that match the aggregation option.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "label",
+              "description": "Aggregation option display label.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "value",
+              "description": "The internal ID that represents the value of the option.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
                   "ofType": null
                 }
               },
