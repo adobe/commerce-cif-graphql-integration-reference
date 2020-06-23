@@ -2465,7 +2465,7 @@
           "fields": [
             {
               "name": "disabled",
-              "description": "Whether the image is hidden from vie.",
+              "description": "Whether the image is hidden from view.",
               "args": [],
               "type": {
                 "kind": "SCALAR",

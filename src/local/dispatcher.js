@@ -14,7 +14,7 @@
 
 'use strict';
 
-const magentoSchema = require('../resources/magento-schema-2.3.4.min.json');
+const magentoSchema = require('../resources/magento-schema-2.3.5.min.json');
 const { makeRemoteExecutableSchema, introspectSchema, mergeSchemas } = require('graphql-tools');
 const { graphql, printSchema } = require('graphql');
 const libState = require('@adobe/aio-lib-state');
