@@ -12,7 +12,7 @@
     "lcov-report": "nyc report --reporter=lcov",
     "unit": "mocha test/**/*Test.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-unit.json",
     "deploy": "serverless deploy",
-    "doc": "node src/documentation/generate.js && jq -c . < src/resources/magento-schema-2.3.4.pruned.json > src/resources/magento-schema-2.3.4.pruned.min.json"
+    "doc": "node src/documentation/generate.js && jq -c . < src/resources/magento-schema-2.3.5.pruned.json > src/resources/magento-schema-2.3.5.pruned.min.json"
   },
   "dependencies": {
     "dataloader": "^1.4.0",

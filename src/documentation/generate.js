@@ -14,7 +14,7 @@
 
 'use strict';
 
-const magentoSchema = require('../resources/magento-schema-2.3.4.min.json');
+const magentoSchema = require('../resources/magento-schema-2.3.5.min.json');
 const SchemaPruner = require('./SchemaPruner.js');
 const gitClone = require('git-clone');
 const fs = require('fs');
@@ -40,7 +40,7 @@ function generate() {
             pruneFolder(schemaPruner, path.join(__dirname, '../../repos/aem-core-cif-components/react-components/src/queries'));
 
             let prunedSchema = schemaPruner.prune();
-            fs.writeFileSync(path.join(__dirname, '../resources/magento-schema-2.3.4.pruned.json'), JSON.stringify(prunedSchema, null, 2));
+            fs.writeFileSync(path.join(__dirname, '../resources/magento-schema-2.3.5.pruned.json'), JSON.stringify(prunedSchema, null, 2));
         });
     });
 }
