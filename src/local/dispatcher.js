@@ -133,11 +133,6 @@ async function resolve(args) {
                     productsLoader: productsLoader
                 })];
             },
-            storeConfig: () => {
-                return {
-                    secure_base_media_url: `${args.url}/images`
-                }
-            },
             customAttributeMetadata: () => {
                 return null; // Not supported by example integration
             }
@@ -217,11 +212,7 @@ function localSchema() {
     // The local schema only implements a limited set of fields of the Query root type
     let schemaBuilder = new SchemaBuilder(magentoSchema)
         .removeMutationType()
-        .filterQueryFields(new Set(["products", "category", "storeConfig", "customAttributeMetadata", "categoryList"]));
-
-    // Remove all fields from ProductFilterInput except "sku" and "url_key"
-    let productFilterInput = schemaBuilder.getType('ProductFilterInput');
-    productFilterInput.inputFields = productFilterInput.inputFields.filter(f => f.name == 'sku' || f.name == 'url_key');
+        .filterQueryFields(new Set(["products", "category", "customAttributeMetadata", "categoryList"]));
 
     // Add a new type and field under the Query root type
     // Note that when adding a field to an interface, you must also add it to all its implementation types
