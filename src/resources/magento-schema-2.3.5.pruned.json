@@ -232,18 +232,6 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
-            },
-            {
-              "name": "storeConfig",
-              "description": "The store config query",
-              "args": [],
-              "type": {
-                "kind": "OBJECT",
-                "name": "StoreConfig",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
             }
           ],
           "inputFields": null,
@@ -2068,20 +2056,20 @@
               "deprecationReason": null
             },
             {
-              "name": "media_gallery_entries",
-              "description": "An array of MediaGalleryEntry objects.",
+              "name": "media_gallery",
+              "description": "An array of Media Gallery objects.",
               "args": [],
               "type": {
                 "kind": "LIST",
                 "name": null,
                 "ofType": {
-                  "kind": "OBJECT",
-                  "name": "MediaGalleryEntry",
+                  "kind": "INTERFACE",
+                  "name": "MediaGalleryInterface",
                   "ofType": null
                 }
               },
-              "isDeprecated": true,
-              "deprecationReason": "Use product's `media_gallery` instead"
+              "isDeprecated": false,
+              "deprecationReason": null
             },
             {
               "name": "name",
@@ -2320,6 +2308,16 @@
               "defaultValue": null
             },
             {
+              "name": "price",
+              "description": "Attribute label: Price",
+              "type": {
+                "kind": "ENUM",
+                "name": "SortEnum",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
               "name": "relevance",
               "description": "Sort by the search relevance score (default).",
               "type": {
@@ -2429,41 +2427,6 @@
           "description": "Product image information. Contains the image URL and label.",
           "fields": [
             {
-              "name": "label",
-              "description": "The label of the product image or video.",
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "url",
-              "description": "The URL of the product image or video.",
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            }
-          ],
-          "inputFields": null,
-          "interfaces": [],
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
-          "kind": "OBJECT",
-          "name": "MediaGalleryEntry",
-          "description": "MediaGalleryEntry defines characteristics about images and videos associated with a specific product.",
-          "fields": [
-            {
               "name": "disabled",
               "description": "Whether the image is hidden from view.",
               "args": [],
@@ -2476,32 +2439,8 @@
               "deprecationReason": null
             },
             {
-              "name": "file",
-              "description": "The path of the image on the server.",
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
               "name": "label",
-              "description": "The alt text displayed on the UI when the user points to the image.",
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "media_type",
-              "description": "image or video.",
+              "description": "The label of the product image or video.",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -2522,12 +2461,100 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "url",
+              "description": "The URL of the product image or video.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             }
           ],
           "inputFields": null,
-          "interfaces": [],
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "MediaGalleryInterface",
+              "ofType": null
+            }
+          ],
           "enumValues": null,
           "possibleTypes": null
+        },
+        {
+          "kind": "INTERFACE",
+          "name": "MediaGalleryInterface",
+          "description": "Contains basic information about a product image or video.",
+          "fields": [
+            {
+              "name": "disabled",
+              "description": "Whether the image is hidden from view.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "label",
+              "description": "The label of the product image or video.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "position",
+              "description": "The media item's position after it has been sorted.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "url",
+              "description": "The URL of the product image or video.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": [
+            {
+              "kind": "OBJECT",
+              "name": "ProductImage",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "ProductVideo",
+              "ofType": null
+            }
+          ]
         },
         {
           "kind": "OBJECT",
@@ -3563,6 +3590,18 @@
               "deprecationReason": null
             },
             {
+              "name": "id",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "name",
               "description": null,
               "args": [],
@@ -3691,6 +3730,22 @@
           "description": "Customer defines the customer name and address and other details",
           "fields": [
             {
+              "name": "addresses",
+              "description": "An array containing the customer's shipping and billing addresses",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "CustomerAddress",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "email",
               "description": "The customer's email address. Required",
               "args": [],
@@ -3729,6 +3784,165 @@
             {
               "name": "lastname",
               "description": "The customer's family name",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "CustomerAddress",
+          "description": "CustomerAddress contains detailed information about a customer's billing and shipping addresses",
+          "fields": [
+            {
+              "name": "city",
+              "description": "The city or town",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "company",
+              "description": "The customer's company",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "country_code",
+              "description": "The customer's country",
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "CountryCodeEnum",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "default_billing",
+              "description": "Indicates whether the address is the default billing address",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "default_shipping",
+              "description": "Indicates whether the address is the default shipping address",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "firstname",
+              "description": "The first name of the person associated with the shipping/billing address",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": "The ID assigned to the address object",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "lastname",
+              "description": "The family name of the person associated with the shipping/billing address",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "postcode",
+              "description": "The customer's ZIP or postal code",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "region",
+              "description": "An object containing the region name, region code, and region ID",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "CustomerAddressRegion",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "street",
+              "description": "An array of strings that define the street number and name",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "telephone",
+              "description": "The telephone number",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -5226,6 +5440,29 @@
           "possibleTypes": null
         },
         {
+          "kind": "OBJECT",
+          "name": "CustomerAddressRegion",
+          "description": "CustomerAddressRegion defines the customer's state or province",
+          "fields": [
+            {
+              "name": "region_code",
+              "description": "The address region code",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
           "kind": "ENUM",
           "name": "PaymentTokenTypeEnum",
           "description": "The list of available payment token types",
@@ -5517,29 +5754,6 @@
           "possibleTypes": null
         },
         {
-          "kind": "OBJECT",
-          "name": "StoreConfig",
-          "description": "The type contains information about a store config",
-          "fields": [
-            {
-              "name": "secure_base_media_url",
-              "description": "Secure base media URL for the store",
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            }
-          ],
-          "inputFields": null,
-          "interfaces": [],
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
           "kind": "ENUM",
           "name": "FixedProductTaxDisplaySettings",
           "description": "This enumeration display settings for the fixed product tax",
@@ -5768,12 +5982,66 @@
               "deprecationReason": null
             },
             {
+              "name": "createCustomerAddress",
+              "description": "Create customer address",
+              "args": [
+                {
+                  "name": "input",
+                  "description": "",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "CustomerAddressInput",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "CustomerAddress",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "createEmptyCart",
               "description": "Creates an empty shopping cart for a guest or logged in user",
               "args": [],
               "type": {
                 "kind": "SCALAR",
                 "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "deleteCustomerAddress",
+              "description": "Delete customer address",
+              "args": [
+                {
+                  "name": "id",
+                  "description": "",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "Int",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -6079,6 +6347,43 @@
               "type": {
                 "kind": "OBJECT",
                 "name": "UpdateCartItemsOutput",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updateCustomerAddress",
+              "description": "Update customer address",
+              "args": [
+                {
+                  "name": "id",
+                  "description": "",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "SCALAR",
+                      "name": "Int",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "input",
+                  "description": "",
+                  "type": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "CustomerAddressInput",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "CustomerAddress",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -6527,6 +6832,172 @@
           ],
           "inputFields": null,
           "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "CustomerAddressInput",
+          "description": "",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "city",
+              "description": "The city or town",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "company",
+              "description": "The customer's company",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "country_code",
+              "description": "The customer's country",
+              "type": {
+                "kind": "ENUM",
+                "name": "CountryCodeEnum",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "default_billing",
+              "description": "Indicates whether the address is the default billing address",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "default_shipping",
+              "description": "Indicates whether the address is the default shipping address",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "firstname",
+              "description": "The first name of the person associated with the shipping/billing address",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "lastname",
+              "description": "The family name of the person associated with the shipping/billing address",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "postcode",
+              "description": "The customer's ZIP or postal code",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "region",
+              "description": "An object containing the region name, region code, and region ID",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "CustomerAddressRegionInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "street",
+              "description": "An array of strings that define the street number and name",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "telephone",
+              "description": "The telephone number",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "CustomerAddressRegionInput",
+          "description": "CustomerAddressRegionInput defines the customer's state or province",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "region",
+              "description": "The state or province name",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "region_code",
+              "description": "The address region code",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "region_id",
+              "description": "region_id is deprecated. Region ID is excessive on storefront and region code should suffice for all scenarios",
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
           "enumValues": null,
           "possibleTypes": null
         },
@@ -7811,20 +8282,20 @@
               "deprecationReason": null
             },
             {
-              "name": "media_gallery_entries",
-              "description": "An array of MediaGalleryEntry objects.",
+              "name": "media_gallery",
+              "description": "An array of Media Gallery objects.",
               "args": [],
               "type": {
                 "kind": "LIST",
                 "name": null,
                 "ofType": {
-                  "kind": "OBJECT",
-                  "name": "MediaGalleryEntry",
+                  "kind": "INTERFACE",
+                  "name": "MediaGalleryInterface",
                   "ofType": null
                 }
               },
-              "isDeprecated": true,
-              "deprecationReason": "Use product's `media_gallery` instead"
+              "isDeprecated": false,
+              "deprecationReason": null
             },
             {
               "name": "name",
@@ -8006,6 +8477,263 @@
           "possibleTypes": null
         },
         {
+          "kind": "OBJECT",
+          "name": "BundleProduct",
+          "description": "BundleProduct defines basic features of a bundle product and contains multiple BundleItems.",
+          "fields": [
+            {
+              "name": "categories",
+              "description": "The categories assigned to a product.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "CategoryInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "created_at",
+              "description": "Timestamp indicating when the product was created.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "crosssell_products",
+              "description": "Crosssell Products",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "ProductInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "description",
+              "description": "Detailed information about the product. The value can include simple HTML tags.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ComplexTextValue",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": "The ID number assigned to the product.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "image",
+              "description": "The relative path to the main image on the product page.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductImage",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "media_gallery",
+              "description": "An array of Media Gallery objects.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "MediaGalleryInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "name",
+              "description": "The product name. Customers use this name to identify the product.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "price",
+              "description": "A ProductPrices object, indicating the price of an item.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductPrices",
+                "ofType": null
+              },
+              "isDeprecated": true,
+              "deprecationReason": "Use price_range for product price information."
+            },
+            {
+              "name": "price_range",
+              "description": "A PriceRange object, indicating the range of prices for the product",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PriceRange",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "related_products",
+              "description": "Related Products",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "ProductInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "sku",
+              "description": "A number or code assigned to a product to identify the product, options, price, and manufacturer.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "small_image",
+              "description": "The relative path to the small image, which is used on catalog pages.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductImage",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "stock_status",
+              "description": "Stock status of the product",
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "ProductStockStatus",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "thumbnail",
+              "description": "The relative path to the product's thumbnail image.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductImage",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": "Timestamp indicating when the product was updated.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "upsell_products",
+              "description": "Upsell Products",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "ProductInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "url_key",
+              "description": "The part of the URL that identifies the product",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "ProductInterface",
+              "ofType": null
+            }
+          ],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
           "kind": "ENUM",
           "name": "PriceViewEnum",
           "description": "This enumeration defines whether a bundle product's price is displayed as the lowest possible value or as a range.",
@@ -8153,20 +8881,20 @@
               "deprecationReason": null
             },
             {
-              "name": "media_gallery_entries",
-              "description": "An array of MediaGalleryEntry objects.",
+              "name": "media_gallery",
+              "description": "An array of Media Gallery objects.",
               "args": [],
               "type": {
                 "kind": "LIST",
                 "name": null,
                 "ofType": {
-                  "kind": "OBJECT",
-                  "name": "MediaGalleryEntry",
+                  "kind": "INTERFACE",
+                  "name": "MediaGalleryInterface",
                   "ofType": null
                 }
               },
-              "isDeprecated": true,
-              "deprecationReason": "Use product's `media_gallery` instead"
+              "isDeprecated": false,
+              "deprecationReason": null
             },
             {
               "name": "name",
@@ -8473,20 +9201,20 @@
               "deprecationReason": null
             },
             {
-              "name": "media_gallery_entries",
-              "description": "An array of MediaGalleryEntry objects.",
+              "name": "media_gallery",
+              "description": "An array of Media Gallery objects.",
               "args": [],
               "type": {
                 "kind": "LIST",
                 "name": null,
                 "ofType": {
-                  "kind": "OBJECT",
-                  "name": "MediaGalleryEntry",
+                  "kind": "INTERFACE",
+                  "name": "MediaGalleryInterface",
                   "ofType": null
                 }
               },
-              "isDeprecated": true,
-              "deprecationReason": "Use product's `media_gallery` instead"
+              "isDeprecated": false,
+              "deprecationReason": null
             },
             {
               "name": "name",

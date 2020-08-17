@@ -285,8 +285,8 @@ describe('Dispatcher Resolver', () => {
             });
         });
 
-        it('Products search by skus with store config', () => {
-            args.query = '{products(filter:{sku:{in:["a-sku", "b-sku"]}}, currentPage:1){items{sku}},storeConfig{secure_base_media_url}}';
+        it('Products search by skus', () => {
+            args.query = '{products(filter:{sku:{in:["a-sku", "b-sku"]}}, currentPage:1){items{sku}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
 
@@ -294,8 +294,6 @@ describe('Dispatcher Resolver', () => {
                 assert.equal(items.length, 2);
                 assert.equal(items[0].sku, 'a-sku');
                 assert.equal(items[1].sku, 'b-sku');
-
-                assert.equal(result.body.data.storeConfig.secure_base_media_url, args.url + '/images');
 
                 // Ensure the Products search function is called once
                 assert(searchProducts.calledOnceWith({
