@@ -30,16 +30,16 @@ describe('I/O Runtime action', () => {
 
                 let schema = result.body;
 
-                // Queries: cart, countries, customAttributeMetadata, customer, products, storeConfig, category, categoryList, customerCart
+                // Queries: cart, countries, customAttributeMetadata, customer, products, category, categoryList, customerCart
                 let queryType = schema.data.__schema.types.find(t => t.name == 'Query');
-                assert.equal(queryType.fields.length, 9);
+                assert.equal(queryType.fields.length, 8);
 
                 // Mutations: a bunch of cart and customer related queries
                 let mutationType = schema.data.__schema.types.find(t => t.name == 'Mutation');
-                assert.equal(mutationType.fields.length, 19);
+                assert.equal(mutationType.fields.length, 22);
 
                 // Ensures the number of types does not decrease "accidentally"
-                assert.equal(schema.data.__schema.types.length, 121);
+                assert.equal(schema.data.__schema.types.length, 125);
             });
         });
     });

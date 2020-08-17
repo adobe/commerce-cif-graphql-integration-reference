@@ -270,11 +270,11 @@ class Product {
             thumbnail: {
                 url: `${this.actionParameters.url}/images/thumb/${data.sku}.jpg` // Dummy
             },
-            media_gallery_entries: [
+            media_gallery: [
                 {
-                    file: `${this.actionParameters.url}/images/normal/${data.sku}.jpg`, // Dummy
+                    __typename: 'ProductImage',
+                    url: `${this.actionParameters.url}/images/normal/${data.sku}.jpg`, // Dummy
                     disabled: false,
-                    media_type: 'image',
                     position: 0
                 }
             ]
