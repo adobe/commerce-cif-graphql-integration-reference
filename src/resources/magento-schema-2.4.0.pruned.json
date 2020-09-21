@@ -674,13 +674,9 @@
               "description": null,
               "args": [],
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -688,6 +684,16 @@
           ],
           "inputFields": null,
           "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "SCALAR",
+          "name": "Int",
+          "description": "The `Int` scalar type represents non-fractional signed whole numeric\nvalues. Int can represent values between -(2^31) and 2^31 - 1. ",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
           "enumValues": null,
           "possibleTypes": null
         },
@@ -1016,7 +1022,7 @@
               "deprecationReason": ""
             },
             {
-              "name": "BYR",
+              "name": "BYN",
               "description": "",
               "isDeprecated": false,
               "deprecationReason": ""
@@ -2253,16 +2259,6 @@
           ]
         },
         {
-          "kind": "SCALAR",
-          "name": "Int",
-          "description": "The `Int` scalar type represents non-fractional signed whole numeric\nvalues. Int can represent values between -(2^31) and 2^31 - 1. ",
-          "fields": null,
-          "inputFields": null,
-          "interfaces": null,
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
           "kind": "INTERFACE",
           "name": "CategoryInterface",
           "description": "CategoryInterface contains the full set of attributes that can be returned in a category search.",
@@ -2378,7 +2374,7 @@
             },
             {
               "name": "total_count",
-              "description": "The number of products returned.",
+              "description": "The number of products in the category that are marked as visible. By default, in complex products, parent products are visible, but their child products are not.",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -3230,6 +3226,103 @@
           "possibleTypes": null
         },
         {
+          "kind": "INPUT_OBJECT",
+          "name": "CategoryFilterInput",
+          "description": "CategoryFilterInput defines the filters to be used in the search. A filter contains at least one attribute, a comparison operator, and the value that is being searched for.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "ids",
+              "description": "Filter by category ID that uniquely identifies the category.",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "FilterEqualTypeInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "name",
+              "description": "Filter by the display name of the category.",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "FilterMatchTypeInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "url_key",
+              "description": "Filter by the part of the URL that identifies the category.",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "FilterEqualTypeInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "FilterEqualTypeInput",
+          "description": "Defines a filter that matches the input exactly.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "eq",
+              "description": "A string to filter on",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
+              "name": "in",
+              "description": "An array of values to filter on",
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                }
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "INPUT_OBJECT",
+          "name": "FilterMatchTypeInput",
+          "description": "Defines a filter that performs a fuzzy search.",
+          "fields": null,
+          "inputFields": [
+            {
+              "name": "match",
+              "description": "One or more words to filter on",
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "defaultValue": null
+            }
+          ],
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
           "kind": "OBJECT",
           "name": "CategoryTree",
           "description": "Category Tree implementation.",
@@ -3324,7 +3417,7 @@
             },
             {
               "name": "product_count",
-              "description": "The number of products in the category.",
+              "description": "The number of products in the category that are marked as visible. By default, in complex products, parent products are visible, but their child products are not.",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -3410,103 +3503,6 @@
               "ofType": null
             }
           ],
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
-          "kind": "INPUT_OBJECT",
-          "name": "CategoryFilterInput",
-          "description": "CategoryFilterInput defines the filters to be used in the search. A filter contains at least one attribute, a comparison operator, and the value that is being searched for.",
-          "fields": null,
-          "inputFields": [
-            {
-              "name": "ids",
-              "description": "Filter by category ID that uniquely identifies the category.",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "FilterEqualTypeInput",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "name",
-              "description": "Filter by the display name of the category.",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "FilterMatchTypeInput",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "url_key",
-              "description": "Filter by the part of the URL that identifies the category",
-              "type": {
-                "kind": "INPUT_OBJECT",
-                "name": "FilterEqualTypeInput",
-                "ofType": null
-              },
-              "defaultValue": null
-            }
-          ],
-          "interfaces": null,
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
-          "kind": "INPUT_OBJECT",
-          "name": "FilterEqualTypeInput",
-          "description": "Defines a filter that matches the input exactly.",
-          "fields": null,
-          "inputFields": [
-            {
-              "name": "eq",
-              "description": "A string to filter on",
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "defaultValue": null
-            },
-            {
-              "name": "in",
-              "description": "An array of values to filter on",
-              "type": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                }
-              },
-              "defaultValue": null
-            }
-          ],
-          "interfaces": null,
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
-          "kind": "INPUT_OBJECT",
-          "name": "FilterMatchTypeInput",
-          "description": "Defines a filter that performs a fuzzy search.",
-          "fields": null,
-          "inputFields": [
-            {
-              "name": "match",
-              "description": "One or more words to filter on",
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "defaultValue": null
-            }
-          ],
-          "interfaces": null,
           "enumValues": null,
           "possibleTypes": null
         },
@@ -5619,7 +5615,7 @@
             },
             {
               "name": "total_count",
-              "description": "The number of products returned.",
+              "description": "The number of products that are marked as visible. By default, in complex products, parent products are visible, but their child products are not.",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -6988,7 +6984,7 @@
             },
             {
               "name": "region_id",
-              "description": "region_id is deprecated. Region ID is excessive on storefront and region code should suffice for all scenarios",
+              "description": "The unique ID for a pre-defined region",
               "type": {
                 "kind": "SCALAR",
                 "name": "Int",
@@ -7214,6 +7210,47 @@
           "possibleTypes": null
         },
         {
+          "kind": "ENUM",
+          "name": "CheckoutUserInputErrorCodes",
+          "description": "",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "REORDER_NOT_AVAILABLE",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "PRODUCT_NOT_FOUND",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "NOT_SALABLE",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "INSUFFICIENT_STOCK",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "UNDEFINED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
           "kind": "OBJECT",
           "name": "RevokeCustomerTokenOutput",
           "description": "",
@@ -7394,7 +7431,7 @@
             },
             {
               "name": "save_in_address_book",
-              "description": "",
+              "description": "Determines whether to save the address in the customer's address book. The default value is true",
               "type": {
                 "kind": "SCALAR",
                 "name": "Boolean",
