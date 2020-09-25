@@ -24,7 +24,7 @@ You can also read our [Medium article](https://medium.com/adobetech/serverless-g
 
 This repository provides a reference implementation **example** that can be used as a **starting point** to develop a real integration. This is NOT a complete implementation that supports all the GraphQL queries of the CIF components and connector. Do not expect that it will work OOTB with all the CIF components: there is no point that we implement a full example mock implementation, this is just demonstrating how one should/can develop a real integration.
 
-**Very important**: in order to help a developer identifiy what GraphQL queries are sent by the CIF components and connector, this repository also contains a "pruned" Magento schema that only contains the fields being queried by the CIF components and connector. This schema hence represents the fields of the Magento schema that must be implemented by a real integration in order to fully support all the CIF GraphQL queries. Make sure you read this [documentation](#schema-documentation).
+**Very important**: in order to help a developer identify what GraphQL queries are sent by the CIF components and connector, this repository also contains a "pruned" Magento schema that only contains the fields being queried by the CIF components and connector. This schema hence represents the fields of the Magento schema that must be implemented by a real integration in order to fully support all the CIF GraphQL queries. Make sure you read this [documentation](#schema-documentation).
 
 ## Introduction
 
