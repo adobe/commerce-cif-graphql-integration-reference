@@ -12,6 +12,7 @@ Working on 3rd-party integration requires that you are **absolutely** familiar w
     * GraphQL resolvers: https://graphql.org/learn/execution/
 * Adobe I/O Runtime: how to write, deploy, and get the logs of actions
     * Read the [developer documentation](https://www.adobe.io/apis/experienceplatform/runtime/docs.html)
+    * Check the [public developer forum](https://experienceleaguecommunities.adobe.com/t5/adobe-i-o-runtime/ct-p/adobe-io-runtime)
 * Make sure you also get used to schema introspection, and how to write and test GraphQL queries
     * GraphQL introspection: https://graphql.org/learn/introspection/
     * Tools: install the ChromeiQL/GraphiQL extension for the Chrome browser
