@@ -10,6 +10,8 @@ Working on 3rd-party integration requires that you are **absolutely** familiar w
     * GraphQL basics: https://graphql.org/learn/
     * GraphQL schema: https://graphql.org/learn/schema/
     * GraphQL resolvers: https://graphql.org/learn/execution/
+* Adobe I/O Runtime: how to write, deploy, and get the logs of actions
+    * Read the [developer documentation](https://www.adobe.io/apis/experienceplatform/runtime/docs.html)
 * Make sure you also get used to schema introspection, and how to write and test GraphQL queries
     * GraphQL introspection: https://graphql.org/learn/introspection/
     * Tools: install the ChromeiQL/GraphiQL extension for the Chrome browser
@@ -17,6 +19,12 @@ Working on 3rd-party integration requires that you are **absolutely** familiar w
     * Magento GraphQL documentation: https://devdocs.magento.com/guides/v2.3/graphql/index.html
 
 You can also read our [Medium article](https://medium.com/adobetech/serverless-graphql-on-adobe-i-o-runtime-e221d2a8e215) to get an overall description of the design of the 3rd-party GraphQL integration with AEM Commerce.
+
+## Expectations (please read this!)
+
+This repository provides a reference implementation **example** that can be used as a **starting point** to develop a real integration. This is NOT a complete implementation that supports all the GraphQL queries of the CIF components and connector. Do not expect that it will work OOTB with all the CIF components: there is no point that we implement a full example mock implementation, this is just demonstrating how one should/can develop a real integration.
+
+**Very important**: in order to help a developer identifiy what GraphQL queries are sent by the CIF components and connector, this repository also contains a "pruned" Magento schema that only contains the fields being queried by the CIF components and connector. This schema hence represents the fields of the Magento schema that must be implemented by a real integration in order to fully support all the CIF GraphQL queries. Make sure you read this [documentation](#schema-documentation).
 
 ## Introduction
 
@@ -124,7 +132,7 @@ To introspect this schema, it is automatically deployed when running `npm run de
 
 For performance reasons, the [dispatcher.js](src/local/dispatcher.js) implementation "caches" the GraphQL schema in a global variable, so that further WARM invocations of the same action can immediately reuse the schema previously built with schema stitching. The Adobe I/O Runtime platform indeed reuses existing `Node.js` containers when possible, so it is possible to "cache" data in global variables.
 
-In addition, the dispatcher implementation also demonstrates the use of the [aio-lib-state](https://github.com/adobe/aio-lib-state) library in order to cache all the remote schemas in a cache maintained by the Adobe I/O platform. This cache is used a second-level caching layer when a COLD container is used. The benefit of this caching layer increases with the number of remote resolvers, and the lifetime of this cached data is currently one hour.
+In addition, the dispatcher implementation also demonstrates the use of the [aio-lib-state](https://github.com/adobe/aio-lib-state) library in order to cache all the remote schemas in a cache maintained by the Adobe I/O platform. This cache is used as a second-level caching layer when a COLD container is used and its usefulness increases with the number of remote resolvers. The cache is disabled by default and has to be explicitly activated by developers.
 
 This caching is activated/disabled by the `use-aio-cache` property set in [serverless.yml](serverless.yml). To activate the caching, set this property to an integer value that will define the caching duration in seconds. During development, we **strongly recommend** that this property is set to `false` to make sure that changes to the schema are immediately visible in the schema.
 
