@@ -35,12 +35,16 @@ function generate() {
 
     gitClone('https://github.com/adobe/commerce-cif-connector.git', 'repos/commerce-cif-connector', {shallow: true}, () => {
         gitClone('https://github.com/adobe/aem-core-cif-components.git', 'repos/aem-core-cif-components', {shallow: true}, () => {
-            pruneFile(schemaPruner, path.join(__dirname, '../../repos/commerce-cif-connector/bundles/cif-connector-graphql/src/test/resources/test-queries/graphql-requests.log'));
-            pruneFile(schemaPruner, path.join(__dirname, '../../repos/aem-core-cif-components/bundles/core/src/test/resources/test-queries/graphql-requests.log'));
-            pruneFolder(schemaPruner, path.join(__dirname, '../../repos/aem-core-cif-components/react-components/src/queries'));
+            gitClone('git@git.corp.adobe.com:CIF/cif-on-skyline-frontend.git', 'repos/cif-on-skyline-frontend', {shallow: true}, () => {
+                pruneFile(schemaPruner, path.join(__dirname, '../../repos/commerce-cif-connector/bundles/cif-connector-graphql/src/test/resources/test-queries/graphql-requests.log'));
+                pruneFile(schemaPruner, path.join(__dirname, '../../repos/aem-core-cif-components/bundles/core/src/test/resources/test-queries/graphql-requests.log'));
+                pruneFolder(schemaPruner, path.join(__dirname, '../../repos/aem-core-cif-components/react-components/src/queries'));
+                pruneFolder(schemaPruner, path.join(__dirname, '../../repos/cif-on-skyline-frontend/app/src/queries/2.3.5'));
+                pruneFolder(schemaPruner, path.join(__dirname, '../../repos/cif-on-skyline-frontend/app/src/queries/2.4.0'));
 
-            let prunedSchema = schemaPruner.prune();
-            fs.writeFileSync(path.join(__dirname, '../resources/magento-schema-2.4.0.pruned.json'), JSON.stringify(prunedSchema, null, 2));
+                let prunedSchema = schemaPruner.prune();
+                fs.writeFileSync(path.join(__dirname, '../resources/magento-schema-2.4.0.pruned.json'), JSON.stringify(prunedSchema, null, 2));
+            });
         });
     });
 }
@@ -59,10 +63,12 @@ function pruneFile(schemaPruner, filepath) {
 // The folder contains multiple files with each file containing a single query
 function pruneFolder(schemaPruner, folderpath) {
     let files = fs.readdirSync(folderpath);
-    files.forEach(file => {
-        let query = fs.readFileSync(path.join(folderpath, file), 'UTF-8');
-        schemaPruner.process(query);
-    })
+    files
+        .filter(file => file.endsWith('.graphql'))
+        .forEach(file => {
+            let query = fs.readFileSync(path.join(folderpath, file), 'UTF-8');
+            schemaPruner.process(query);
+        });
 }
 
 generate();
