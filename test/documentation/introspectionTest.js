@@ -36,7 +36,7 @@ describe('I/O Runtime action', () => {
 
                 // Mutations: a bunch of cart and customer related queries
                 let mutationType = schema.data.__schema.types.find(t => t.name == 'Mutation');
-                assert.equal(mutationType.fields.length, 25);
+                assert.equal(mutationType.fields.length, 26);
 
                 // Ensures the number of types does not decrease "accidentally"
                 assert.equal(schema.data.__schema.types.length, 138);

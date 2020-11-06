@@ -2121,6 +2121,42 @@
               "deprecationReason": null
             },
             {
+              "name": "meta_description",
+              "description": "A brief overview of the product for search results listings, maximum 255 characters.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_keyword",
+              "description": "A comma-separated list of keywords that are visible only to search engines.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_title",
+              "description": "A string that is displayed in the title bar and tab of the browser and in search results lists.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "name",
               "description": "The product name. Customers use this name to identify the product.",
               "args": [],
@@ -2337,6 +2373,18 @@
             {
               "name": "name",
               "description": "The display name of the category.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "url_key",
+              "description": "The url key assigned to the category.",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -3624,6 +3672,42 @@
               "deprecationReason": null
             },
             {
+              "name": "meta_description",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_keywords",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_title",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "name",
               "description": "The display name of the category.",
               "args": [],
@@ -3790,6 +3874,18 @@
                   "name": "Region",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "full_name_locale",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -6710,6 +6806,33 @@
               "deprecationReason": null
             },
             {
+              "name": "updateCustomer",
+              "description": "Update the customer's personal information",
+              "args": [
+                {
+                  "name": "input",
+                  "description": "",
+                  "type": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "CustomerInput",
+                      "ofType": null
+                    }
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "CustomerOutput",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "updateCustomerAddress",
               "description": "Update customer address",
               "args": [
@@ -8880,6 +9003,42 @@
               "deprecationReason": null
             },
             {
+              "name": "meta_description",
+              "description": "A brief overview of the product for search results listings, maximum 255 characters.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_keyword",
+              "description": "A comma-separated list of keywords that are visible only to search engines.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_title",
+              "description": "A string that is displayed in the title bar and tab of the browser and in search results lists.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "name",
               "description": "The product name. Customers use this name to identify the product.",
               "args": [],
@@ -9681,6 +9840,42 @@
               "deprecationReason": null
             },
             {
+              "name": "meta_description",
+              "description": "A brief overview of the product for search results listings, maximum 255 characters.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_keyword",
+              "description": "A comma-separated list of keywords that are visible only to search engines.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_title",
+              "description": "A string that is displayed in the title bar and tab of the browser and in search results lists.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "name",
               "description": "The product name. Customers use this name to identify the product.",
               "args": [],
@@ -10024,6 +10219,42 @@
               "deprecationReason": null
             },
             {
+              "name": "meta_description",
+              "description": "A brief overview of the product for search results listings, maximum 255 characters.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_keyword",
+              "description": "A comma-separated list of keywords that are visible only to search engines.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_title",
+              "description": "A string that is displayed in the title bar and tab of the browser and in search results lists.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "name",
               "description": "The product name. Customers use this name to identify the product.",
               "args": [],
@@ -10339,6 +10570,42 @@
                   "name": "MediaGalleryInterface",
                   "ofType": null
                 }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_description",
+              "description": "A brief overview of the product for search results listings, maximum 255 characters.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_keyword",
+              "description": "A comma-separated list of keywords that are visible only to search engines.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_title",
+              "description": "A string that is displayed in the title bar and tab of the browser and in search results lists.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
