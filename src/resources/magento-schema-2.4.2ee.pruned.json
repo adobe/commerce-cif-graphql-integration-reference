@@ -284,8 +284,8 @@
         },
         {
           "kind": "SCALAR",
-          "name": "String",
-          "description": "The `String` scalar type represents textual data, represented as UTF-8\ncharacter sequences. The String type is most often used by GraphQL to\nrepresent free-form human-readable text.",
+          "name": "Boolean",
+          "description": "The `Boolean` scalar type represents `true` or `false`.",
           "fields": null,
           "inputFields": null,
           "interfaces": null,
@@ -294,8 +294,8 @@
         },
         {
           "kind": "SCALAR",
-          "name": "Boolean",
-          "description": "The `Boolean` scalar type represents `true` or `false`.",
+          "name": "String",
+          "description": "The `String` scalar type represents textual data, represented as UTF-8\ncharacter sequences. The String type is most often used by GraphQL to\nrepresent free-form human-readable text.",
           "fields": null,
           "inputFields": null,
           "interfaces": null,
@@ -354,6 +354,16 @@
           "possibleTypes": null
         },
         {
+          "kind": "SCALAR",
+          "name": "ID",
+          "description": "The `ID` scalar type represents a unique identifier, often used to\nrefetch an object or as key for a cache. The ID type appears in a JSON\nresponse as a String; however, it is not intended to be human-readable.\nWhen expected as an input type, any string (such as `\"4\"`) or integer\n(such as `4`) input value will be accepted as an ID.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
           "kind": "OBJECT",
           "name": "Cart",
           "description": "",
@@ -368,7 +378,7 @@
                 "ofType": null
               },
               "isDeprecated": true,
-              "deprecationReason": "Use applied_coupons instead "
+              "deprecationReason": "Use applied_coupons instead"
             },
             {
               "name": "available_payment_methods",
@@ -412,7 +422,7 @@
             },
             {
               "name": "id",
-              "description": "The ID of the cart.",
+              "description": "The unique ID for a `Cart` object",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -1628,16 +1638,6 @@
           "possibleTypes": null
         },
         {
-          "kind": "SCALAR",
-          "name": "ID",
-          "description": "The `ID` scalar type represents a unique identifier, often used to\nrefetch an object or as key for a cache. The ID type appears in a JSON\nresponse as a String; however, it is not intended to be human-readable.\nWhen expected as an input type, any string (such as `\"4\"`) or integer\n(such as `4`) input value will be accepted as an ID.",
-          "fields": null,
-          "inputFields": null,
-          "interfaces": null,
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
           "kind": "OBJECT",
           "name": "AvailablePaymentMethod",
           "description": "",
@@ -1895,8 +1895,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use `uid` instead"
             },
             {
               "name": "prices",
@@ -1964,17 +1964,17 @@
             },
             {
               "kind": "OBJECT",
-              "name": "GiftCardCartItem",
-              "ofType": null
-            },
-            {
-              "kind": "OBJECT",
               "name": "ConfigurableCartItem",
               "ofType": null
             },
             {
               "kind": "OBJECT",
               "name": "BundleCartItem",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "GiftCardCartItem",
               "ofType": null
             }
           ]
@@ -2095,8 +2095,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
             },
             {
               "name": "crosssell_products",
@@ -2135,8 +2135,8 @@
                 "name": "Int",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use the `uid` field instead."
             },
             {
               "name": "image",
@@ -2315,8 +2315,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
             },
             {
               "name": "upsell_products",
@@ -2368,11 +2368,6 @@
             },
             {
               "kind": "OBJECT",
-              "name": "GiftCardProduct",
-              "ofType": null
-            },
-            {
-              "kind": "OBJECT",
               "name": "BundleProduct",
               "ofType": null
             },
@@ -2384,6 +2379,11 @@
             {
               "kind": "OBJECT",
               "name": "ConfigurableProduct",
+              "ofType": null
+            },
+            {
+              "kind": "OBJECT",
+              "name": "GiftCardProduct",
               "ofType": null
             }
           ]
@@ -2418,8 +2418,8 @@
                 "name": "Int",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use the `uid` argument instead."
             },
             {
               "name": "name",
@@ -2483,8 +2483,8 @@
                 "name": "Int",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use the `category_uid` argument instead."
             },
             {
               "name": "category_name",
@@ -3509,7 +3509,7 @@
           "inputFields": [
             {
               "name": "ids",
-              "description": "Filter by category ID that uniquely identifies the category.",
+              "description": "Deprecated: use 'category_uid' to filter uniquely identifiers of categories.",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "FilterEqualTypeInput",
@@ -3707,8 +3707,8 @@
                 "name": "Int",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use the `uid` argument instead."
             },
             {
               "name": "image",
@@ -3846,8 +3846,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
             },
             {
               "name": "url_key",
@@ -3943,7 +3943,7 @@
             },
             {
               "name": "id",
-              "description": null,
+              "description": "The unique ID for a `Country` object.",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -3978,7 +3978,7 @@
             },
             {
               "name": "id",
-              "description": null,
+              "description": "The unique ID for a `Region` object.",
               "args": [],
               "type": {
                 "kind": "SCALAR",
@@ -5851,6 +5851,159 @@
         },
         {
           "kind": "ENUM",
+          "name": "ReturnItemStatus",
+          "description": "",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "PENDING",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "AUTHORIZED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "RECEIVED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "APPROVED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "REJECTED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "DENIED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "ReturnShippingTrackingStatusType",
+          "description": "",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "INFORMATION",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "ERROR",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "ReturnStatus",
+          "description": "",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "PENDING",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "AUTHORIZED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "PARTIALLY_AUTHORIZED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "RECEIVED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "PARTIALLY_RECEIVED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "APPROVED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "PARTIALLY_APPROVED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "REJECTED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "PARTIALLY_REJECTED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "DENIED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "PROCESSED_AND_CLOSED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "CLOSED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
           "name": "RewardPointsSubscriptionStatusesEnum",
           "description": "",
           "fields": null,
@@ -5865,6 +6018,58 @@
             },
             {
               "name": "NOT_SUBSCRIBED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "PriceTypeEnum",
+          "description": "This enumeration the price type.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "FIXED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "PERCENT",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "DYNAMIC",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            }
+          ],
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "WishlistVisibilityEnum",
+          "description": "This enumeration defines the wish list visibility types",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "PUBLIC",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "PRIVATE",
               "description": "",
               "isDeprecated": false,
               "deprecationReason": ""
@@ -5926,7 +6131,7 @@
           "inputFields": [
             {
               "name": "category_id",
-              "description": "Filter product by category id",
+              "description": "Deprecated: use `category_uid` to filter product by category id.",
               "type": {
                 "kind": "INPUT_OBJECT",
                 "name": "FilterEqualTypeInput",
@@ -6060,7 +6265,7 @@
         {
           "kind": "OBJECT",
           "name": "Aggregation",
-          "description": "A bucket that contains information for each filterable option (such as price, category ID, and custom attributes).",
+          "description": "A bucket that contains information for each filterable option (such as price, category `UID`, and custom attributes).",
           "fields": [
             {
               "name": "attribute_code",
@@ -6514,13 +6719,9 @@
                   "name": "destination_cart_id",
                   "description": "",
                   "type": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "SCALAR",
-                      "name": "String",
-                      "ofType": null
-                    }
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
                   },
                   "defaultValue": null
                 }
@@ -7073,21 +7274,17 @@
           "inputFields": [
             {
               "name": "id",
-              "description": "",
+              "description": "The customizable option id of the product",
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
               },
               "defaultValue": null
             },
             {
               "name": "value_string",
-              "description": "",
+              "description": "The string value of the option",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -7150,7 +7347,7 @@
             },
             {
               "name": "selected_options",
-              "description": "The selected options for the base product, such as color or size",
+              "description": "The selected options for the base product, such as color or size with  unique ID for a `CustomizableRadioOption`, `CustomizableDropDownOption`, `ConfigurableProductOptionsValues`, etc. objects",
               "type": {
                 "kind": "LIST",
                 "name": null,
@@ -7189,7 +7386,7 @@
           "inputFields": [
             {
               "name": "uid",
-              "description": "An encoded ID",
+              "description": "The unique ID for a `CustomizableFieldOption`, `CustomizableFileOption`, `CustomizableAreaOption`, etc. of `CustomizableOptionInterface` objects",
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -8001,15 +8198,11 @@
             },
             {
               "name": "cart_item_id",
-              "description": "",
+              "description": "Deprecated. Use `cart_item_uid` instead.",
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
               },
               "defaultValue": null
             }
@@ -8831,15 +9024,11 @@
           "inputFields": [
             {
               "name": "cart_item_id",
-              "description": "",
+              "description": "Deprecated. Use `cart_item_uid` instead.",
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
               },
               "defaultValue": null
             },
@@ -9064,35 +9253,6 @@
           "possibleTypes": null
         },
         {
-          "kind": "ENUM",
-          "name": "PriceTypeEnum",
-          "description": "This enumeration the price type.",
-          "fields": null,
-          "inputFields": null,
-          "interfaces": null,
-          "enumValues": [
-            {
-              "name": "FIXED",
-              "description": "",
-              "isDeprecated": false,
-              "deprecationReason": ""
-            },
-            {
-              "name": "PERCENT",
-              "description": "",
-              "isDeprecated": false,
-              "deprecationReason": ""
-            },
-            {
-              "name": "DYNAMIC",
-              "description": "",
-              "isDeprecated": false,
-              "deprecationReason": ""
-            }
-          ],
-          "possibleTypes": null
-        },
-        {
           "kind": "OBJECT",
           "name": "SimpleProduct",
           "description": "A simple product is tangible and are usually sold as single units or in fixed quantities.",
@@ -9134,8 +9294,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
             },
             {
               "name": "crosssell_products",
@@ -9174,8 +9334,8 @@
                 "name": "Int",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use the `uid` field instead."
             },
             {
               "name": "image",
@@ -9354,8 +9514,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
             },
             {
               "name": "upsell_products",
@@ -9421,35 +9581,6 @@
           "possibleTypes": null
         },
         {
-          "kind": "ENUM",
-          "name": "GiftCardTypeEnum",
-          "description": "This enumeration defines the types of gift cards",
-          "fields": null,
-          "inputFields": null,
-          "interfaces": null,
-          "enumValues": [
-            {
-              "name": "VIRTUAL",
-              "description": "",
-              "isDeprecated": false,
-              "deprecationReason": ""
-            },
-            {
-              "name": "PHYSICAL",
-              "description": "",
-              "isDeprecated": false,
-              "deprecationReason": ""
-            },
-            {
-              "name": "COMBINED",
-              "description": "",
-              "isDeprecated": false,
-              "deprecationReason": ""
-            }
-          ],
-          "possibleTypes": null
-        },
-        {
           "kind": "OBJECT",
           "name": "BundleCartItem",
           "description": "",
@@ -9487,8 +9618,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use `uid` instead"
             },
             {
               "name": "prices",
@@ -9564,8 +9695,8 @@
                   "ofType": null
                 }
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use `uid` instead"
             },
             {
               "name": "label",
@@ -9632,7 +9763,7 @@
           "fields": [
             {
               "name": "id",
-              "description": null,
+              "description": "Use `uid` instead",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -9714,8 +9845,8 @@
                 "name": "Int",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use `uid` instead"
             },
             {
               "name": "options",
@@ -9825,8 +9956,8 @@
                 "name": "Int",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use `uid` instead"
             },
             {
               "name": "is_default",
@@ -9948,8 +10079,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
             },
             {
               "name": "crosssell_products",
@@ -10024,8 +10155,8 @@
                 "name": "Int",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use the `uid` field instead."
             },
             {
               "name": "image",
@@ -10244,8 +10375,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
             },
             {
               "name": "upsell_products",
@@ -10363,8 +10494,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
             },
             {
               "name": "crosssell_products",
@@ -10403,8 +10534,8 @@
                 "name": "Int",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use the `uid` field instead."
             },
             {
               "name": "image",
@@ -10599,8 +10730,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
             },
             {
               "name": "upsell_products",
@@ -10735,8 +10866,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
             },
             {
               "name": "crosssell_products",
@@ -10775,8 +10906,8 @@
                 "name": "Int",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use the `uid` field instead."
             },
             {
               "name": "image",
@@ -10955,8 +11086,8 @@
                 "name": "String",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
             },
             {
               "name": "upsell_products",
@@ -11091,8 +11222,8 @@
                 "name": "Int",
                 "ofType": null
               },
-              "isDeprecated": false,
-              "deprecationReason": null
+              "isDeprecated": true,
+              "deprecationReason": "Use `uid` instead"
             }
           ],
           "inputFields": null,
@@ -11184,6 +11315,35 @@
           "inputFields": null,
           "interfaces": [],
           "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "ENUM",
+          "name": "GiftCardTypeEnum",
+          "description": "This enumeration defines the types of gift cards",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
+          "enumValues": [
+            {
+              "name": "VIRTUAL",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "PHYSICAL",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            },
+            {
+              "name": "COMBINED",
+              "description": "",
+              "isDeprecated": false,
+              "deprecationReason": ""
+            }
+          ],
           "possibleTypes": null
         }
       ],

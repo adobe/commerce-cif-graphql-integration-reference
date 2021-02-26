@@ -14,7 +14,7 @@
 
 'use strict';
 
-const magentoSchema = require('../resources/magento-schema-2.4.1ee.min.json');
+const magentoSchema = require('../resources/magento-schema-2.4.2ee.min.json');
 const { graphql } = require('graphql');
 const SchemaBuilder = require('../common/SchemaBuilder.js');
 const Cart = require('../common/Cart.js');
