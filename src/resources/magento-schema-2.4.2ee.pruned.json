@@ -2243,6 +2243,22 @@
               "deprecationReason": null
             },
             {
+              "name": "rating_summary",
+              "description": "The average of all the ratings given to the product.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "related_products",
               "description": "Related Products",
               "args": [],
@@ -2278,6 +2294,22 @@
                 "kind": "OBJECT",
                 "name": "ProductImage",
                 "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "staged",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -2420,6 +2452,18 @@
               },
               "isDeprecated": true,
               "deprecationReason": "Use the `uid` argument instead."
+            },
+            {
+              "name": "image",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             },
             {
               "name": "name",
@@ -6140,6 +6184,16 @@
               "defaultValue": null
             },
             {
+              "name": "category_uid",
+              "description": "Filter product by the unique ID for a `CategoryInterface` object.",
+              "type": {
+                "kind": "INPUT_OBJECT",
+                "name": "FilterEqualTypeInput",
+                "ofType": null
+              },
+              "defaultValue": null
+            },
+            {
               "name": "price",
               "description": "Attribute label: Price",
               "type": {
@@ -9442,6 +9496,22 @@
               "deprecationReason": null
             },
             {
+              "name": "rating_summary",
+              "description": "The average of all the ratings given to the product.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "related_products",
               "description": "Related Products",
               "args": [],
@@ -9477,6 +9547,22 @@
                 "kind": "OBJECT",
                 "name": "ProductImage",
                 "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "staged",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -10291,6 +10377,22 @@
               "deprecationReason": null
             },
             {
+              "name": "rating_summary",
+              "description": "The average of all the ratings given to the product.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "related_products",
               "description": "Related Products",
               "args": [],
@@ -10338,6 +10440,22 @@
                 "kind": "OBJECT",
                 "name": "ProductImage",
                 "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "staged",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -10658,6 +10776,22 @@
               "deprecationReason": null
             },
             {
+              "name": "rating_summary",
+              "description": "The average of all the ratings given to the product.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "related_products",
               "description": "Related Products",
               "args": [],
@@ -10693,6 +10827,22 @@
                 "kind": "OBJECT",
                 "name": "ProductImage",
                 "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "staged",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -11014,6 +11164,22 @@
               "deprecationReason": null
             },
             {
+              "name": "rating_summary",
+              "description": "The average of all the ratings given to the product.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
               "name": "related_products",
               "description": "Related Products",
               "args": [],
@@ -11049,6 +11215,22 @@
                 "kind": "OBJECT",
                 "name": "ProductImage",
                 "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "staged",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -11314,6 +11496,343 @@
           ],
           "inputFields": null,
           "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "OBJECT",
+          "name": "GiftCardProduct",
+          "description": "GiftCardProduct defines properties of a gift card, including the minimum and maximum values and an array that contains the current and past values on the specific gift card",
+          "fields": [
+            {
+              "name": "allow_open_amount",
+              "description": "Indicates whether customers have the ability to set the value of the gift card.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "categories",
+              "description": "The categories assigned to a product.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "CategoryInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "created_at",
+              "description": "Timestamp indicating when the product was created.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
+            },
+            {
+              "name": "crosssell_products",
+              "description": "Crosssell Products",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "ProductInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "description",
+              "description": "Detailed information about the product. The value can include simple HTML tags.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ComplexTextValue",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "id",
+              "description": "The ID number assigned to the product.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": true,
+              "deprecationReason": "Use the `uid` field instead."
+            },
+            {
+              "name": "image",
+              "description": "The relative path to the main image on the product page.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductImage",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "media_gallery",
+              "description": "An array of Media Gallery objects.",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "MediaGalleryInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_description",
+              "description": "A brief overview of the product for search results listings, maximum 255 characters.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_keyword",
+              "description": "A comma-separated list of keywords that are visible only to search engines.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "meta_title",
+              "description": "A string that is displayed in the title bar and tab of the browser and in search results lists.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "name",
+              "description": "The product name. Customers use this name to identify the product.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "price",
+              "description": "A ProductPrices object, indicating the price of an item.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductPrices",
+                "ofType": null
+              },
+              "isDeprecated": true,
+              "deprecationReason": "Use price_range for product price information."
+            },
+            {
+              "name": "price_range",
+              "description": "A PriceRange object, indicating the range of prices for the product",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "PriceRange",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "rating_summary",
+              "description": "The average of all the ratings given to the product.",
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Float",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "related_products",
+              "description": "Related Products",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "ProductInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "sku",
+              "description": "A number or code assigned to a product to identify the product, options, price, and manufacturer.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "small_image",
+              "description": "The relative path to the small image, which is used on catalog pages.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductImage",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "staged",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "stock_status",
+              "description": "Stock status of the product",
+              "args": [],
+              "type": {
+                "kind": "ENUM",
+                "name": "ProductStockStatus",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "thumbnail",
+              "description": "The relative path to the product's thumbnail image.",
+              "args": [],
+              "type": {
+                "kind": "OBJECT",
+                "name": "ProductImage",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "updated_at",
+              "description": "Timestamp indicating when the product was updated.",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": true,
+              "deprecationReason": "The field should not be used on the storefront."
+            },
+            {
+              "name": "upsell_products",
+              "description": "Upsell Products",
+              "args": [],
+              "type": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "INTERFACE",
+                  "name": "ProductInterface",
+                  "ofType": null
+                }
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "url_key",
+              "description": "The part of the URL that identifies the product",
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            }
+          ],
+          "inputFields": null,
+          "interfaces": [
+            {
+              "kind": "INTERFACE",
+              "name": "ProductInterface",
+              "ofType": null
+            }
+          ],
           "enumValues": null,
           "possibleTypes": null
         },
