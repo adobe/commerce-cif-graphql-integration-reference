@@ -39,8 +39,10 @@ function generate() {
                 pruneFile(schemaPruner, path.join(__dirname, '../../repos/commerce-cif-connector/bundles/cif-connector-graphql/src/test/resources/test-queries/graphql-requests.log'));
                 pruneFile(schemaPruner, path.join(__dirname, '../../repos/aem-core-cif-components/bundles/core/src/test/resources/test-queries/graphql-requests.log'));
                 pruneFolder(schemaPruner, path.join(__dirname, '../../repos/aem-core-cif-components/react-components/src/queries'));
-                pruneFolder(schemaPruner, path.join(__dirname, '../../repos/cif-on-skyline-frontend/app/src/queries/2.3.5'));
-                pruneFolder(schemaPruner, path.join(__dirname, '../../repos/cif-on-skyline-frontend/app/src/queries/2.4.0'));
+
+                // Include all the queries used to check the Magento version in the frontend part of the CIF Add-On
+                let versions = ['2.3.5', '2.4.0', '2.4.1ce', '2.4.1ee', '2.4.2ce', '2.4.2ee'];
+                versions.map(version => pruneFolder(schemaPruner, path.join(__dirname, `../../repos/cif-on-skyline-frontend/app/src/queries/${version}`)));
 
                 let prunedSchema = schemaPruner.prune();
                 fs.writeFileSync(path.join(__dirname, '../resources/magento-schema-2.4.2ee.pruned.json'), JSON.stringify(prunedSchema, null, 2));
