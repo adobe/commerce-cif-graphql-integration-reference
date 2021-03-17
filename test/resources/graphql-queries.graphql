@@ -1,11 +1,11 @@
-{ products(search: "glove"){ items{ __typename, id, url_key, name, small_image{ label, url },...on ConfigurableProduct{ price_range{ maximum_price{ regular_price{ value, currency }, final_price{ value, currency }, discount{ amount_off, percent_off } }, minimum_price{ regular_price{ value, currency }, final_price{ value, currency }, discount{ amount_off, percent_off } } } },...on SimpleProduct{ price_range{ minimum_price{ regular_price{ value, currency }, final_price{ value, currency }, discount{ amount_off, percent_off } } } } } } }
+{products(search:"glove"){items{__typename,id,url_key,name,small_image{label,url},... on ConfigurableProduct{price_range{maximum_price{regular_price{value,currency},final_price{value,currency},discount{amount_off,percent_off}},minimum_price{regular_price{value,currency},final_price{value,currency},discount{amount_off,percent_off}}}},... on SimpleProduct{price_range{minimum_price{regular_price{value,currency},final_price{value,currency},discount{amount_off,percent_off}}}}}}}
 
-{ category(id: 2){ id, name, url_path, position, children{ id, name, url_path, position, children{ id, name, url_path, position, children{ id, name, url_path, position, children{ id, name, url_path, position, children{ id, name, url_path, position } } } } } } }
+{category(id:2){id,name,url_path,position,children{id,name,url_path,position,children{id,name,url_path,position,children{id,name,url_path,position,children{id,name,url_path,position,children{id,name,url_path,position}}}}}}}
 
-{ customAttributeMetadata(attributes: []){ items{ attribute_code, attribute_type, input_type } } }
+{customAttributeMetadata(attributes:[]){items{attribute_code,attribute_type,input_type}}}
 
-mutation createAccount($email: String, $firstname: String, $lastname: String, $password: String){ createCustomer(input: { email: $email, firstname: $firstname, lastname: $lastname, password: $password }){ customer{ email, firstname, lastname } } }
+mutation createAccount($email:String,$firstname:String,$lastname:String,$password:String){createCustomer(input:{email:$email,firstname:$firstname,lastname:$lastname,password:$password}){customer{email,firstname,lastname}}}
 
-mutation($cartId: String!, $sku: String!, $quantity: Float!){ addSimpleProductsToCart(input: { cart_id: $cartId, cart_items: [{ data: { quantity: $quantity, sku: $sku } }] }){ cart{ items{ id, quantity, product{ name } } } } }
+mutation($cartId:String!,$sku:String!,$quantity:Float!){addSimpleProductsToCart(input:{cart_id:$cartId,cart_items:[{data:{quantity:$quantity,sku:$sku}}]}){cart{items{id,quantity,product{name}}}}}
 
-mutation($cartId: String!, $cartItems: [SimpleProductCartItemInput]!){ addSimpleProductsToCart(input: { cart_id: $cartId, cart_items: $cartItems }){ cart{ items{ id, quantity, product{ name } } } } }
+mutation($cartId:String!,$cartItems:[SimpleProductCartItemInput]!){addSimpleProductsToCart(input:{cart_id:$cartId,cart_items:$cartItems}){cart{items{id,quantity,product{name}}}}}
