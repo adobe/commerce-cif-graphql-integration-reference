@@ -14,8 +14,6 @@
 
 'use strict';
 
-const { parse } = require('graphql');
-
 class SchemaPruner {
 
     /**
@@ -33,10 +31,9 @@ class SchemaPruner {
      * @param {String} query A GraphQL query.
      */
     process(query) {
-        let ast = parse(query);
         // console.debug(query);
         // console.debug(JSON.stringify(ast, null, 2));
-        ast.definitions.forEach(def => {
+        query.definitions.forEach(def => {
             let op = def.operation.charAt(0).toUpperCase() + def.operation.slice(1);
             let parentType = this.__getType(op);
             this.__extractTypeFields(parentType, def);

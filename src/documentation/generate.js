@@ -66,9 +66,9 @@ function pruneFile(schemaPruner, filepath) {
 function pruneFolder(schemaPruner, folderpath) {
     let files = fs.readdirSync(folderpath);
     files
-        .filter(file => file.endsWith('.graphql'))
+        .filter(file => file.endsWith('.graphql.js'))
         .forEach(file => {
-            let query = fs.readFileSync(path.join(folderpath, file), 'UTF-8');
+            let query = require(path.join(folderpath, file)).default;
             schemaPruner.process(query);
         });
 }
