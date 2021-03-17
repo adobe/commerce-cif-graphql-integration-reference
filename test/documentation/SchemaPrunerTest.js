@@ -42,10 +42,6 @@ describe('Schema Pruner', () => {
 
             let mutationType = schema.data.__schema.types.find(t => t.name == 'Mutation');
             assert.equal(mutationType.fields.length, 2); // createCustomer and addSimpleProductsToCart
-
-            let setToJsonResult = schemaPruner.__setToJson('test', new Set([1, 2, 3, 4, 5]));
-            assert.isArray(setToJsonResult);
-            assert.sameMembers([1, 2, 3, 4, 5], setToJsonResult, 'same members');
         });
     });
 });
