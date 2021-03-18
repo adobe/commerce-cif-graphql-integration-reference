@@ -17,7 +17,6 @@
 const magentoSchema = require('../resources/magento-schema-2.4.2ee.min.json');
 const SchemaPruner = require('./SchemaPruner.js');
 const gitClone = require('git-clone');
-const { print } = require('graphql');
 const fs = require('fs');
 const path = require('path');
 
