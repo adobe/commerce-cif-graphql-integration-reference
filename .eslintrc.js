@@ -17,7 +17,7 @@
 const headerBlock = [
     '******************************************************************************',
     ' *',
-    ' *    Copyright 2019 Adobe. All rights reserved.',
+    { 'pattern': ' *    Copyright 20\\d{2} Adobe. All rights reserved.', "template": " *    Copyright 2021 Adobe" },
     ' *    This file is licensed to you under the Apache License, Version 2.0 (the "License");',
     ' *    you may not use this file except in compliance with the License. You may obtain a copy',
     ' *    of the License at http://www.apache.org/licenses/LICENSE-2.0',

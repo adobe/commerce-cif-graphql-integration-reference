@@ -54,7 +54,7 @@ class SchemaPruner {
         if (!selection.selectionSet) {
             return;
         }
-    
+
         selection.selectionSet.selections.forEach(sel => {
             if (sel.kind == 'Field') {
                 // console.debug('Looking for field ' + parentType.name + '.' + sel.name.value);
@@ -67,7 +67,7 @@ class SchemaPruner {
                         this.__extractTypeFields(type, sel);
                     }
                 }
-    
+
                 if (sel.arguments) {
                     sel.arguments.forEach(arg => {
                         // console.debug('Looking for argument ' + parentType.name + '.' + sel.name.value + '.' + arg.name.value);
@@ -102,7 +102,7 @@ class SchemaPruner {
             }
         });
     }
-    
+
     __getFieldType(field) {
         let fieldType = field.type;
         // LIST and NOT_NULL can be nested in multiple levels
@@ -176,7 +176,7 @@ class SchemaPruner {
      */
     __setToJson(key, value) {
         if (typeof value === 'object' && value instanceof Set) {
-          return [...value];
+            return [...value];
         }
         return value;
     }
@@ -223,7 +223,7 @@ class SchemaPruner {
                 type.fields = type.fields.filter(field => fields.has(field.name));
             }
         });
-    
+
         // We remove all unused fields from objects, but keep fields still defined in interfaces
         this.schema.data.__schema.types.forEach(type => {
             if (type.kind == 'OBJECT' || type.kind == 'INPUT_OBJECT') {
