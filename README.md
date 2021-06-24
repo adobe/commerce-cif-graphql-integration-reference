@@ -17,7 +17,7 @@ Working on 3rd-party integration requires that you are **absolutely** familiar w
     * GraphQL introspection: https://graphql.org/learn/introspection/
     * Tools: install the ChromeiQL/GraphiQL extension for the Chrome browser
 * Get familiar with the Magento GraphQL schema and the types of queries you can make
-    * Magento GraphQL documentation: https://devdocs.magento.com/guides/v2.3/graphql/index.html
+    * Magento GraphQL documentation: https://devdocs.magento.com/guides/v2.4/graphql/index.html
 
 You can also read our [Medium article](https://medium.com/adobetech/serverless-graphql-on-adobe-i-o-runtime-e221d2a8e215) to get an overall description of the design of the 3rd-party GraphQL integration with AEM Commerce.
 
@@ -29,9 +29,9 @@ This repository provides a reference implementation **example** that can be used
 
 ## Introduction
 
-The [CIF (Commerce Integration Framework) GraphQL connector](https://github.com/adobe/commerce-cif-connector) and the [AEM CIF Core Components](https://github.com/adobe/aem-core-cif-components) offer authoring and frontend integration between AEM (Adobe Experience Manager) and Magento. This integration is based on the [Magento GraphQL API](https://devdocs.magento.com/guides/v2.3/graphql/index.html) which offers a very flexible and efficient integration point between AEM and Magento.
+The [CIF (Commerce Integration Framework) GraphQL connector](https://github.com/adobe/commerce-cif-connector) and the [AEM CIF Core Components](https://github.com/adobe/aem-core-cif-components) offer authoring and frontend integration between AEM (Adobe Experience Manager) and Magento. This integration is based on the [Magento GraphQL API](https://devdocs.magento.com/guides/v2.4/graphql/index.html) which offers a very flexible and efficient integration point between AEM and Magento.
 
-In order to support other 3rd-party "non-Magento" commerce platforms, this project implements an example "reference" implementation that demonstrates how a 3rd-party commerce platform can be integrated with the CIF GraphQL connector and the AEM CIF Core Components via the Magento GraphQL API. Note that the integration is currently based on the GraphQL API of Magento 2.3.4.
+In order to support other 3rd-party "non-Magento" commerce platforms, this project implements an example "reference" implementation that demonstrates how a 3rd-party commerce platform can be integrated with the CIF GraphQL connector and the AEM CIF Core Components via the Magento GraphQL API. Note that the integration is currently based on the GraphQL API of Magento 2.4.2.
 
 This enables customers to reuse our existing connector and components in their project by simply exposing the Magento GraphQL API on top of any 3rd-party commerce platform. To offer maximum flexibility and scalability, this "adaptation layer" is deployed on the serverless [Adobe I/O Runtime](https://www.adobe.io/apis/experienceplatform/runtime.html) platform.
 
