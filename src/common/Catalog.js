@@ -60,12 +60,17 @@ class CategoryTree {
     __convertData(data) {
         return {
             id: data.id,
+            uid: 'UID',
             position: data.id,
             url_key: data.id,
             url_path: data.slug,
             name: data.title,
             description: data.description,
-            product_count: 2
+            product_count: 2,
+            staged: false,
+            meta_description: '',
+            meta_keywords: '',
+            meta_title: ''
         };
     }
 
@@ -212,7 +217,7 @@ class Product {
         return 'SimpleProduct';
     }
 
-    get categories() {
+    /* get categories() {
         return this.productData.categoryIds.map(categoryId => {
             return new CategoryTree({
                 categoryId: categoryId,
@@ -222,7 +227,7 @@ class Product {
                 productsLoader: this.productsLoader
             });
         });
-    }
+    } */
 
     __load() {
         return Promise.resolve(this.productData);
@@ -237,23 +242,24 @@ class Product {
             description: {
                 html: data.description
             },
+            categories: [],
             price: {
                 regularPrice: {
                     amount: {
-                        currency: data.price.currency,
-                        value: data.price.amount
+                        currency: 'USD',
+                        value: 123.45
                     }
                 }
             },
             price_range: {
                 minimum_price: {
                     final_price: {
-                        currency: data.price.currency,
-                        value: data.price.amount
+                        currency: 'USD',
+                        value: null
                     },
                     regular_price: {
-                        currency: data.price.currency,
-                        value: data.price.amount
+                        currency: 'USD',
+                        value: null
                     },
                     discount: {
                         amount_off: 0,
@@ -270,6 +276,7 @@ class Product {
             thumbnail: {
                 url: `${this.actionParameters.url}/images/thumb/${data.sku}.jpg` // Dummy
             },
+            staged: false,
             media_gallery: [
                 {
                     __typename: 'ProductImage',
