@@ -1,5 +1,5 @@
 {
-    "extends": ["config:base", ":semanticCommits"],
+    "extends": ["config:base"],
     "prConcurrentLimit": 5,
     "reviewers": [
         "@mhaack",
@@ -11,34 +11,34 @@
     ],
     "packageRules": [
         {
-            "packageNames": ["circleci/node"],
-            "allowedVersions": "14"
+            "allowedVersions": "14",
+            "matchPackageNames": ["circleci/node"]
         },
         {
             "groupName": "adobe fixes",
-            "updateTypes": ["patch", "pin", "digest", "minor"],
             "automerge": true,
-            "packagePatterns": ["^@adobe/"]
+            "matchUpdateTypes": ["patch", "pin", "digest", "minor"],
+            "matchPackagePatterns": ["^@adobe/"]
         },
         {
             "groupName": "adobe major",
-            "updateTypes": ["major"],
             "automerge": false,
-            "packagePatterns": ["^@adobe/"]
+            "matchUpdateTypes": ["major"],
+            "matchPackagePatterns": ["^@adobe/"]
         },
         {
             "groupName": "external fixes",
-            "updateTypes": ["patch", "pin", "digest", "minor"],
             "automerge": true,
-            "packagePatterns": ["^.+"],
-            "excludePackagePatterns": ["^@adobe/"]
+            "excludePackagePatterns": ["^@adobe/"],
+            "matchUpdateTypes": ["patch", "pin", "digest", "minor"],
+            "matchPackagePatterns": ["^.+"]
         },
         {
             "groupName": "external major",
-            "updateTypes": ["major"],
             "automerge": false,
-            "packagePatterns": ["^.+"],
-            "excludePackagePatterns": ["^@adobe/"]
+            "excludePackagePatterns": ["^@adobe/"],
+            "matchUpdateTypes": ["major"],
+            "matchPackagePatterns": ["^.+"]
         }
     ]
 }
