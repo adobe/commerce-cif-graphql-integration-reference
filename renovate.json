@@ -18,7 +18,8 @@
             "groupName": "adobe fixes",
             "automerge": true,
             "matchUpdateTypes": ["patch", "pin", "digest", "minor"],
-            "matchPackagePatterns": ["^@adobe/"]
+            "matchPackagePatterns": ["^@adobe/"],
+            "addLabels": ["automerge"]
         },
         {
             "groupName": "adobe major",
@@ -31,7 +32,8 @@
             "automerge": true,
             "excludePackagePatterns": ["^@adobe/"],
             "matchUpdateTypes": ["patch", "pin", "digest", "minor"],
-            "matchPackagePatterns": ["^.+"]
+            "matchPackagePatterns": ["^.+"],
+            "addLabels": ["automerge"]
         },
         {
             "groupName": "external major",
