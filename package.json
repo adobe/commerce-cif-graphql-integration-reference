@@ -26,7 +26,7 @@
     "serverless-openwhisk": "0.18.4",
     "serverless-webpack": "5.3.1",
     "webpack": "4.41.0",
-    "eslint": "6.5.1",
+    "eslint": "7.31.0",
     "eslint-plugin-header": "3.0.0",
     "mocha": "6.2.3",
     "mocha-junit-reporter": "1.23.1",
