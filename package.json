@@ -19,7 +19,7 @@
     "graphql": "14.5.8",
     "graphql-tools": "3.1.1",
     "openwhisk": "3.20.0",
-    "@adobe/aio-lib-state": "1.0.4"
+    "@adobe/aio-lib-state": "1.1.0"
   },
   "devDependencies": {
     "serverless": "1.70.0",
