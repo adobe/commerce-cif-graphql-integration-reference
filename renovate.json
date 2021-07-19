@@ -1,5 +1,44 @@
 {
-  "extends": [
-    "config:base"
-  ]
+    "extends": ["config:base", ":semanticCommits"],
+    "prConcurrentLimit": 5,
+    "reviewers": [
+        "@mhaack",
+        "@herzog31",
+        "@dplaton",
+        "@Buuhuu",
+        "@LSantha",
+        "@laurentiumagureanu"
+    ],
+    "packageRules": [
+        {
+            "packageNames": ["circleci/node"],
+            "allowedVersions": "14"
+        },
+        {
+            "groupName": "adobe fixes",
+            "updateTypes": ["patch", "pin", "digest", "minor"],
+            "automerge": true,
+            "packagePatterns": ["^@adobe/"]
+        },
+        {
+            "groupName": "adobe major",
+            "updateTypes": ["major"],
+            "automerge": false,
+            "packagePatterns": ["^@adobe/"]
+        },
+        {
+            "groupName": "external fixes",
+            "updateTypes": ["patch", "pin", "digest", "minor"],
+            "automerge": true,
+            "packagePatterns": ["^.+"],
+            "excludePackagePatterns": ["^@adobe/"]
+        },
+        {
+            "groupName": "external major",
+            "updateTypes": ["major"],
+            "automerge": false,
+            "packagePatterns": ["^.+"],
+            "excludePackagePatterns": ["^@adobe/"]
+        }
+    ]
 }
