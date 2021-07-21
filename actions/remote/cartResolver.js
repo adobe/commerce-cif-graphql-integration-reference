@@ -12,17 +12,16 @@
  *
  ******************************************************************************/
 
-'use strict';
+"use strict";
 
-const magentoSchema = require('../resources/magento-schema-2.4.2ee.min.json');
-const { graphql } = require('graphql');
-const SchemaBuilder = require('../common/SchemaBuilder.js');
-const Cart = require('../common/Cart.js');
+const magentoSchema = require("../resources/magento-schema-2.4.2ee.min.json");
+const { graphql } = require("graphql");
+const SchemaBuilder = require("../common/SchemaBuilder.js");
+const Cart = require("../common/Cart.js");
 
 let cachedSchema = null;
 
 function resolve(args) {
-
     if (cachedSchema == null) {
         let schemaBuilder = new SchemaBuilder(magentoSchema)
             .filterMutationFields(new Set(["createEmptyCart"]))
@@ -37,22 +36,31 @@ function resolve(args) {
             return new Cart({
                 cartId: params.cart_id,
                 graphqlContext: context,
-                actionParameters: args
+                actionParameters: args,
             });
         },
         createEmptyCart: (params, context) => { // eslint-disable-line no-unused-vars
             // In a real integration, this would for example make a REST POST request to
             // the 3rd-party system to create a new cart
             return Promise.resolve("thisisthenewcartid");
-        }
-    };   
+        },
+    };
 
     // The resolver for this action
-    return graphql(cachedSchema, args.query, resolvers, args.context, args.variables, args.operationName).then((response) => {
-        return response;
-    }).catch(error => {
-        console.error(error);
-    });
+    return graphql(
+        cachedSchema,
+        args.query,
+        resolvers,
+        args.context,
+        args.variables,
+        args.operationName
+    )
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            console.error(error);
+        });
 }
 
 module.exports.main = resolve;

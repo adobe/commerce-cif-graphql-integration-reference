@@ -12,17 +12,16 @@
  *
  ******************************************************************************/
 
-'use strict';
+"use strict";
 
-const openwhisk = require('openwhisk');
-const { print } = require('graphql');
+const openwhisk = require("openwhisk");
+const { print } = require("graphql");
 
 /**
  * This class implements a GraphQL Fetcher that can be used with the graphql-tools
  * library to query a remote GraphQL endpoint deployed in an Adobe I/O Runtime action.
  */
 class RemoteResolverFetcher {
-
     constructor(actionName) {
         this.actionName = actionName;
 
@@ -43,8 +42,8 @@ class RemoteResolverFetcher {
                 query,
                 variables: params.variables,
                 operationName: params.operationName,
-                context
-            }
+                context,
+            },
         });
     }
 }

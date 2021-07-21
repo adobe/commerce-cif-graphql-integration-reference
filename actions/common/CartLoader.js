@@ -12,37 +12,45 @@
  *
  ******************************************************************************/
 
-'use strict';
+"use strict";
 
-const DataLoader = require('dataloader');
+const DataLoader = require("dataloader");
 
 class CartLoader {
-
     /**
      * @param {Object} [actionParameters] Some optional parameters of the I/O Runtime action, like for example authentication info.
      */
     constructor(actionParameters) {
         // The loading function: "cartIds" is an Array of cart ids
-        let loadingFunction = cartIds => {
+        let loadingFunction = (cartIds) => {
             // This loader loads each cart one by one, but if the 3rd party backend allows it,
             // it could also fetch all carts in one single request. In this case, the method
             // must still return an Array of carts with the same order as the keys.
-            return Promise.resolve(cartIds.map(cartId => {
-                console.debug(`--> Fetching cart with id ${cartId}`);
-                return this.__getCartById(cartId, actionParameters)
-                    .catch(error => {
-                        console.error(`Failed loading cart ${cartId}, got error ${JSON.stringify(error, null, 0)}`);
-                        return null;
-                    });
-            }));
+            return Promise.resolve(
+                cartIds.map((cartId) => {
+                    console.debug(`--> Fetching cart with id ${cartId}`);
+                    return this.__getCartById(cartId, actionParameters).catch(
+                        (error) => {
+                            console.error(
+                                `Failed loading cart ${cartId}, got error ${JSON.stringify(
+                                    error,
+                                    null,
+                                    0
+                                )}`
+                            );
+                            return null;
+                        }
+                    );
+                })
+            );
         };
 
-        this.loader = new DataLoader(keys => loadingFunction(keys));
+        this.loader = new DataLoader((keys) => loadingFunction(keys));
     }
 
     /**
      * Loads the cart with the given cartId.
-     * 
+     *
      * @param {*} cartId
      * @returns {Promise} A Promise with the cart data.
      */
@@ -54,7 +62,7 @@ class CartLoader {
      * In a real 3rd-party integration, this method would query the 3rd-party system
      * in order to fetch a cart based on the cart id. This method returns a Promise,
      * for example to simulate some HTTP REST call being performed to the 3rd-party commerce system.
-     * 
+     *
      * @param {String} cartId The cart id.
      * @param {Object} actionParameters Some parameters of the I/O action itself (e.g. backend server URL, authentication info, etc)
      * @returns {Promise} A Promise with the cart data.
@@ -65,25 +73,25 @@ class CartLoader {
         // demonstrates how each product will be fetched if they are being requested in the GraphQL query.
         return Promise.resolve({
             id: cartId,
-            email: 'dummy@example.com',
+            email: "dummy@example.com",
             entries: [
                 {
                     quantity: 1,
-                    sku: 'product-1',
+                    sku: "product-1",
                     unitPrice: 12.34,
-                    entryPrice: 24.68
+                    entryPrice: 24.68,
                 },
                 {
                     quantity: 2,
-                    sku: 'product-2',
+                    sku: "product-2",
                     unitPrice: 56.78,
-                    entryPrice: 113.56
-                }
+                    entryPrice: 113.56,
+                },
             ],
             totalPrice: {
-                currency: 'USD',
-                amount: 138.24
-            }
+                currency: "USD",
+                amount: 138.24,
+            },
         });
     }
 }

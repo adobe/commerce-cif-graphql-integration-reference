@@ -12,17 +12,16 @@
  *
  ******************************************************************************/
 
-'use strict';
+"use strict";
 
-const LoaderProxy = require('./LoaderProxy.js');
-const { Product } = require('./Catalog.js');
-const CartLoader = require('./CartLoader.js');
-const ProductLoader = require('./ProductLoader.js');
-const ProductsLoader = require('./ProductsLoader.js');
-const CategoryTreeLoader = require('./CategoryTreeLoader.js');
+const LoaderProxy = require("./LoaderProxy.js");
+const { Product } = require("./Catalog.js");
+const CartLoader = require("./CartLoader.js");
+const ProductLoader = require("./ProductLoader.js");
+const ProductsLoader = require("./ProductsLoader.js");
+const CategoryTreeLoader = require("./CategoryTreeLoader.js");
 
 class Cart {
-
     /**
      * @param {Object} parameters
      * @param {String} parameters.cartId The cart id.
@@ -50,7 +49,7 @@ class Cart {
      * Converts some cart data from the 3rd-party commerce system into the Magento GraphQL format.
      * Properties that require some extra data fetching with the 3rd-party system must have dedicated getters
      * in this class.
-     * 
+     *
      * @param {Object} data
      * @returns {Object} The backend cart data converted into a GraphQL "Cart" data.
      */
@@ -60,9 +59,9 @@ class Cart {
             prices: {
                 grand_total: {
                     currency: data.totalPrice.currency,
-                    value: data.totalPrice.amount
-                }
-            }
+                    value: data.totalPrice.amount,
+                },
+            },
         };
     }
 
@@ -82,18 +81,21 @@ class Cart {
 
             return this.data.entries.map((entry, idx) => {
                 return {
-                    __typename: 'SimpleCartItem',
+                    __typename: "SimpleCartItem",
                     id: idx,
                     quantity: entry.quantity,
-                    product: () => productLoader.load(entry.sku)
-                        .then(data => new Product({
-                            productData: data,
-                            graphqlContext: this.graphqlContext,
-                            actionParameters: this.actionParameters,
-                            categoryTreeLoader: categoryTreeLoader,
-                            productsLoader: productsLoader
-                        }))
-                }
+                    product: () =>
+                        productLoader.load(entry.sku).then(
+                            (data) =>
+                                new Product({
+                                    productData: data,
+                                    graphqlContext: this.graphqlContext,
+                                    actionParameters: this.actionParameters,
+                                    categoryTreeLoader: categoryTreeLoader,
+                                    productsLoader: productsLoader,
+                                })
+                        ),
+                };
             });
         });
     }

@@ -17,11 +17,11 @@
 const sinon = require('sinon');
 const assert = require('chai').assert;
 const expect = require('chai').expect;
-const CartLoader = require('../../src/common/CartLoader.js');
-const ProductLoader = require('../../src/common/ProductLoader.js');
+const CartLoader = require("../../actions/common/CartLoader.js");
+const ProductLoader = require("../../actions/common/ProductLoader.js");
 
 // The cart resolver
-const resolve = require('../../src/remote/cartResolver.js').main;
+const resolve = require("../../actions/remote/cartResolver.js").main;
 
 describe('Cart Resolver', () => {
 

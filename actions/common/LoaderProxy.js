@@ -12,16 +12,14 @@
  *
  ******************************************************************************/
 
-'use strict';
+"use strict";
 
 class LoaderProxy {
-
     /**
      * @param {*} clazz The class for which that proxy must be created.
      * The class must have a '__load' and '__convertData' function.
      */
     constructor(clazz) {
-
         /**
          * This class returns a Proxy to avoid having to implement a getter for all properties.
          */
@@ -36,21 +34,24 @@ class LoaderProxy {
                     return object[property]; // The object class has that property
                 }
 
-                return object.__load().then(data => {
-                    if (!data) {
-                        throw new Error('Backend data is null');
-                    }
+                return object
+                    .__load()
+                    .then((data) => {
+                        if (!data) {
+                            throw new Error("Backend data is null");
+                        }
 
-                    if (!object.data) {
-                        object.data = data;
-                        object.convertedData = object.__convertData(data);
-                    }
+                        if (!object.data) {
+                            object.data = data;
+                            object.convertedData = object.__convertData(data);
+                        }
 
-                    return object.convertedData[property]; // Get the property from the converted data
-                }).catch(error => {
-                    return error; // Will "bubble-up" the error to the GraphQL resolver which will add the error to the JSON response
-                });
-            }
+                        return object.convertedData[property]; // Get the property from the converted data
+                    })
+                    .catch((error) => {
+                        return error; // Will "bubble-up" the error to the GraphQL resolver which will add the error to the JSON response
+                    });
+            },
         });
     }
 }

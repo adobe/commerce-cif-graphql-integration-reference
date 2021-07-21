@@ -18,10 +18,10 @@ const sinon = require('sinon');
 const assert = require('chai').assert;
 const expect = require('chai').expect;
 const mockRequire = require('mock-require');
-const ProductsLoader = require('../../src/common/ProductsLoader.js');
-const CategoryTreeLoader = require('../../src/common/CategoryTreeLoader.js');
-const CartLoader = require('../../src/common/CartLoader.js');
-const ProductLoader = require('../../src/common/ProductLoader.js');
+const ProductsLoader = require('../../actions/common/ProductsLoader.js');
+const CategoryTreeLoader = require("../../actions/common/CategoryTreeLoader.js");
+const CartLoader = require("../../actions/common/CartLoader.js");
+const ProductLoader = require("../../actions/common/ProductLoader.js");
 const fs = require('fs');
 
 describe('Dispatcher Resolver', () => {
@@ -74,8 +74,8 @@ describe('Dispatcher Resolver', () => {
         });
 
         // The main dispatcher resolver (will use the mock openwhisk client)
-        resolve = require('../../src/local/dispatcher.js').main;
-        cleanCachedSchema = require('../../src/local/dispatcher.js').cleanCacheSchema;
+        resolve = require("../../actions/dispatcher/index").main;
+        cleanCachedSchema = require('../../actions/dispatcher/index').cleanCacheSchema;
     });
 
     after(() => {
@@ -107,7 +107,7 @@ describe('Dispatcher Resolver', () => {
             remoteSchemas: {
                 cart: {
                     order: 20,
-                    action: '../../src/remote/cartResolver.js'
+                    action: '../../actions/remote/cartResolver.js'
                 }
             },
             "use-aio-cache": 3600

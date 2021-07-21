@@ -12,37 +12,48 @@
  *
  ******************************************************************************/
 
-'use strict';
+"use strict";
 
-const DataLoader = require('dataloader');
+const DataLoader = require("dataloader");
 
 class CategoryTreeLoader {
-
     /**
      * @param {Object} [actionParameters] Some optional parameters of the I/O Runtime action, like for example authentication info.
      */
     constructor(actionParameters) {
         // The loading function: "categoryIds" is an Array of category ids
-        let loadingFunction = categoryIds => {
+        let loadingFunction = (categoryIds) => {
             // This loader loads each category one by one, but if the 3rd party backend allows it,
             // it could also fetch all categories in one single request. In this case, the method
             // must still return an Array of categories with the same order as the keys.
-            return Promise.resolve(categoryIds.map(categoryId => {
-                console.debug(`--> Fetching category with id ${categoryId}`);
-                return this.__getCategoryById(categoryId, actionParameters)
-                    .catch(error => {
-                        console.error(`Failed loading category ${categoryId}, got error ${JSON.stringify(error, null, 0)}`);
+            return Promise.resolve(
+                categoryIds.map((categoryId) => {
+                    console.debug(
+                        `--> Fetching category with id ${categoryId}`
+                    );
+                    return this.__getCategoryById(
+                        categoryId,
+                        actionParameters
+                    ).catch((error) => {
+                        console.error(
+                            `Failed loading category ${categoryId}, got error ${JSON.stringify(
+                                error,
+                                null,
+                                0
+                            )}`
+                        );
                         return null;
                     });
-            }));
+                })
+            );
         };
 
-        this.loader = new DataLoader(keys => loadingFunction(keys));
+        this.loader = new DataLoader((keys) => loadingFunction(keys));
     }
 
     /**
      * Loads the category with the given categoryId.
-     * 
+     *
      * @param {*} categoryId
      * @returns {Promise} A Promise with the category data.
      */
@@ -54,13 +65,12 @@ class CategoryTreeLoader {
      * In a real 3rd-party integration, this method would query the 3rd-party system
      * in order to fetch a category based on the category id. This method returns a Promise,
      * for example to simulate some HTTP REST call being performed to the 3rd-party commerce system.
-     * 
+     *
      * @param {Number} categoryId The category id (integer).
      * @param {Object} actionParameters Some parameters of the I/O action itself (e.g. backend server URL, authentication info, etc)
      * @returns {Promise} A Promise with the category data.
      */
     __getCategoryById(categoryId, actionParameters) {
-
         // Each category contains the list of its sub-categories ids: the function CategoryTree.children()
         // demonstrates how these ids can be mapped to detailed category data.
         // In contrast, each category does not return the ids of the products it contains.
@@ -72,7 +82,10 @@ class CategoryTreeLoader {
             slug: this.__toSlug(categoryId),
             title: `Category #${categoryId}`,
             description: `Fetched category #${categoryId} from ${actionParameters.url}`,
-            subcategories: new String(categoryId).length < 3 ? [categoryId * 10 + 1, categoryId * 10 + 2] : []
+            subcategories:
+                new String(categoryId).length < 3
+                    ? [categoryId * 10 + 1, categoryId * 10 + 2]
+                    : [],
         });
     }
 
@@ -85,13 +98,13 @@ class CategoryTreeLoader {
 
         let previous = 0;
         return new String(categoryId)
-            .split('')
-            .map(s => parseInt(s))
-            .map(i => {
-                previous = (previous * 10) + i;
+            .split("")
+            .map((s) => parseInt(s))
+            .map((i) => {
+                previous = previous * 10 + i;
                 return previous;
             })
-            .join('/');
+            .join("/");
     }
 }
 
