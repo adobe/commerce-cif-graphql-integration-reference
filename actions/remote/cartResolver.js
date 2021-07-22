@@ -12,20 +12,20 @@
  *
  ******************************************************************************/
 
-"use strict";
+'use strict';
 
-const magentoSchema = require("../resources/magento-schema-2.4.2ee.min.json");
-const { graphql } = require("graphql");
-const SchemaBuilder = require("../common/SchemaBuilder.js");
-const Cart = require("../common/Cart.js");
+const magentoSchema = require('../resources/magento-schema-2.4.2ee.min.json');
+const { graphql } = require('graphql');
+const SchemaBuilder = require('../common/SchemaBuilder.js');
+const Cart = require('../common/Cart.js');
 
 let cachedSchema = null;
 
 function resolve(args) {
     if (cachedSchema == null) {
         let schemaBuilder = new SchemaBuilder(magentoSchema)
-            .filterMutationFields(new Set(["createEmptyCart"]))
-            .filterQueryFields(new Set(["cart"]));
+            .filterMutationFields(new Set(['createEmptyCart']))
+            .filterQueryFields(new Set(['cart']));
 
         cachedSchema = schemaBuilder.build();
     }
@@ -42,7 +42,7 @@ function resolve(args) {
         createEmptyCart: (params, context) => { // eslint-disable-line no-unused-vars
             // In a real integration, this would for example make a REST POST request to
             // the 3rd-party system to create a new cart
-            return Promise.resolve("thisisthenewcartid");
+            return Promise.resolve('thisisthenewcartid');
         },
     };
 

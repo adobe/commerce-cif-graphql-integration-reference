@@ -12,11 +12,11 @@
  *
  ******************************************************************************/
 
-"use strict";
+'use strict';
 
-const ProductsLoader = require("./ProductsLoader.js");
-const CategoryTreeLoader = require("./CategoryTreeLoader.js");
-const LoaderProxy = require("./LoaderProxy.js");
+const ProductsLoader = require('./ProductsLoader.js');
+const CategoryTreeLoader = require('./CategoryTreeLoader.js');
+const LoaderProxy = require('./LoaderProxy.js');
 
 // This module contains 3 classes because they have cross/cyclic dependencies to each other
 // and it's not possible to have them in separate files because this is not supported by Javascript
@@ -34,12 +34,8 @@ class CategoryTree {
         this.categoryId = parameters.categoryId;
         this.graphqlContext = parameters.graphqlContext;
         this.actionParameters = parameters.actionParameters;
-        this.categoryTreeLoader =
-            parameters.categoryTreeLoader ||
-            new CategoryTreeLoader(parameters.actionParameters);
-        this.productsLoader =
-            parameters.productsLoader ||
-            new ProductsLoader(parameters.actionParameters);
+        this.categoryTreeLoader = parameters.categoryTreeLoader || new CategoryTreeLoader(parameters.actionParameters);
+        this.productsLoader = parameters.productsLoader || new ProductsLoader(parameters.actionParameters);
 
         /**
          * This class returns a Proxy to avoid having to implement a getter for all properties.
@@ -73,15 +69,12 @@ class CategoryTree {
     }
 
     get __typename() {
-        return "CategoryTree";
+        return 'CategoryTree';
     }
 
     get children() {
         return this.__load().then(() => {
-            if (
-                !this.data.subcategories ||
-                this.data.subcategories.length == 0
-            ) {
+            if (!this.data.subcategories || this.data.subcategories.length == 0) {
                 return [];
             }
 
@@ -101,11 +94,8 @@ class CategoryTree {
     // children_count is a String in the Magento schema
     get children_count() {
         return this.__load().then(() => {
-            if (
-                !this.data.subcategories ||
-                this.data.subcategories.length == 0
-            ) {
-                return "0";
+            if (!this.data.subcategories || this.data.subcategories.length == 0) {
+                return '0';
             }
             return this.data.subcategories.length.toString();
         });
@@ -143,12 +133,8 @@ class Products {
         this.search = parameters.search;
         this.graphqlContext = parameters.graphqlContext;
         this.actionParameters = parameters.actionParameters;
-        this.productsLoader =
-            parameters.productsLoader ||
-            new ProductsLoader(parameters.actionParameters);
-        this.categoryTreeLoader =
-            parameters.categoryTreeLoader ||
-            new CategoryTreeLoader(parameters.actionParameters);
+        this.productsLoader = parameters.productsLoader || new ProductsLoader(parameters.actionParameters);
+        this.categoryTreeLoader = parameters.categoryTreeLoader || new CategoryTreeLoader(parameters.actionParameters);
 
         /**
          * This class returns a Proxy to avoid having to implement a getter for all properties.
@@ -157,9 +143,7 @@ class Products {
     }
 
     __load() {
-        console.debug(
-            "Loading products for " + JSON.stringify(this.search, null, 0)
-        );
+        console.debug('Loading products for ' + JSON.stringify(this.search, null, 0));
         return this.productsLoader.load(this.search);
     }
 
@@ -213,12 +197,8 @@ class Product {
         this.productData = parameters.productData;
         this.graphqlContext = parameters.graphqlContext;
         this.actionParameters = parameters.actionParameters;
-        this.categoryTreeLoader =
-            parameters.categoryTreeLoader ||
-            new CategoryTreeLoader(parameters.actionParameters);
-        this.productsLoader =
-            parameters.productsLoader ||
-            new ProductsLoader(parameters.actionParameters);
+        this.categoryTreeLoader = parameters.categoryTreeLoader || new CategoryTreeLoader(parameters.actionParameters);
+        this.productsLoader = parameters.productsLoader || new ProductsLoader(parameters.actionParameters);
 
         /**
          * This class returns a Proxy to avoid having to implement a getter for all properties.
@@ -227,7 +207,7 @@ class Product {
     }
 
     get __typename() {
-        return "SimpleProduct";
+        return 'SimpleProduct';
     }
 
     get categories() {
@@ -290,7 +270,7 @@ class Product {
             },
             media_gallery: [
                 {
-                    __typename: "ProductImage",
+                    __typename: 'ProductImage',
                     url: `${this.actionParameters.url}/images/normal/${data.sku}.jpg`, // Dummy
                     disabled: false,
                     position: 0,

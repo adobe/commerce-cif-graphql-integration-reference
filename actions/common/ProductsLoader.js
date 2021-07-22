@@ -12,9 +12,9 @@
  *
  ******************************************************************************/
 
-"use strict";
+'use strict';
 
-const DataLoader = require("dataloader");
+const DataLoader = require('dataloader');
 
 class ProductsLoader {
     /**
@@ -28,22 +28,17 @@ class ProductsLoader {
         let loadingFunction = (keys) => {
             return Promise.resolve(
                 keys.map((key) => {
-                    console.debug(
-                        "--> Performing a search with " +
-                            JSON.stringify(key, null, 0)
-                    );
-                    return this.__searchProducts(key, actionParameters).catch(
-                        (error) => {
-                            console.error(
-                                `Failed loading products for search ${JSON.stringify(
-                                    key,
-                                    null,
-                                    0
-                                )}, got error ${JSON.stringify(error, null, 0)}`
-                            );
-                            return null;
-                        }
-                    );
+                    console.debug('--> Performing a search with ' + JSON.stringify(key, null, 0));
+                    return this.__searchProducts(key, actionParameters).catch((error) => {
+                        console.error(
+                            `Failed loading products for search ${JSON.stringify(
+                                key,
+                                null,
+                                0
+                            )}, got error ${JSON.stringify(error, null, 0)}`
+                        );
+                        return null;
+                    });
                 })
             );
         };
@@ -79,8 +74,7 @@ class ProductsLoader {
         if (
             params.search ||
             params.categoryId ||
-            (params.filter &&
-                (params.filter.category_id || params.filter.price))
+            (params.filter && (params.filter.category_id || params.filter.price))
         ) {
             // Text search or fetching of the products of a category
             return Promise.resolve({
@@ -89,39 +83,31 @@ class ProductsLoader {
                 limit: params.pageSize,
                 products: [
                     {
-                        sku: "product-1",
-                        title: "Product #1",
+                        sku: 'product-1',
+                        title: 'Product #1',
                         description: `Fetched product #1 from ${actionParameters.url}`,
                         price: {
-                            currency: "USD",
+                            currency: 'USD',
                             amount: 12.34,
                         },
                         categoryIds: [1, 2],
                     },
                     {
-                        sku: "product-2",
-                        title: "Product #2",
+                        sku: 'product-2',
+                        title: 'Product #2',
                         description: `Fetched product #2 from ${actionParameters.url}`,
                         price: {
-                            currency: "USD",
+                            currency: 'USD',
                             amount: 56.78,
                         },
                         categoryIds: [2, 3],
                     },
                 ],
             });
-        } else if (
-            params.filter &&
-            (params.filter.sku || params.filter.url_key)
-        ) {
+        } else if (params.filter && (params.filter.sku || params.filter.url_key)) {
             // Get a product by sku or url_key
-            if (
-                (params.filter.sku && params.filter.sku.eq) ||
-                (params.filter.url_key && params.filter.url_key.eq)
-            ) {
-                let key = params.filter.sku
-                    ? params.filter.sku.eq
-                    : params.filter.url_key.eq;
+            if ((params.filter.sku && params.filter.sku.eq) || (params.filter.url_key && params.filter.url_key.eq)) {
+                let key = params.filter.sku ? params.filter.sku.eq : params.filter.url_key.eq;
                 return Promise.resolve({
                     total: 1,
                     offset: params.currentPage * params.pageSize,
@@ -132,7 +118,7 @@ class ProductsLoader {
                             title: `Product #${key}`,
                             description: `Fetched product #${key} from ${actionParameters.url}`,
                             price: {
-                                currency: "USD",
+                                currency: 'USD',
                                 amount: 12.34,
                             },
                             categoryIds: [1, 2],
@@ -151,7 +137,7 @@ class ProductsLoader {
                             title: `Product #${sku}`,
                             description: `Fetched product #${sku} from ${actionParameters.url}`,
                             price: {
-                                currency: "USD",
+                                currency: 'USD',
                                 amount: 12.34,
                             },
                             categoryIds: [1, 2],

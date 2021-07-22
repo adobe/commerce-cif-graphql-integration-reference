@@ -12,9 +12,9 @@
  *
  ******************************************************************************/
 
-"use strict";
+'use strict';
 
-const DataLoader = require("dataloader");
+const DataLoader = require('dataloader');
 
 class ProductLoader {
     /**
@@ -28,19 +28,10 @@ class ProductLoader {
             // must still return an Array of products with the same order as the keys.
             return Promise.resolve(
                 productSkus.map((productSku) => {
-                    console.debug(
-                        `--> Fetching product with sku ${productSku}`
-                    );
-                    return this.__getProductBySku(
-                        productSku,
-                        actionParameters
-                    ).catch((error) => {
+                    console.debug(`--> Fetching product with sku ${productSku}`);
+                    return this.__getProductBySku(productSku, actionParameters).catch((error) => {
                         console.error(
-                            `Failed loading product ${productSku}, got error ${JSON.stringify(
-                                error,
-                                null,
-                                0
-                            )}`
+                            `Failed loading product ${productSku}, got error ${JSON.stringify(error, null, 0)}`
                         );
                         return null;
                     });
@@ -78,10 +69,10 @@ class ProductLoader {
             title: `Product #${productSku}`,
             description: `Fetched product #${productSku} from ${actionParameters.url}`,
             price: {
-                currency: "USD",
+                currency: 'USD',
                 amount: 12.34,
             },
-            categoryIds: ["cat1", "cat2"],
+            categoryIds: ['cat1', 'cat2'],
         });
     }
 }

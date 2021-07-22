@@ -12,9 +12,9 @@
  *
  ******************************************************************************/
 
-"use strict";
+'use strict';
 
-const DataLoader = require("dataloader");
+const DataLoader = require('dataloader');
 
 class CategoryTreeLoader {
     /**
@@ -28,19 +28,10 @@ class CategoryTreeLoader {
             // must still return an Array of categories with the same order as the keys.
             return Promise.resolve(
                 categoryIds.map((categoryId) => {
-                    console.debug(
-                        `--> Fetching category with id ${categoryId}`
-                    );
-                    return this.__getCategoryById(
-                        categoryId,
-                        actionParameters
-                    ).catch((error) => {
+                    console.debug(`--> Fetching category with id ${categoryId}`);
+                    return this.__getCategoryById(categoryId, actionParameters).catch((error) => {
                         console.error(
-                            `Failed loading category ${categoryId}, got error ${JSON.stringify(
-                                error,
-                                null,
-                                0
-                            )}`
+                            `Failed loading category ${categoryId}, got error ${JSON.stringify(error, null, 0)}`
                         );
                         return null;
                     });
@@ -82,10 +73,7 @@ class CategoryTreeLoader {
             slug: this.__toSlug(categoryId),
             title: `Category #${categoryId}`,
             description: `Fetched category #${categoryId} from ${actionParameters.url}`,
-            subcategories:
-                new String(categoryId).length < 3
-                    ? [categoryId * 10 + 1, categoryId * 10 + 2]
-                    : [],
+            subcategories: new String(categoryId).length < 3 ? [categoryId * 10 + 1, categoryId * 10 + 2] : [],
         });
     }
 
@@ -98,13 +86,13 @@ class CategoryTreeLoader {
 
         let previous = 0;
         return new String(categoryId)
-            .split("")
+            .split('')
             .map((s) => parseInt(s))
             .map((i) => {
                 previous = previous * 10 + i;
                 return previous;
             })
-            .join("/");
+            .join('/');
     }
 }
 

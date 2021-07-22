@@ -12,9 +12,9 @@
  *
  ******************************************************************************/
 
-"use strict";
+'use strict';
 
-const DataLoader = require("dataloader");
+const DataLoader = require('dataloader');
 
 class CartLoader {
     /**
@@ -29,18 +29,10 @@ class CartLoader {
             return Promise.resolve(
                 cartIds.map((cartId) => {
                     console.debug(`--> Fetching cart with id ${cartId}`);
-                    return this.__getCartById(cartId, actionParameters).catch(
-                        (error) => {
-                            console.error(
-                                `Failed loading cart ${cartId}, got error ${JSON.stringify(
-                                    error,
-                                    null,
-                                    0
-                                )}`
-                            );
-                            return null;
-                        }
-                    );
+                    return this.__getCartById(cartId, actionParameters).catch((error) => {
+                        console.error(`Failed loading cart ${cartId}, got error ${JSON.stringify(error, null, 0)}`);
+                        return null;
+                    });
                 })
             );
         };
@@ -73,23 +65,23 @@ class CartLoader {
         // demonstrates how each product will be fetched if they are being requested in the GraphQL query.
         return Promise.resolve({
             id: cartId,
-            email: "dummy@example.com",
+            email: 'dummy@example.com',
             entries: [
                 {
                     quantity: 1,
-                    sku: "product-1",
+                    sku: 'product-1',
                     unitPrice: 12.34,
                     entryPrice: 24.68,
                 },
                 {
                     quantity: 2,
-                    sku: "product-2",
+                    sku: 'product-2',
                     unitPrice: 56.78,
                     entryPrice: 113.56,
                 },
             ],
             totalPrice: {
-                currency: "USD",
+                currency: 'USD',
                 amount: 138.24,
             },
         });

@@ -12,7 +12,7 @@
  *
  ******************************************************************************/
 
-"use strict";
+'use strict';
 
 class LoaderProxy {
     /**
@@ -38,7 +38,7 @@ class LoaderProxy {
                     .__load()
                     .then((data) => {
                         if (!data) {
-                            throw new Error("Backend data is null");
+                            throw new Error('Backend data is null');
                         }
 
                         if (!object.data) {

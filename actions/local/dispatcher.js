@@ -12,30 +12,30 @@
  *
  ******************************************************************************/
 
-"use strict";
+'use strict';
 
-const { Core } = require("@adobe/aio-sdk");
-const libState = require("@adobe/aio-lib-state");
-const { errorResponse, stringParameters } = require("../utils");
+const { Core } = require('@adobe/aio-sdk');
+const libState = require('@adobe/aio-lib-state');
+const { errorResponse, stringParameters } = require('../utils');
 
-const magentoSchema = require("../resources/magento-schema-2.4.2ee.min.json");
-const { makeRemoteExecutableSchema, introspectSchema, mergeSchemas } = require("graphql-tools");
-const { graphql, printSchema } = require("graphql");
+const magentoSchema = require('../resources/magento-schema-2.4.2ee.min.json');
+const { makeRemoteExecutableSchema, introspectSchema, mergeSchemas } = require('graphql-tools');
+const { graphql, printSchema } = require('graphql');
 
-const { Products, CategoryTree } = require("../common/Catalog.js");
-const ProductsLoader = require("../common/ProductsLoader.js");
-const CategoryTreeLoader = require("../common/CategoryTreeLoader.js");
-const SchemaBuilder = require("../common/SchemaBuilder.js");
-const RemoteResolverFetcher = require("../common/RemoteResolverFetcher.js");
+const { Products, CategoryTree } = require('../common/Catalog.js');
+const ProductsLoader = require('../common/ProductsLoader.js');
+const CategoryTreeLoader = require('../common/CategoryTreeLoader.js');
+const SchemaBuilder = require('../common/SchemaBuilder.js');
+const RemoteResolverFetcher = require('../common/RemoteResolverFetcher.js');
 
 let cachedSchema = null;
 
 async function resolve(params) {
-    const logger = Core.Logger("dispatcher", {
-        level: params.LOG_LEVEL || "info",
+    const logger = Core.Logger('dispatcher', {
+        level: params.LOG_LEVEL || 'info',
     });
 
-    logger.info("dispatcher resolve action");
+    logger.info('dispatcher resolve action');
     logger.debug(stringParameters(params));
 
     let remoteResolvers = null;
@@ -43,7 +43,7 @@ async function resolve(params) {
     let storeSchema = false; // If true, we will put the remote schemas in the aio-lib-state cache
 
     // If the schema is not cached, we try to get the remote schemas from the aio-lib-state cache
-    if (cachedSchema == null && Number.isInteger(params["use-aio-cache"])) {
+    if (cachedSchema == null && Number.isInteger(params['use-aio-cache'])) {
         state = await libState.init();
         remoteResolvers = await fetchRemoteSchemasFromCache(state);
     }
@@ -52,7 +52,7 @@ async function resolve(params) {
     // we prepare the remote fetchers to build the executable remote schemas
     if (cachedSchema == null && params.remoteSchemas && remoteResolvers == null) {
         remoteResolvers = prepareRemoteSchemaFetchers(params.remoteSchemas);
-        storeSchema = Number.isInteger(params["use-aio-cache"]);
+        storeSchema = Number.isInteger(params['use-aio-cache']);
     }
 
     // The schema is already available, we use a NOOP Promise for Promise.all()
@@ -87,9 +87,9 @@ async function resolve(params) {
                     });
 
                     if (state && cachedSchemas.length > 0) {
-                        let ttl = params["use-aio-cache"];
+                        let ttl = params['use-aio-cache'];
                         console.debug(`Trying to put schemas in aio-lib-state cache with ttl:${ttl} ...`);
-                        await state.put("schemas", cachedSchemas, {
+                        await state.put('schemas', cachedSchemas, {
                             ttl,
                         });
                     }
@@ -105,7 +105,7 @@ async function resolve(params) {
 
             // Passed to all resolver actions, can for example contain an authentication token
             let context = {
-                dummy: "Can be some authentication token",
+                dummy: 'Can be some authentication token',
             };
 
             // We instantiate some loaders common to the "products" and "category" resolvers
@@ -167,7 +167,7 @@ async function resolve(params) {
         })
         .catch((error) => {
             logger.error(error);
-            return errorResponse(500, "server error", logger);
+            return errorResponse(500, 'server error', logger);
         });
 }
 
@@ -208,8 +208,8 @@ function prepareRemoteSchemaFetchers(remoteSchemas) {
  * executable remote schemas. It returns null if nothing could be fetched from the cache.
  */
 async function fetchRemoteSchemasFromCache(state) {
-    console.debug("Trying to get remote schemas from aio-lib-state cache ...");
-    let schemas = await state.get("schemas");
+    console.debug('Trying to get remote schemas from aio-lib-state cache ...');
+    let schemas = await state.get('schemas');
     if (schemas) {
         console.debug(`Got ${schemas.value.length} schemas from aio-lib-state cache`);
         return schemas.value.map((obj) => {
@@ -233,7 +233,7 @@ function localSchema() {
     // The local schema only implements a limited set of fields of the Query root type
     let schemaBuilder = new SchemaBuilder(magentoSchema)
         .removeMutationType()
-        .filterQueryFields(new Set(["products", "category", "customAttributeMetadata", "categoryList"]));
+        .filterQueryFields(new Set(['products', 'category', 'customAttributeMetadata', 'categoryList']));
 
     // Add a new type and field under the Query root type
     // Note that when adding a field to an interface, you must also add it to all its implementation types
@@ -253,19 +253,19 @@ function localSchema() {
     `);
 
     // Add some fields to the ProductInterface type and all its implementations
-    schemaBuilder.addFieldToType("ProductInterface", "rating", "The rating of the product", "String");
+    schemaBuilder.addFieldToType('ProductInterface', 'rating', 'The rating of the product', 'String');
     schemaBuilder.addFieldToType(
-        "ProductInterface",
-        "accessories",
-        "The accessories of the product",
-        "ProductInterface",
+        'ProductInterface',
+        'accessories',
+        'The accessories of the product',
+        'ProductInterface',
         true
     );
     schemaBuilder.addFieldToType(
-        "ProductInterface",
-        "country_of_origin",
-        "The code of the country where the product is manufactured",
-        "CountryCodeEnum"
+        'ProductInterface',
+        'country_of_origin',
+        'The code of the country where the product is manufactured',
+        'CountryCodeEnum'
     );
 
     return schemaBuilder.build(10);

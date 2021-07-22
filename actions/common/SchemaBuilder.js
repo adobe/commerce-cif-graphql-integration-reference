@@ -12,10 +12,9 @@
  *
  ******************************************************************************/
 
-"use strict";
+'use strict';
 
 const { buildClientSchema, GraphQLSchema, GraphQLType, parse, extendSchema, introspectionQuery, graphqlSync } = require('graphql'); // eslint-disable-line no-unused-vars
-
 class SchemaBuilder {
     /**
      * @param {*} jsonSchema The schema in JSON format, as returned by an introspection query.
@@ -32,8 +31,8 @@ class SchemaBuilder {
      * @returns {GraphQLSchema} A GraphQLSchema that can be used by all graphql-js tools.
      */
     build(sortOrder) {
-        let queryRootType = this.schema.data.__schema.types.find((t) => t.name == "Query");
-        let mutationRootType = this.schema.data.__schema.types.find((t) => t.name == "Mutation");
+        let queryRootType = this.schema.data.__schema.types.find((t) => t.name == 'Query');
+        let mutationRootType = this.schema.data.__schema.types.find((t) => t.name == 'Mutation');
 
         // Remove "Query" root type if it doesn't have any field
         if (queryRootType && queryRootType.fields.length == 0) {
@@ -56,7 +55,7 @@ class SchemaBuilder {
      * @returns The builder itself.
      */
     removeMutationType() {
-        this.schema.data.__schema.types = this.schema.data.__schema.types.filter((t) => t.name != "Mutation");
+        this.schema.data.__schema.types = this.schema.data.__schema.types.filter((t) => t.name != 'Mutation');
         delete this.schema.data.__schema.mutationType;
         return this;
     }
@@ -67,7 +66,7 @@ class SchemaBuilder {
      * @returns The builder itself.
      */
     removeQueryType() {
-        this.schema.data.__schema.types = this.schema.data.__schema.types.filter((t) => t.name != "Query");
+        this.schema.data.__schema.types = this.schema.data.__schema.types.filter((t) => t.name != 'Query');
         delete this.schema.data.__schema.queryType;
         return this;
     }
@@ -79,7 +78,7 @@ class SchemaBuilder {
      * @returns The builder itself.
      */
     filterQueryFields(queryFields) {
-        let queryRootType = this.schema.data.__schema.types.find((t) => t.name == "Query");
+        let queryRootType = this.schema.data.__schema.types.find((t) => t.name == 'Query');
         queryRootType.fields = queryRootType.fields.filter((f) => queryFields.has(f.name));
         return this;
     }
@@ -91,7 +90,7 @@ class SchemaBuilder {
      * @returns The builder itself.
      */
     filterMutationFields(mutationFields) {
-        let mutationRootType = this.schema.data.__schema.types.find((t) => t.name == "Mutation");
+        let mutationRootType = this.schema.data.__schema.types.find((t) => t.name == 'Mutation');
         mutationRootType.fields = mutationRootType.fields.filter((f) => mutationFields.has(f.name));
         return this;
     }
@@ -112,9 +111,9 @@ class SchemaBuilder {
      */
     __toFieldType(fieldType, isList = false) {
         if (isList) {
-            return "LIST";
-        } else if (["String", "Int", "Float", "Boolean", "ID"].includes(fieldType)) {
-            return "SCALAR";
+            return 'LIST';
+        } else if (['String', 'Int', 'Float', 'Boolean', 'ID'].includes(fieldType)) {
+            return 'SCALAR';
         } else {
             let t = this.getType(fieldType);
             return t ? t.kind : null;
@@ -155,7 +154,7 @@ class SchemaBuilder {
         type.fields.push(newField);
         type.fields.sort((a, b) => a.name.localeCompare(b.name));
 
-        if (type.kind == "INTERFACE" && type.possibleTypes) {
+        if (type.kind == 'INTERFACE' && type.possibleTypes) {
             type.possibleTypes.forEach((possibleType) => {
                 let t = this.getType(possibleType.name);
                 t.fields.push(newField);

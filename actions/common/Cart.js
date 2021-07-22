@@ -12,14 +12,14 @@
  *
  ******************************************************************************/
 
-"use strict";
+'use strict';
 
-const LoaderProxy = require("./LoaderProxy.js");
-const { Product } = require("./Catalog.js");
-const CartLoader = require("./CartLoader.js");
-const ProductLoader = require("./ProductLoader.js");
-const ProductsLoader = require("./ProductsLoader.js");
-const CategoryTreeLoader = require("./CategoryTreeLoader.js");
+const LoaderProxy = require('./LoaderProxy.js');
+const { Product } = require('./Catalog.js');
+const CartLoader = require('./CartLoader.js');
+const ProductLoader = require('./ProductLoader.js');
+const ProductsLoader = require('./ProductsLoader.js');
+const CategoryTreeLoader = require('./CategoryTreeLoader.js');
 
 class Cart {
     /**
@@ -81,7 +81,7 @@ class Cart {
 
             return this.data.entries.map((entry, idx) => {
                 return {
-                    __typename: "SimpleCartItem",
+                    __typename: 'SimpleCartItem',
                     id: idx,
                     quantity: entry.quantity,
                     product: () =>
