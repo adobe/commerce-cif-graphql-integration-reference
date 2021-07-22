@@ -22,7 +22,7 @@
     "@adobe/aio-lib-state": "1.1.0"
   },
   "devDependencies": {
-    "serverless": "2.52.0",
+    "serverless": "2.52.1",
     "serverless-openwhisk": "0.18.4",
     "serverless-webpack": "5.5.1",
     "webpack": "4.46.0",
