@@ -29,7 +29,7 @@ jobs:
       - name: Build
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_PROD }}
-        uses: adobe/aio-apps-action@1.1.0
+        uses: adobe/aio-apps-action@1.1.1
         with:
           os: ${{ matrix.os }}
           command: build
@@ -37,7 +37,7 @@ jobs:
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_PROD }}
           AIO_RUNTIME_AUTH: ${{ secrets.AIO_RUNTIME_AUTH_PROD }}
-        uses: adobe/aio-apps-action@1.1.0
+        uses: adobe/aio-apps-action@1.1.1
         with:
           os: ${{ matrix.os }}
           command: deploy

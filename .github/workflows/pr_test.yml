@@ -26,12 +26,12 @@ jobs:
       - name: Build
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
-        uses: adobe/aio-apps-action@1.1.0
+        uses: adobe/aio-apps-action@1.1.1
         with:
           os: ${{ matrix.os }}
           command: build
       - name: Test
-        uses: adobe/aio-apps-action@1.1.0
+        uses: adobe/aio-apps-action@1.1.1
         with:
           os: ${{ matrix.os }}
           command: test
