@@ -44,7 +44,7 @@ class ProductsLoader {
         };
 
         this.loader = new DataLoader((keys) => loadingFunction(keys), {
-            cacheKeyFn: cacheKeyFunction,
+            cacheKeyFn: cacheKeyFunction
         });
     }
 
@@ -88,9 +88,9 @@ class ProductsLoader {
                         description: `Fetched product #1 from ${actionParameters.url}`,
                         price: {
                             currency: 'USD',
-                            amount: 12.34,
+                            amount: 12.34
                         },
-                        categoryIds: [1, 2],
+                        categoryIds: [1, 2]
                     },
                     {
                         sku: 'product-2',
@@ -98,11 +98,11 @@ class ProductsLoader {
                         description: `Fetched product #2 from ${actionParameters.url}`,
                         price: {
                             currency: 'USD',
-                            amount: 56.78,
+                            amount: 56.78
                         },
-                        categoryIds: [2, 3],
-                    },
-                ],
+                        categoryIds: [2, 3]
+                    }
+                ]
             });
         } else if (params.filter && (params.filter.sku || params.filter.url_key)) {
             // Get a product by sku or url_key
@@ -119,11 +119,11 @@ class ProductsLoader {
                             description: `Fetched product #${key} from ${actionParameters.url}`,
                             price: {
                                 currency: 'USD',
-                                amount: 12.34,
+                                amount: 12.34
                             },
-                            categoryIds: [1, 2],
-                        },
-                    ],
+                            categoryIds: [1, 2]
+                        }
+                    ]
                 });
             } else if (params.filter.sku.in) {
                 // Get multiple products by skus
@@ -138,11 +138,11 @@ class ProductsLoader {
                             description: `Fetched product #${sku} from ${actionParameters.url}`,
                             price: {
                                 currency: 'USD',
-                                amount: 12.34,
+                                amount: 12.34
                             },
-                            categoryIds: [1, 2],
+                            categoryIds: [1, 2]
                         };
-                    }),
+                    })
                 });
             }
         }

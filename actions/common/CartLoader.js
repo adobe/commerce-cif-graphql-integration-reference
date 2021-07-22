@@ -71,19 +71,19 @@ class CartLoader {
                     quantity: 1,
                     sku: 'product-1',
                     unitPrice: 12.34,
-                    entryPrice: 24.68,
+                    entryPrice: 24.68
                 },
                 {
                     quantity: 2,
                     sku: 'product-2',
                     unitPrice: 56.78,
-                    entryPrice: 113.56,
-                },
+                    entryPrice: 113.56
+                }
             ],
             totalPrice: {
                 currency: 'USD',
-                amount: 138.24,
-            },
+                amount: 138.24
+            }
         });
     }
 }

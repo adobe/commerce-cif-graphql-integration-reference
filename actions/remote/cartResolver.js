@@ -36,14 +36,14 @@ function resolve(args) {
             return new Cart({
                 cartId: params.cart_id,
                 graphqlContext: context,
-                actionParameters: args,
+                actionParameters: args
             });
         },
         createEmptyCart: (params, context) => { // eslint-disable-line no-unused-vars
             // In a real integration, this would for example make a REST POST request to
             // the 3rd-party system to create a new cart
             return Promise.resolve('thisisthenewcartid');
-        },
+        }
     };
 
     // The resolver for this action

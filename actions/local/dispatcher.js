@@ -32,7 +32,7 @@ let cachedSchema = null;
 
 async function resolve(params) {
     const logger = Core.Logger('dispatcher', {
-        level: params.LOG_LEVEL || 'info',
+        level: params.LOG_LEVEL || 'info'
     });
 
     logger.info('dispatcher resolve action');
@@ -71,7 +71,7 @@ async function resolve(params) {
                     remotes.forEach((remote) => {
                         let remoteExecutableSchema = makeRemoteExecutableSchema({
                             schema: remote.schema,
-                            fetcher: remote.fetcher,
+                            fetcher: remote.fetcher
                         });
                         remoteExecutableSchema.sortOrder = remote.order;
                         remoteExecutableSchemas.push(remoteExecutableSchema);
@@ -81,7 +81,7 @@ async function resolve(params) {
                             cachedSchemas.push({
                                 schema: printSchema(remote.schema),
                                 action: remote.action,
-                                order: remote.order,
+                                order: remote.order
                             });
                         }
                     });
@@ -90,14 +90,14 @@ async function resolve(params) {
                         let ttl = params['use-aio-cache'];
                         console.debug(`Trying to put schemas in aio-lib-state cache with ttl:${ttl} ...`);
                         await state.put('schemas', cachedSchemas, {
-                            ttl,
+                            ttl
                         });
                     }
                 }
 
                 let finalSchema = mergeSchemas({
                     schemas: remoteExecutableSchemas,
-                    onTypeConflict: onTypeConflict,
+                    onTypeConflict: onTypeConflict
                 });
 
                 cachedSchema = finalSchema; // eslint-disable-line require-atomic-updates
@@ -105,7 +105,7 @@ async function resolve(params) {
 
             // Passed to all resolver actions, can for example contain an authentication token
             let context = {
-                dummy: 'Can be some authentication token',
+                dummy: 'Can be some authentication token'
             };
 
             // We instantiate some loaders common to the "products" and "category" resolvers
@@ -120,7 +120,7 @@ async function resolve(params) {
                         graphqlContext: context,
                         actionParameters: params,
                         productsLoader: productsLoader,
-                        categoryTreeLoader: categoryTreeLoader,
+                        categoryTreeLoader: categoryTreeLoader
                     });
                 },
                 category: (params, context) => {
@@ -129,7 +129,7 @@ async function resolve(params) {
                         graphqlContext: context,
                         actionParameters: params,
                         categoryTreeLoader: categoryTreeLoader,
-                        productsLoader: productsLoader,
+                        productsLoader: productsLoader
                     });
                 },
                 categoryList: (params, context) => {
@@ -145,13 +145,13 @@ async function resolve(params) {
                             graphqlContext: context,
                             actionParameters: params,
                             categoryTreeLoader: categoryTreeLoader,
-                            productsLoader: productsLoader,
-                        }),
+                            productsLoader: productsLoader
+                        })
                     ];
                 },
                 customAttributeMetadata: () => {
                     return null; // Not supported by example integration
-                },
+                }
             };
 
             // Main resolver action, partially delegating resolution to the "remote schemas"
@@ -160,7 +160,7 @@ async function resolve(params) {
                     logger.info(`successful request`);
                     return {
                         statusCode: 200,
-                        body: response,
+                        body: response
                     };
                 }
             );
@@ -196,7 +196,7 @@ function prepareRemoteSchemaFetchers(remoteSchemas) {
                 schema,
                 fetcher,
                 order: resolver.order,
-                action: resolver.action,
+                action: resolver.action
             });
         });
     });
@@ -216,7 +216,7 @@ async function fetchRemoteSchemasFromCache(state) {
             return Promise.resolve({
                 schema: obj.schema,
                 fetcher: new RemoteResolverFetcher(obj.action).fetcher,
-                order: obj.order,
+                order: obj.order
             });
         });
     }

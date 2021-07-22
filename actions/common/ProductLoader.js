@@ -70,9 +70,9 @@ class ProductLoader {
             description: `Fetched product #${productSku} from ${actionParameters.url}`,
             price: {
                 currency: 'USD',
-                amount: 12.34,
+                amount: 12.34
             },
-            categoryIds: ['cat1', 'cat2'],
+            categoryIds: ['cat1', 'cat2']
         });
     }
 }

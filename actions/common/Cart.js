@@ -59,9 +59,9 @@ class Cart {
             prices: {
                 grand_total: {
                     currency: data.totalPrice.currency,
-                    value: data.totalPrice.amount,
-                },
-            },
+                    value: data.totalPrice.amount
+                }
+            }
         };
     }
 
@@ -92,9 +92,9 @@ class Cart {
                                     graphqlContext: this.graphqlContext,
                                     actionParameters: this.actionParameters,
                                     categoryTreeLoader: categoryTreeLoader,
-                                    productsLoader: productsLoader,
+                                    productsLoader: productsLoader
                                 })
-                        ),
+                        )
                 };
             });
         });

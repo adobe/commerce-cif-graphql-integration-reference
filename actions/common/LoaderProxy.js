@@ -51,7 +51,7 @@ class LoaderProxy {
                     .catch((error) => {
                         return error; // Will "bubble-up" the error to the GraphQL resolver which will add the error to the JSON response
                     });
-            },
+            }
         });
     }
 }

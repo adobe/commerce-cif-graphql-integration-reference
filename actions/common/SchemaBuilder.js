@@ -127,7 +127,7 @@ class SchemaBuilder {
         return {
             kind: this.__toFieldType(fieldType, isList),
             name: isList ? null : fieldType,
-            ofType: isList ? this.__toTypeDef(fieldType) : null,
+            ofType: isList ? this.__toTypeDef(fieldType) : null
         };
     }
 
@@ -149,7 +149,7 @@ class SchemaBuilder {
             args: [],
             type: this.__toTypeDef(fieldTypeName, isList),
             isDeprecated: false,
-            deprecationReason: null,
+            deprecationReason: null
         };
         type.fields.push(newField);
         type.fields.sort((a, b) => a.name.localeCompare(b.name));
@@ -172,7 +172,7 @@ class SchemaBuilder {
         let ast = parse(sdl);
         let graphQLSchema = buildClientSchema(this.schema.data);
         let extendedGraphQLSchema = extendSchema(graphQLSchema, ast, {
-            commentDescriptions: true,
+            commentDescriptions: true
         });
         this.schema = graphqlSync(extendedGraphQLSchema, introspectionQuery);
     }

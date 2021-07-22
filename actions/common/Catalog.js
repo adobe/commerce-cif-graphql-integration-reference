@@ -64,7 +64,7 @@ class CategoryTree {
             url_path: data.slug,
             name: data.title,
             description: data.description,
-            product_count: 2,
+            product_count: 2
         };
     }
 
@@ -85,7 +85,7 @@ class CategoryTree {
                         graphqlContext: this.graphqlContext,
                         actionParameters: this.actionParameters,
                         categoryTreeLoader: this.categoryTreeLoader,
-                        productsLoader: this.productsLoader,
+                        productsLoader: this.productsLoader
                     })
             );
         });
@@ -110,12 +110,12 @@ class CategoryTree {
             search: {
                 categoryId: this.categoryId,
                 pageSize: params.pageSize,
-                currentPage: params.currentPage,
+                currentPage: params.currentPage
             },
             graphqlContext: this.graphqlContext,
             actionParameters: this.actionParameters,
             productsLoader: this.productsLoader,
-            categoryTreeLoader: this.categoryTreeLoader,
+            categoryTreeLoader: this.categoryTreeLoader
         });
     }
 }
@@ -160,8 +160,8 @@ class Products {
             total_count: data.total,
             page_info: {
                 current_page: data.offset / data.limit,
-                page_size: data.limit,
-            },
+                page_size: data.limit
+            }
         };
     }
 
@@ -177,7 +177,7 @@ class Products {
                     graphqlContext: this.graphqlContext,
                     actionParameters: this.actionParameters,
                     categoryTreeLoader: this.categoryTreeLoader,
-                    productsLoader: this.productsLoader,
+                    productsLoader: this.productsLoader
                 });
             });
         });
@@ -217,7 +217,7 @@ class Product {
                 graphqlContext: this.graphqlContext,
                 actionParameters: this.actionParameters,
                 categoryTreeLoader: this.categoryTreeLoader,
-                productsLoader: this.productsLoader,
+                productsLoader: this.productsLoader
             });
         });
     }
@@ -233,49 +233,49 @@ class Product {
             url_key: data.sku,
             name: data.title,
             description: {
-                html: data.description,
+                html: data.description
             },
             price: {
                 regularPrice: {
                     amount: {
                         currency: data.price.currency,
-                        value: data.price.amount,
-                    },
-                },
+                        value: data.price.amount
+                    }
+                }
             },
             price_range: {
                 minimum_price: {
                     final_price: {
                         currency: data.price.currency,
-                        value: data.price.amount,
+                        value: data.price.amount
                     },
                     regular_price: {
                         currency: data.price.currency,
-                        value: data.price.amount,
+                        value: data.price.amount
                     },
                     discount: {
                         amount_off: 0,
-                        percent_off: 0,
-                    },
-                },
+                        percent_off: 0
+                    }
+                }
             },
             small_image: {
-                url: `${this.actionParameters.url}/images/small/${data.sku}.jpg`, // Dummy
+                url: `${this.actionParameters.url}/images/small/${data.sku}.jpg` // Dummy
             },
             image: {
-                url: `${this.actionParameters.url}/images/normal/${data.sku}.jpg`, // Dummy
+                url: `${this.actionParameters.url}/images/normal/${data.sku}.jpg` // Dummy
             },
             thumbnail: {
-                url: `${this.actionParameters.url}/images/thumb/${data.sku}.jpg`, // Dummy
+                url: `${this.actionParameters.url}/images/thumb/${data.sku}.jpg` // Dummy
             },
             media_gallery: [
                 {
                     __typename: 'ProductImage',
                     url: `${this.actionParameters.url}/images/normal/${data.sku}.jpg`, // Dummy
                     disabled: false,
-                    position: 0,
-                },
-            ],
+                    position: 0
+                }
+            ]
         };
     }
 }
