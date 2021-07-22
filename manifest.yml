@@ -3,7 +3,7 @@ packages:
     license: Apache-2.0
     actions:
       dispatcher:
-        function: actions/dispatcher/index.js
+        function: actions/local/dispatcher.js
         web: 'yes'
         runtime: 'nodejs:14'
         inputs:

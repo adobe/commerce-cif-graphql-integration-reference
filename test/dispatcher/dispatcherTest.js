@@ -74,8 +74,8 @@ describe('Dispatcher Resolver', () => {
         });
 
         // The main dispatcher resolver (will use the mock openwhisk client)
-        resolve = require("../../actions/dispatcher/index").main;
-        cleanCachedSchema = require('../../actions/dispatcher/index').cleanCacheSchema;
+        resolve = require("../../actions/local/dispatcher").main;
+        cleanCachedSchema = require('../../actions/local/dispatcher').cleanCacheSchema;
     });
 
     after(() => {
