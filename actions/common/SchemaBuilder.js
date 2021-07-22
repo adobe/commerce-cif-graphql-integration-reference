@@ -32,12 +32,8 @@ class SchemaBuilder {
      * @returns {GraphQLSchema} A GraphQLSchema that can be used by all graphql-js tools.
      */
     build(sortOrder) {
-        let queryRootType = this.schema.data.__schema.types.find(
-            (t) => t.name == "Query"
-        );
-        let mutationRootType = this.schema.data.__schema.types.find(
-            (t) => t.name == "Mutation"
-        );
+        let queryRootType = this.schema.data.__schema.types.find((t) => t.name == "Query");
+        let mutationRootType = this.schema.data.__schema.types.find((t) => t.name == "Mutation");
 
         // Remove "Query" root type if it doesn't have any field
         if (queryRootType && queryRootType.fields.length == 0) {
@@ -60,8 +56,7 @@ class SchemaBuilder {
      * @returns The builder itself.
      */
     removeMutationType() {
-        this.schema.data.__schema.types =
-            this.schema.data.__schema.types.filter((t) => t.name != "Mutation");
+        this.schema.data.__schema.types = this.schema.data.__schema.types.filter((t) => t.name != "Mutation");
         delete this.schema.data.__schema.mutationType;
         return this;
     }
@@ -72,8 +67,7 @@ class SchemaBuilder {
      * @returns The builder itself.
      */
     removeQueryType() {
-        this.schema.data.__schema.types =
-            this.schema.data.__schema.types.filter((t) => t.name != "Query");
+        this.schema.data.__schema.types = this.schema.data.__schema.types.filter((t) => t.name != "Query");
         delete this.schema.data.__schema.queryType;
         return this;
     }
@@ -85,12 +79,8 @@ class SchemaBuilder {
      * @returns The builder itself.
      */
     filterQueryFields(queryFields) {
-        let queryRootType = this.schema.data.__schema.types.find(
-            (t) => t.name == "Query"
-        );
-        queryRootType.fields = queryRootType.fields.filter((f) =>
-            queryFields.has(f.name)
-        );
+        let queryRootType = this.schema.data.__schema.types.find((t) => t.name == "Query");
+        queryRootType.fields = queryRootType.fields.filter((f) => queryFields.has(f.name));
         return this;
     }
 
@@ -101,12 +91,8 @@ class SchemaBuilder {
      * @returns The builder itself.
      */
     filterMutationFields(mutationFields) {
-        let mutationRootType = this.schema.data.__schema.types.find(
-            (t) => t.name == "Mutation"
-        );
-        mutationRootType.fields = mutationRootType.fields.filter((f) =>
-            mutationFields.has(f.name)
-        );
+        let mutationRootType = this.schema.data.__schema.types.find((t) => t.name == "Mutation");
+        mutationRootType.fields = mutationRootType.fields.filter((f) => mutationFields.has(f.name));
         return this;
     }
 
@@ -127,9 +113,7 @@ class SchemaBuilder {
     __toFieldType(fieldType, isList = false) {
         if (isList) {
             return "LIST";
-        } else if (
-            ["String", "Int", "Float", "Boolean", "ID"].includes(fieldType)
-        ) {
+        } else if (["String", "Int", "Float", "Boolean", "ID"].includes(fieldType)) {
             return "SCALAR";
         } else {
             let t = this.getType(fieldType);

@@ -19,11 +19,7 @@ const libState = require("@adobe/aio-lib-state");
 const { errorResponse, stringParameters } = require("../utils");
 
 const magentoSchema = require("../resources/magento-schema-2.4.2ee.min.json");
-const {
-    makeRemoteExecutableSchema,
-    introspectSchema,
-    mergeSchemas,
-} = require("graphql-tools");
+const { makeRemoteExecutableSchema, introspectSchema, mergeSchemas } = require("graphql-tools");
 const { graphql, printSchema } = require("graphql");
 
 const { Products, CategoryTree } = require("../common/Catalog.js");
@@ -54,11 +50,7 @@ async function resolve(params) {
 
     // If the schema is not cached and we didn't get anything from the aio-lib-state cache,
     // we prepare the remote fetchers to build the executable remote schemas
-    if (
-        cachedSchema == null &&
-        params.remoteSchemas &&
-        remoteResolvers == null
-    ) {
+    if (cachedSchema == null && params.remoteSchemas && remoteResolvers == null) {
         remoteResolvers = prepareRemoteSchemaFetchers(params.remoteSchemas);
         storeSchema = Number.isInteger(params["use-aio-cache"]);
     }
@@ -77,12 +69,10 @@ async function resolve(params) {
                     let cachedSchemas = [];
 
                     remotes.forEach((remote) => {
-                        let remoteExecutableSchema = makeRemoteExecutableSchema(
-                            {
-                                schema: remote.schema,
-                                fetcher: remote.fetcher,
-                            }
-                        );
+                        let remoteExecutableSchema = makeRemoteExecutableSchema({
+                            schema: remote.schema,
+                            fetcher: remote.fetcher,
+                        });
                         remoteExecutableSchema.sortOrder = remote.order;
                         remoteExecutableSchemas.push(remoteExecutableSchema);
 
@@ -98,9 +88,7 @@ async function resolve(params) {
 
                     if (state && cachedSchemas.length > 0) {
                         let ttl = params["use-aio-cache"];
-                        console.debug(
-                            `Trying to put schemas in aio-lib-state cache with ttl:${ttl} ...`
-                        );
+                        console.debug(`Trying to put schemas in aio-lib-state cache with ttl:${ttl} ...`);
                         await state.put("schemas", cachedSchemas, {
                             ttl,
                         });
@@ -167,20 +155,15 @@ async function resolve(params) {
             };
 
             // Main resolver action, partially delegating resolution to the "remote schemas"
-            return graphql(
-                cachedSchema,
-                params.query,
-                resolvers,
-                context,
-                params.variables,
-                params.operationName
-            ).then((response) => {
-                logger.info(`successful request`);
-                return {
-                    statusCode: 200,
-                    body: response,
-                };
-            });
+            return graphql(cachedSchema, params.query, resolvers, context, params.variables, params.operationName).then(
+                (response) => {
+                    logger.info(`successful request`);
+                    return {
+                        statusCode: 200,
+                        body: response,
+                    };
+                }
+            );
         })
         .catch((error) => {
             logger.error(error);
@@ -206,9 +189,7 @@ function onTypeConflict(left, right, info) {
 function prepareRemoteSchemaFetchers(remoteSchemas) {
     // Get all resolver actions to fetch the remote schemas dynamically
     return Object.values(remoteSchemas).map((resolver) => {
-        console.debug(
-            `Preparing remote schema fetcher for action ${resolver.action}`
-        );
+        console.debug(`Preparing remote schema fetcher for action ${resolver.action}`);
         let fetcher = new RemoteResolverFetcher(resolver.action).fetcher;
         return introspectSchema(fetcher).then((schema) => {
             return Promise.resolve({
@@ -230,9 +211,7 @@ async function fetchRemoteSchemasFromCache(state) {
     console.debug("Trying to get remote schemas from aio-lib-state cache ...");
     let schemas = await state.get("schemas");
     if (schemas) {
-        console.debug(
-            `Got ${schemas.value.length} schemas from aio-lib-state cache`
-        );
+        console.debug(`Got ${schemas.value.length} schemas from aio-lib-state cache`);
         return schemas.value.map((obj) => {
             return Promise.resolve({
                 schema: obj.schema,
@@ -254,14 +233,7 @@ function localSchema() {
     // The local schema only implements a limited set of fields of the Query root type
     let schemaBuilder = new SchemaBuilder(magentoSchema)
         .removeMutationType()
-        .filterQueryFields(
-            new Set([
-                "products",
-                "category",
-                "customAttributeMetadata",
-                "categoryList",
-            ])
-        );
+        .filterQueryFields(new Set(["products", "category", "customAttributeMetadata", "categoryList"]));
 
     // Add a new type and field under the Query root type
     // Note that when adding a field to an interface, you must also add it to all its implementation types
@@ -281,12 +253,7 @@ function localSchema() {
     `);
 
     // Add some fields to the ProductInterface type and all its implementations
-    schemaBuilder.addFieldToType(
-        "ProductInterface",
-        "rating",
-        "The rating of the product",
-        "String"
-    );
+    schemaBuilder.addFieldToType("ProductInterface", "rating", "The rating of the product", "String");
     schemaBuilder.addFieldToType(
         "ProductInterface",
         "accessories",

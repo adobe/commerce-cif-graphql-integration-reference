@@ -47,14 +47,7 @@ function resolve(args) {
     };
 
     // The resolver for this action
-    return graphql(
-        cachedSchema,
-        args.query,
-        resolvers,
-        args.context,
-        args.variables,
-        args.operationName
-    )
+    return graphql(cachedSchema, args.query, resolvers, args.context, args.variables, args.operationName)
         .then((response) => {
             return response;
         })
