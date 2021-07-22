@@ -11,8 +11,7 @@
         "test-cov": "nyc npm run unit && npm run lcov-report",
         "lcov-report": "nyc report --reporter=lcov",
         "unit": "mocha test/**/*Test.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-unit.json",
-        "deploy": "serverless deploy",
-        "doc": "node src/documentation/generate.js && jq -c . < src/resources/magento-schema-2.4.2ee.pruned.json > src/resources/magento-schema-2.4.2ee.pruned.min.json"
+        "doc": "node actions/documentation/generate.js && jq -c . < actions/resources/magento-schema-2.4.2ee.pruned.json > actions/resources/magento-schema-2.4.2ee.pruned.min.json"
     },
     "dependencies": {
         "dataloader": "1.4.0",
@@ -38,11 +37,11 @@
     },
     "nyc": {
         "include": [
-            "src/**"
+            "actions/**"
         ],
         "exclude": [
-            "src/resources",
-            "src/documentation/generate.js"
+            "actions/resources",
+            "actions/documentation/generate.js"
         ],
         "check-coverage": true,
         "per-file": false,
