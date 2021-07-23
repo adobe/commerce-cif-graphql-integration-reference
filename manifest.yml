@@ -1,5 +1,5 @@
 packages:
-  __APP_PACKAGE__:
+  commerce-cif-graphql-integration-reference:
     license: Apache-2.0
     actions:
       dispatcher:
@@ -13,7 +13,7 @@ packages:
           remoteSchemas: # Action with smaller order has "merge priority" in schema conflicts
             cart:
               order: 20
-              action: commerce-cif-graphql-integration-reference-1.0.0/cart
+              action: commerce-cif-graphql-integration-reference/cart
         annotations:
           provide-api-key: true
           final: true
