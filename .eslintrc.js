@@ -14,7 +14,6 @@
 
 "use strict";
 
-// License header
 // We don't use a pattern here, so we can leverage eslint --fix.
 const headerBlock = [
     '******************************************************************************',
