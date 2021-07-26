@@ -17,13 +17,13 @@
         "dataloader": "1.4.0",
         "graphql": "14.7.0",
         "graphql-tools": "3.1.1",
-        "regenerator-runtime": "^0.13.5",
+        "regenerator-runtime": "0.13.7",
         "@adobe/aio-lib-state": "1.1.0",
         "@adobe/aio-sdk": "^3.0.0",
         "@adobe/exc-app": "^0.2.17"
     },
     "devDependencies": {
-        "@openwhisk/wskdebug": "^1.3.0",
+        "@openwhisk/wskdebug": "1.3.0",
         "chai": "4.3.4",
         "eslint": "7.31.0",
         "eslint-plugin-header": "3.1.1",
