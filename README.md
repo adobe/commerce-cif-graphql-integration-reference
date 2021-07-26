@@ -53,11 +53,15 @@ actions
    ├── dispatcher
 ├── remote
    ├── cartResolver
+...
+web-src
 ```
 
 The `common` folder contains all the code that fetches and converts 3rd-party data into the GraphQL format. These classes can be used either by the local dispatcher action or by remote resolvers.
 
 The `documentation` folder contains some code that is used to generate a subset of the Magento schema that covers all the queries required by the CIF integration. This is **not** used by the resolvers, see the [Schema documentation](#schema-documentation) section below.
+
+Within the `web-src` folder we provide a mini web application which loads the [GraphiQL](https://github.com/graphql/graphiql) GraphQL client. It allows you to immediately try out the GraphQL actions of the project.
 
 For a detailed description of the project folder and file structure see [Project Firefly Application getting started documentation](https://www.adobe.io/apis/experienceplatform/project-firefly/docs.html#!AdobeDocs/project-firefly/master/getting_started.md).
 
@@ -119,7 +123,9 @@ To deploy the application on the Adobe I/O platform simply run:
 $ aio app deploy
 ```
 
-This will build and deploy the GraphQl functions and web frontend. The CLI will print out the deployed functions in you I/O Runtime namespace including the URL to access them. The dispatcher is a web action that is accessible with the URL `https://<PROJECT_NAME>.adobeio-static.net/api/v1/web/commerce-cif-graphql-integration-reference-1.0.0/dispatcher`. To test the GraphQL endpoint, you can for example use the `GraphiQL` plugin in the Chrome browser. 
+This will build and deploy the GraphQl functions and web frontend. The CLI will print out the deployed functions in you I/O Runtime namespace including the URL to access them. The dispatcher is a web action that is accessible with the URL `https://<PROJECT_NAME>.adobeio-static.net/api/v1/web/commerce-cif-graphql-integration-reference-1.0.0/dispatcher`.
+
+To test the GraphQL endpoint directly open the GraphiQL to test some GraphQL queries. The URL for your GraphiQL instance is printed out by the AIO CLI during the deployment. Any other GraphQL client will work as well.
 
 ## Developing a real 3rd-party integration
 

@@ -12,8 +12,6 @@
  *
  ******************************************************************************/
 
-"use strict";
-
 // We don't use a pattern here, so we can leverage eslint --fix.
 const headerBlock = [
     '******************************************************************************',
@@ -33,16 +31,25 @@ const headerBlock = [
 
 module.exports = {
     root: true,
+    settings: {
+        react: {
+            version: 'detect'
+        }
+    },
     env: {
+        browser: true,
         node: true,
-        es6: true,
-        mocha: true
+        es6: true
     },
-    plugins: ['header'],
+    plugins: ['react', 'header'],
     parserOptions: {
-        ecmaVersion: 2020,
+        ecmaFeatures: {
+            jsx: true
+        },
+        ecmaVersion: 2018,
+        sourceType: 'module'
     },
-    extends: 'eslint:recommended',
+    extends: ['eslint:recommended', 'plugin:react/recommended'],
     rules: {
         'no-console': 'off',
         'header/header': [2, 'block', headerBlock],

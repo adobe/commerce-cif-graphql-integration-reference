@@ -1,59 +1,31 @@
-<!-- <license header> -->
+<!-- /*******************************************************************************
+ *
+ *    Copyright 2021 Adobe. All rights reserved.
+ *    This file is licensed to you under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License. You may obtain a copy
+ *    of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software distributed under
+ *    the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+ *    OF ANY KIND, either express or implied. See the License for the specific language
+ *    governing permissions and limitations under the License.
+ *
+ ******************************************************************************/ -->
 
-  <!DOCTYPE html>
-  <html lang="en" class="spectrum spectrum--medium spectrum--light">
-  
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://unpkg.com/@spectrum-css/vars/dist/spectrum-global.css">
-    <link rel="stylesheet" href="https://unpkg.com/@spectrum-css/typography/index.css">
-    <link rel="stylesheet" href="index.css">
-  <title>cifgraphqlreference</title>
-  <script src="./src/utils.js"></script>
-  <script src="./src/index.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <meta name="theme-color" content="#333333">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>CIF GraphQL integration reference</title>
 </head>
+
 <body>
-  <h1>Welcome to cifgraphqlreference!</h1>
-  <div class="spectrum--large spectrum-Typography spectrum-Site">
-    <div>
-      <h2>Run your application backend actions</h2>
-      <form id='actionForm'>
-        <div>
-          <label for='action-list'>Select an action.</label>
-          <span id="action-list" name="action-list"></span>
-        </div>
-        <div>
-          <label for="actionParams">headers { json } to pass to your action:</label>
-          <textarea id='actionHeaders' name='actionHeaders' placeholder='{ "key": "value" }'></textarea>
-        </div>
-        <div>
-          <label for="actionParams">params { json } to pass to your action:</label>
-          <textarea id='actionParams' name='actionParams' placeholder='{ "key": "value" }'></textarea>
-        </div>
-        <input type="submit" value="Invoke">
-      </form>
-    </div>
-    <div>
-      <h2>results</h2>
-      <textarea id='taOutput' readonly spellcheck="false" style="min-height:260px;"></textarea>
-    </div>
-    <footer>
-      <h2>Useful documentation for your app</h2>
-      <a href='https://github.com/AdobeDocs/project-firefly/blob/master/README.md#project-firefly-developer-guide' target='_blank'>
-        Firefly Apps
-      </a>
-      <a href='https://github.com/adobe/aio-sdk#adobeaio-sdk' target='_blank'>
-        Adobe I/O SDK
-      </a>
-      <a href='https://adobedocs.github.io/adobeio-runtime/' target='_blank'>
-        Adobe I/O Runtime
-      </a>
-      <a href='https://react-spectrum.adobe.com/react-spectrum/index.html' target='_blank'>
-        React Spectrum
-      </a>
-    </footer>
-  </div>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+  <script src="./src/index.js" async="true"></script>
 </body>
 </html>
