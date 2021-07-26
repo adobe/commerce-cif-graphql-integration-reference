@@ -44,7 +44,7 @@ const App = props => {
         <GraphiQL
             style={{ height: '100vh' }}
             fetcher={async (graphQLParams) => {
-                const data = await fetch(url, {
+                const data = await fetch(url.replace('adobeio-static', 'adobeioruntime'),{
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
