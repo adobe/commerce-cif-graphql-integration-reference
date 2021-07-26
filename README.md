@@ -125,7 +125,7 @@ $ aio app deploy
 
 This will build and deploy the GraphQl functions and web frontend. The CLI will print out the deployed functions in you I/O Runtime namespace including the URL to access them. The dispatcher is a web action that is accessible with the URL `https://<PROJECT_NAME>.adobeio-static.net/api/v1/web/commerce-cif-graphql-integration-reference-1.0.0/dispatcher`.
 
- To test the GraphQL endpoint directly open the GraphiQL to test some GraphQL queries. The URL for your is printed out by the AIO CLI during the deployment. Any other GraphQL client will work as well.
+To test the GraphQL endpoint directly open the GraphiQL to test some GraphQL queries. The URL for your is printed out by the AIO CLI during the deployment. Any other GraphQL client will work as well.
 
 ## Developing a real 3rd-party integration
 
