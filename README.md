@@ -61,7 +61,7 @@ The `common` folder contains all the code that fetches and converts 3rd-party da
 
 The `documentation` folder contains some code that is used to generate a subset of the Magento schema that covers all the queries required by the CIF integration. This is **not** used by the resolvers, see the [Schema documentation](#schema-documentation) section below.
 
-Within the `web-src` folder we provide a mini web application with loads the [GraphiQL](https://github.com/graphql/graphiql) GraphQL client, which always you to immediately try out the GraphQL actions of the project.
+Within the `web-src` folder we provide a mini web application which loads the [GraphiQL](https://github.com/graphql/graphiql) GraphQL client. It allows you to immediately try out the GraphQL actions of the project.
 
 For a detailed description of the project folder and file structure see [Project Firefly Application getting started documentation](https://www.adobe.io/apis/experienceplatform/project-firefly/docs.html#!AdobeDocs/project-firefly/master/getting_started.md).
 
