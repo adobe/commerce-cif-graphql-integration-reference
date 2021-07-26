@@ -1,7 +1,40 @@
+# package directories
 node_modules
-.serverless
+jspm_packages
+
+# build
+build
+dist
+.manifest-dist.yml
+
+# Config
+config.json
+.env*
+.aio
+
+# Adobe I/O console config
+console.json
+
+# Test output
+junit.xml
+
+# IDE & Temp
+.cache
+.idea
 .nyc_output
+.vscode
 coverage
-results.xml
+.aws.tmp.creds.json
+.wskdebug.props.tmp
+.parcel-cache
 test/*.cache
-repos
+results.xml
+
+# OSX
+.DS_Store
+
+# yeoman
+.yo-repository
+
+# logs folder for aio-run-detached
+logs

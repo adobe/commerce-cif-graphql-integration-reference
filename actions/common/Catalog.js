@@ -22,7 +22,6 @@ const LoaderProxy = require('./LoaderProxy.js');
 // and it's not possible to have them in separate files because this is not supported by Javascript
 
 class CategoryTree {
-
     /**
      * @param {Object} parameters
      * @param {String} parameters.categoryId The category id.
@@ -53,7 +52,7 @@ class CategoryTree {
      * Converts some category data from the 3rd-party commerce system into the Magento GraphQL format.
      * Properties that require some extra data fetching with the 3rd-party system must have dedicated getters
      * in this class.
-     * 
+     *
      * @param {Object} data
      * @returns {Object} The backend category data converted into a GraphQL "CategoryTree" data.
      */
@@ -79,14 +78,15 @@ class CategoryTree {
                 return [];
             }
 
-            return this.data.subcategories.map(categoryId =>
-                new CategoryTree({
-                    categoryId: categoryId,
-                    graphqlContext: this.graphqlContext,
-                    actionParameters: this.actionParameters,
-                    categoryTreeLoader : this.categoryTreeLoader,
-                    productsLoader: this.productsLoader
-                })
+            return this.data.subcategories.map(
+                (categoryId) =>
+                    new CategoryTree({
+                        categoryId: categoryId,
+                        graphqlContext: this.graphqlContext,
+                        actionParameters: this.actionParameters,
+                        categoryTreeLoader: this.categoryTreeLoader,
+                        productsLoader: this.productsLoader
+                    })
             );
         });
     }
@@ -95,9 +95,9 @@ class CategoryTree {
     get children_count() {
         return this.__load().then(() => {
             if (!this.data.subcategories || this.data.subcategories.length == 0) {
-                return "0";
+                return '0';
             }
-            return this.data.subcategories.length.toString(); 
+            return this.data.subcategories.length.toString();
         });
     }
 
@@ -121,7 +121,6 @@ class CategoryTree {
 }
 
 class Products {
-
     /**
      * @param {Object} parameters
      * @param {Object} parameters.search The "search" argument of the GraphQL "products" field, with an optional categoryId property.
@@ -152,7 +151,7 @@ class Products {
      * Converts some products data from the 3rd-party commerce system into the Magento GraphQL format.
      * Properties that require some extra data fetching with the 3rd-party system must have dedicated getters
      * in this class.
-     * 
+     *
      * @param {Object} data
      * @returns {Object} The backend products data converted into a GraphQL "Products" data.
      */
@@ -160,7 +159,7 @@ class Products {
         return {
             total_count: data.total,
             page_info: {
-                current_page: (data.offset / data.limit),
+                current_page: data.offset / data.limit,
                 page_size: data.limit
             }
         };
@@ -172,21 +171,20 @@ class Products {
                 return [];
             }
 
-            return this.data.products.map(productData => {
+            return this.data.products.map((productData) => {
                 return new Product({
                     productData: productData,
                     graphqlContext: this.graphqlContext,
                     actionParameters: this.actionParameters,
                     categoryTreeLoader: this.categoryTreeLoader,
                     productsLoader: this.productsLoader
-                })
+                });
             });
         });
     }
 }
 
 class Product {
-
     /**
      * @param {Object} parameters
      * @param {Object} parameters.productData The product data from the 3rd-party system.
@@ -213,7 +211,7 @@ class Product {
     }
 
     get categories() {
-        return this.productData.categoryIds.map(categoryId => {
+        return this.productData.categoryIds.map((categoryId) => {
             return new CategoryTree({
                 categoryId: categoryId,
                 graphqlContext: this.graphqlContext,
@@ -278,7 +276,7 @@ class Product {
                     position: 0
                 }
             ]
-        }
+        };
     }
 }
 

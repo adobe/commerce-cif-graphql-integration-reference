@@ -15,7 +15,7 @@
 'use strict';
 
 const assert = require('chai').assert;
-const resolve = require('../../src/documentation/introspection.js').main;
+const resolve = require('../../actions/documentation/introspection.js').main;
 const { introspectionQuery } = require('graphql');
 
 describe('I/O Runtime action', () => {

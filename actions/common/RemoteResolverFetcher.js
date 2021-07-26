@@ -22,7 +22,6 @@ const { print } = require('graphql');
  * library to query a remote GraphQL endpoint deployed in an Adobe I/O Runtime action.
  */
 class RemoteResolverFetcher {
-
     constructor(actionName) {
         this.actionName = actionName;
 

@@ -22,11 +22,10 @@ const Cart = require('../common/Cart.js');
 let cachedSchema = null;
 
 function resolve(args) {
-
     if (cachedSchema == null) {
         let schemaBuilder = new SchemaBuilder(magentoSchema)
-            .filterMutationFields(new Set(["createEmptyCart"]))
-            .filterQueryFields(new Set(["cart"]));
+            .filterMutationFields(new Set(['createEmptyCart']))
+            .filterQueryFields(new Set(['cart']));
 
         cachedSchema = schemaBuilder.build();
     }
@@ -43,16 +42,18 @@ function resolve(args) {
         createEmptyCart: (params, context) => { // eslint-disable-line no-unused-vars
             // In a real integration, this would for example make a REST POST request to
             // the 3rd-party system to create a new cart
-            return Promise.resolve("thisisthenewcartid");
+            return Promise.resolve('thisisthenewcartid');
         }
-    };   
+    };
 
     // The resolver for this action
-    return graphql(cachedSchema, args.query, resolvers, args.context, args.variables, args.operationName).then((response) => {
-        return response;
-    }).catch(error => {
-        console.error(error);
-    });
+    return graphql(cachedSchema, args.query, resolvers, args.context, args.variables, args.operationName)
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            console.error(error);
+        });
 }
 
 module.exports.main = resolve;
