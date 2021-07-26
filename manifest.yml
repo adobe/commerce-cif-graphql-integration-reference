@@ -27,7 +27,6 @@ packages:
       # This deploys a GraphQL introspection endpoint that includes all the Magento types and fields
       # used by the AEM/Magento integration.
       cif-schema:
-        #name: graphql-reference/cif-schema
         function: actions/documentation/introspection.js
         runtime: 'nodejs:14'
         web: 'yes'
