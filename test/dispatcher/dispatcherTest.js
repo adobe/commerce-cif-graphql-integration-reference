@@ -110,6 +110,7 @@ describe('Dispatcher Resolver', () => {
                     action: '../../actions/remote/cartResolver.js'
                 }
             },
+            variables: "{}",
             "use-aio-cache": 3600
         };
 
@@ -188,7 +189,7 @@ describe('Dispatcher Resolver', () => {
         });
 
         it('Category tree query - CIF version = 1.0.0', () => {
-            args.query = '{categoryList(filters:{ids:{eq:"1"}}){id,name,description,children_count,children{id,name,description,,children_count,children{id,name,description,children_count,children{id}}}}}';
+            args.query = '{categoryList(filters:{ids:{eq:"1"}}){id,name,description,children_count,children{id,name,description,children_count,children{id,name,description,children_count,children{id}}}}}';
             return resolve(args).then(result => {
                 assert.isUndefined(result.body.errors); // No GraphQL errors
 
