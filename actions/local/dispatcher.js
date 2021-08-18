@@ -154,8 +154,9 @@ async function resolve(params) {
                 }
             };
 
+            const variables = typeof (params.variables) === 'string' ? JSON.parse(params.variables) : params.variables;
             // Main resolver action, partially delegating resolution to the "remote schemas"
-            return graphql(cachedSchema, params.query, resolvers, context, params.variables, params.operationName).then(
+            return graphql(cachedSchema, params.query, resolvers, context, variables, params.operationName).then(
                 (response) => {
                     logger.info(`successful request`);
                     return {
