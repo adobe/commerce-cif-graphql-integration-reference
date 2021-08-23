@@ -22,16 +22,16 @@ jobs:
         uses: adobe/aio-cli-setup-action@1.1.0
         with:
           os: ${{ matrix.os }}
-          version: 7.x.x
+          version: 8.x.x
       - name: Build
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
-        uses: adobe/aio-apps-action@1.1.1
+        uses: adobe/aio-apps-action@2.0.1
         with:
           os: ${{ matrix.os }}
           command: build
       - name: Test
-        uses: adobe/aio-apps-action@1.1.1
+        uses: adobe/aio-apps-action@2.0.1
         with:
           os: ${{ matrix.os }}
           command: test

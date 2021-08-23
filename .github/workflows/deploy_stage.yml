@@ -26,11 +26,11 @@ jobs:
         uses: adobe/aio-cli-setup-action@1.1.0
         with:
           os: ${{ matrix.os }}
-          version: 7.x.x
+          version: 8.x.x
       - name: Build
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
-        uses: adobe/aio-apps-action@1.1.1
+        uses: adobe/aio-apps-action@2.0.1
         with:
           os: ${{ matrix.os }}
           command: build
@@ -38,7 +38,12 @@ jobs:
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
           AIO_RUNTIME_AUTH: ${{ secrets.AIO_RUNTIME_AUTH_STAGE }}
-        uses: adobe/aio-apps-action@1.1.1
+          AIO_PROJECT_ID: ${{ secrets.AIO_PROJECT_ID_STAGE }}
+          AIO_PROJECT_NAME: ${{ secrets.AIO_PROJECT_NAME_STAGE }}
+          AIO_PROJECT_ORG_ID: ${{ secrets.AIO_PROJECT_ORG_ID_STAGE }}
+          AIO_PROJECT_WORKSPACE_ID: ${{ secrets.AIO_PROJECT_WORKSPACE_ID_STAGE }}
+          AIO_PROJECT_WORKSPACE_NAME: ${{ secrets.AIO_PROJECT_WORKSPACE_NAME_STAGE }}
+          AIO_PROJECT_WORKSPACE_DETAILS_SERVICES: ${{ secrets.AIO_PROJECT_WORKSPACE_DETAILS_SERVICES_STAGE }}        uses: adobe/aio-apps-action@2.0.1
         with:
           os: ${{ matrix.os }}
           command: deploy
