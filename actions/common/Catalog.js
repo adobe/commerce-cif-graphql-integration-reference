@@ -207,7 +207,7 @@ class Product {
     }
 
     get __typename() {
-        return 'SimpleProduct';
+        return 'SimpleProduct'; // TODO use real product type
     }
 
     get categories() {
@@ -228,13 +228,16 @@ class Product {
 
     __convertData(data) {
         return {
-            id: 1, // dummy id
+            uid: data.sku,
             sku: data.sku,
-            url_key: data.sku,
-            name: data.title,
+            url_key: data.url_key,
+            name: data.name,
             description: {
                 html: data.description
             },
+            meta_title: data.meta_title,
+            meta_keyword: data.meta_keywords,
+            meta_description: data.meta_description,
             price: {
                 regularPrice: {
                     amount: {
@@ -260,18 +263,21 @@ class Product {
                 }
             },
             small_image: {
-                url: `${this.actionParameters.url}/images/small/${data.sku}.jpg` // Dummy
+                url: data.base_image,
+                label: data.base_image_label
             },
             image: {
-                url: `${this.actionParameters.url}/images/normal/${data.sku}.jpg` // Dummy
+                url: data.base_image,
+                label: data.base_image_label
             },
             thumbnail: {
-                url: `${this.actionParameters.url}/images/thumb/${data.sku}.jpg` // Dummy
+                url: data.base_image,
+                label: data.base_image_label
             },
             media_gallery: [
                 {
                     __typename: 'ProductImage',
-                    url: `${this.actionParameters.url}/images/normal/${data.sku}.jpg`, // Dummy
+                    url: data.base_image,
                     disabled: false,
                     position: 0
                 }

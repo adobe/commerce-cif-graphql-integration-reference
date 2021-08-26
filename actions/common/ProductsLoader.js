@@ -15,12 +15,14 @@
 'use strict';
 
 const DataLoader = require('dataloader');
-
+const { Core } = require('@adobe/aio-sdk');
 class ProductsLoader {
     /**
      * @param {Object} [actionParameters] Some optional parameters of the I/O Runtime action, like for example authentication info.
      */
     constructor(actionParameters) {
+        this.logger = Core.Logger('ProductsLoader', { level: actionParameters.LOG_LEVEL || 'info' });
+
         // A custom function to generate custom cache keys, simply serializing the key.
         let cacheKeyFunction = (key) => JSON.stringify(key, null, 0);
 
@@ -28,9 +30,9 @@ class ProductsLoader {
         let loadingFunction = (keys) => {
             return Promise.resolve(
                 keys.map((key) => {
-                    console.debug('--> Performing a search with ' + JSON.stringify(key, null, 0));
+                    this.logger.debug('Performing a search with ' + JSON.stringify(key, null, 0));
                     return this.__searchProducts(key, actionParameters).catch((error) => {
-                        console.error(
+                        this.logger.error(
                             `Failed loading products for search ${JSON.stringify(
                                 key,
                                 null,
@@ -70,13 +72,9 @@ class ProductsLoader {
     __searchProducts(params, actionParameters) {
         // This method returns a Promise, for example to simulate some HTTP REST call being performed
         // to the 3rd-party commerce system.
-
-        if (
-            params.search ||
-            params.categoryId ||
-            (params.filter && (params.filter.category_id || params.filter.price))
-        ) {
-            // Text search or fetching of the products of a category
+        const state = actionParameters.state;
+        if (params.categoryId || (params.filter && (params.filter.category_id || params.filter.price))) {
+            // fetching of the products of a category
             return Promise.resolve({
                 total: 2,
                 offset: params.currentPage * params.pageSize,
@@ -104,46 +102,101 @@ class ProductsLoader {
                     }
                 ]
             });
+        } else if (params.search || (params.filter && params.filter.name)) {
+            // Query products by text search
+            const query = params.search !== undefined ? params.search : params.filter.name.match;
+            this.logger.debug(`search products for term ${query}`);
+
+            const productSkusFunction = async () => {
+                const val = await state.get('indexSearch');
+                if (val != null) {
+                    return val.value
+                        .filter((x) => x.name.toLowerCase().includes(query.toLowerCase()))
+                        .map((x) => x.sku);
+                }
+            };
+
+            return (async () => {
+                const products = [];
+                const productSkus = await productSkusFunction();
+                const promises = productSkus.map(async (sku) => {
+                    const val = await state.get(sku);
+                    if (val != null) {
+                        this.logger.debug(`Product with sku ${sku} loaded`);
+                        products.push(JSON.parse(val.value));
+                        return JSON.parse(val.value);
+                    } else {
+                        this.logger.debug(`Product with sku ${sku} not found`);
+                    }
+                });
+
+                return Promise.all(promises).then(() => ({
+                    products: products,
+                    total: products.length,
+                    offset: params.currentPage * params.pageSize,
+                    limit: params.pageSize
+                }));
+            })();
         } else if (params.filter && (params.filter.sku || params.filter.url_key)) {
-            // Get a product by sku or url_key
-            if ((params.filter.sku && params.filter.sku.eq) || (params.filter.url_key && params.filter.url_key.eq)) {
-                let key = params.filter.sku ? params.filter.sku.eq : params.filter.url_key.eq;
-                return Promise.resolve({
-                    total: 1,
-                    offset: params.currentPage * params.pageSize,
-                    limit: params.pageSize,
-                    products: [
-                        {
-                            sku: key,
-                            title: `Product #${key}`,
-                            description: `Fetched product #${key} from ${actionParameters.url}`,
-                            price: {
-                                currency: 'USD',
-                                amount: 12.34
-                            },
-                            categoryIds: [1, 2]
+            if (params.filter.url_key && (params.filter.url_key.eq || params.filter.url_key.in)) {
+                // get one ore multiple products by url_key
+                const productUrlKeys =
+                    params.filter.url_key.in !== undefined ? params.filter.url_key.in : [params.filter.url_key.eq];
+
+                const productSkusFunction = async () => {
+                    const val = await state.get('indexUrlKey');
+                    if (val != null) {
+                        return productUrlKeys.map((urlKey) => {
+                            return val.value.find((x) => x.url_key === urlKey).sku;
+                        });
+                    }
+                };
+
+                return (async () => {
+                    const products = [];
+                    const productSkus = await productSkusFunction();
+                    const promises = productSkus.map(async (sku) => {
+                        const val = await state.get(sku);
+                        if (val != null) {
+                            this.logger.debug(`Product with sku ${sku} loaded`);
+                            products.push(JSON.parse(val.value));
+                            return JSON.parse(val.value);
+                        } else {
+                            this.logger.debug(`Product with sku ${sku} not found`);
                         }
-                    ]
+                    });
+
+                    return Promise.all(promises).then(() => ({
+                        products: products,
+                        total: products.length,
+                        offset: params.currentPage * params.pageSize,
+                        limit: params.pageSize
+                    }));
+                })();
+            } else if (params.filter.sku && (params.filter.sku.eq || params.filter.sku.in)) {
+                // get one ore multiple products by sku
+                const productSkus =
+                    params.filter.sku.in !== undefined
+                        ? params.filter.sku.in.map((x) => 'p-' + x.trim())
+                        : ['p-' + params.filter.sku.eq.trim()];
+                const products = [];
+                const promises = productSkus.map(async (sku) => {
+                    const val = await state.get(sku);
+                    if (val != null) {
+                        this.logger.debug(`Product with sku ${sku} loaded`);
+                        products.push(JSON.parse(val.value));
+                        return JSON.parse(val.value);
+                    } else {
+                        this.logger.debug(`Product with sku ${sku} not found`);
+                    }
                 });
-            } else if (params.filter.sku.in) {
-                // Get multiple products by skus
-                return Promise.resolve({
-                    total: params.filter.sku.in.length,
+
+                return Promise.all(promises).then(() => ({
+                    products: products,
+                    total: products.length,
                     offset: params.currentPage * params.pageSize,
-                    limit: params.pageSize,
-                    products: params.filter.sku.in.map((sku) => {
-                        return {
-                            sku: sku,
-                            title: `Product #${sku}`,
-                            description: `Fetched product #${sku} from ${actionParameters.url}`,
-                            price: {
-                                currency: 'USD',
-                                amount: 12.34
-                            },
-                            categoryIds: [1, 2]
-                        };
-                    })
-                });
+                    limit: params.pageSize
+                }));
             }
         }
     }

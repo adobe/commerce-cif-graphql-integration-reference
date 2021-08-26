@@ -12,27 +12,39 @@ application:
             runtime: 'nodejs:14'
             inputs:
               LOG_LEVEL: debug
-              use-aio-cache: false # number of seconds for caching; set to false or remove to disable caching
-              url: https://a-dummy-url.com
-              remoteSchemas: # Action with smaller order has "merge priority" in schema conflicts
+              use-aio-cache: false
+              url: 'https://a-dummy-url.com'
+              remoteSchemas:
                 cart:
                   order: 20
                   action: commerce-cif-graphql-integration-reference/cart
             annotations:
               provide-api-key: true
               final: true
-
           cart:
             function: actions/remote/cartResolver.js
             runtime: 'nodejs:14'
             inputs:
               LOG_LEVEL: info
-
-          # This deploys a GraphQL introspection endpoint that includes all the Magento types and fields
-          # used by the AEM/Magento integration.
           cif-schema:
             function: actions/documentation/introspection.js
             runtime: 'nodejs:14'
             web: 'yes'
+            annotations:
+              final: true
+          import:
+            function: actions/import/index.js
+            web: 'yes'
+            runtime: 'nodejs:14'
+            inputs:
+              LOG_LEVEL: debug
+            annotations:
+              final: true
+          test:
+            function: actions/test/index.js
+            web: 'yes'
+            runtime: 'nodejs:14'
+            inputs:
+              LOG_LEVEL: debug
             annotations:
               final: true

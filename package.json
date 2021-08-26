@@ -14,7 +14,7 @@
         "doc": "node actions/documentation/generate.js && jq -c . < actions/resources/magento-schema-2.4.2ee.pruned.json > actions/resources/magento-schema-2.4.2ee.pruned.min.json"
     },
     "dependencies": {
-        "@adobe/aio-lib-state": "1.1.1",
+        "@adobe/aio-lib-state": "^1.1.1",
         "@adobe/aio-sdk": "3.0.0",
         "@adobe/exc-app": "0.2.38",
         "core-js": "3.16.2",
@@ -22,6 +22,7 @@
         "graphiql": "1.4.2",
         "graphql": "14.7.0",
         "graphql-tools": "3.1.1",
+        "papaparse": "^5.3.1",
         "prop-types": "15.7.2",
         "react": "17.0.2",
         "react-dom": "17.0.2",

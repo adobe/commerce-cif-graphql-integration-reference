@@ -38,13 +38,13 @@ async function resolve(params) {
     logger.info('dispatcher resolve action');
     logger.debug(stringParameters(params));
 
+    let state = await libState.init(); // The aio-lib-state object
+    params.state = state;
     let remoteResolvers = null;
-    let state = null; // The aio-lib-state object
     let storeSchema = false; // If true, we will put the remote schemas in the aio-lib-state cache
 
     // If the schema is not cached, we try to get the remote schemas from the aio-lib-state cache
     if (cachedSchema == null && Number.isInteger(params['use-aio-cache'])) {
-        state = await libState.init();
         remoteResolvers = await fetchRemoteSchemasFromCache(state);
     }
 
@@ -155,7 +155,7 @@ async function resolve(params) {
             };
 
             // convert variables parameter to JSON object (requiered for GET requests)
-            const variables = typeof (params.variables) === 'string' ? JSON.parse(params.variables) : params.variables;
+            const variables = typeof params.variables === 'string' ? JSON.parse(params.variables) : params.variables;
             // Main resolver action, partially delegating resolution to the "remote schemas"
             return graphql(cachedSchema, params.query, resolvers, context, variables, params.operationName).then(
                 (response) => {
