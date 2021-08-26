@@ -16,7 +16,7 @@
     "dependencies": {
         "@adobe/aio-lib-state": "1.1.1",
         "@adobe/aio-sdk": "3.0.0",
-        "@adobe/exc-app": "0.2.38",
+        "@adobe/exc-app": "0.2.39",
         "core-js": "3.16.3",
         "dataloader": "1.4.0",
         "graphiql": "1.4.2",
