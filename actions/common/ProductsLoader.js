@@ -69,7 +69,7 @@ class ProductsLoader {
      * @param {Object} actionParameters Some parameters of the I/O action itself (e.g. backend server URL, authentication info, etc)
      * @returns {Promise} A Promise with the products data.
      */
-    __searchProducts(params, actionParameters) {
+    async __searchProducts(params, actionParameters) {
         // This method returns a Promise, for example to simulate some HTTP REST call being performed
         // to the 3rd-party commerce system.
         const state = actionParameters.state;
@@ -102,102 +102,65 @@ class ProductsLoader {
                     }
                 ]
             });
-        } else if (params.search || (params.filter && params.filter.name)) {
-            // Query products by text search
-            const query = params.search !== undefined ? params.search : params.filter.name.match;
-            this.logger.debug(`search products for term ${query}`);
+        } else if (
+            params.search ||
+            (params.filter && (params.filter.name || params.filter.sku || params.filter.url_key))
+        ) {
+            const productSkusFunction = async (params) => {
+                // query products by text search
+                if (params.search || (params.filter.name && params.filter.name.match)) {
+                    const query = params.search !== undefined ? params.search : params.filter.name.match;
+                    this.logger.debug(`search products for term ${query}`);
 
-            const productSkusFunction = async () => {
-                const val = await state.get('indexSearch');
-                if (val != null) {
-                    return val.value
-                        .filter((x) => x.name.toLowerCase().includes(query.toLowerCase()))
-                        .map((x) => x.sku);
-                }
-            };
-
-            return (async () => {
-                const products = [];
-                const productSkus = await productSkusFunction();
-                const promises = productSkus.map(async (sku) => {
-                    const val = await state.get(sku);
+                    const val = await state.get('indexSearch');
                     if (val != null) {
-                        this.logger.debug(`Product with sku ${sku} loaded`);
-                        products.push(JSON.parse(val.value));
-                        return JSON.parse(val.value);
-                    } else {
-                        this.logger.debug(`Product with sku ${sku} not found`);
+                        return val.value
+                            .filter((x) => x.name.toLowerCase().includes(query.toLowerCase()))
+                            .map((x) => x.sku);
                     }
-                });
-
-                return Promise.all(promises).then(() => ({
-                    products: products,
-                    total: products.length,
-                    offset: params.currentPage * params.pageSize,
-                    limit: params.pageSize
-                }));
-            })();
-        } else if (params.filter && (params.filter.sku || params.filter.url_key)) {
-            if (params.filter.url_key && (params.filter.url_key.eq || params.filter.url_key.in)) {
+                }
                 // get one ore multiple products by url_key
-                const productUrlKeys =
-                    params.filter.url_key.in !== undefined ? params.filter.url_key.in : [params.filter.url_key.eq];
-
-                const productSkusFunction = async () => {
+                if (params.filter.url_key && (params.filter.url_key.eq || params.filter.url_key.in)) {
+                    const productUrlKeys =
+                        params.filter.url_key.in !== undefined ? params.filter.url_key.in : [params.filter.url_key.eq];
+                    this.logger.debug(`search products for url keys ${productUrlKeys}`);
                     const val = await state.get('indexUrlKey');
                     if (val != null) {
                         return productUrlKeys.map((urlKey) => {
                             return val.value.find((x) => x.url_key === urlKey).sku;
                         });
                     }
-                };
+                }
+                return [];
+            };
 
-                return (async () => {
-                    const products = [];
-                    const productSkus = await productSkusFunction();
-                    const promises = productSkus.map(async (sku) => {
-                        const val = await state.get(sku);
-                        if (val != null) {
-                            this.logger.debug(`Product with sku ${sku} loaded`);
-                            products.push(JSON.parse(val.value));
-                            return JSON.parse(val.value);
-                        } else {
-                            this.logger.debug(`Product with sku ${sku} not found`);
-                        }
-                    });
-
-                    return Promise.all(promises).then(() => ({
-                        products: products,
-                        total: products.length,
-                        offset: params.currentPage * params.pageSize,
-                        limit: params.pageSize
-                    }));
-                })();
-            } else if (params.filter.sku && (params.filter.sku.eq || params.filter.sku.in)) {
-                // get one ore multiple products by sku
-                const productSkus =
+            let productSkus = [];
+            // for SKU query no extra index lookup is needed, can be returned directly
+            if (params.filter && params.filter.sku && (params.filter.sku.eq || params.filter.sku.in)) {
+                productSkus =
                     params.filter.sku.in !== undefined
                         ? params.filter.sku.in.map((x) => 'p-' + x.trim())
                         : ['p-' + params.filter.sku.eq.trim()];
-                const products = [];
-                const promises = productSkus.map(async (sku) => {
-                    const val = await state.get(sku);
-                    if (val != null) {
-                        this.logger.debug(`Product with sku ${sku} loaded`);
-                        products.push(JSON.parse(val.value));
-                        return JSON.parse(val.value);
-                    } else {
-                        this.logger.debug(`Product with sku ${sku} not found`);
-                    }
-                });
-
-                return Promise.all(promises).then(() => ({
-                    products: products,
-                    total: products.length,
-                    offset: params.currentPage * params.pageSize,
-                    limit: params.pageSize
-                }));
+            } else {
+                productSkus = await productSkusFunction(params);
             }
+
+            const promises = productSkus.map(async (sku) => {
+                const val = await state.get(sku);
+                if (val != null) {
+                    this.logger.debug(`Product with sku ${sku} loaded`);
+                    return JSON.parse(val.value);
+                } else {
+                    this.logger.debug(`Product with sku ${sku} not found`);
+                }
+            });
+
+            return Promise.all(promises).then((products) => ({
+                products: products,
+                total: products.length,
+                offset: params.currentPage * params.pageSize,
+                limit: params.pageSize
+            }));
         }
     }
 }

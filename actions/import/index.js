@@ -60,22 +60,28 @@ async function main(params) {
             });
 
         if (storedProducts.length > 0) {
-            logger.debug("store url_key index")
+            logger.debug('store url_key index');
             await state.put(
                 'indexUrlKey',
-                storedProducts.map((entry) => {
-                    const { name, ...other } = entry;
-                    return { ...other };
-                })
+                storedProducts.map(
+                    (entry) => {
+                        const { name, ...other } = entry;
+                        return { ...other };
+                    },
+                    { ttl: -1 }
+                )
             );
-            
+
             logger.debug('store search index');
             await state.put(
                 'indexSearch',
-                storedProducts.map((entry) => {
-                    const { url_key, ...other } = entry;
-                    return { ...other };
-                })
+                storedProducts.map(
+                    (entry) => {
+                        const { url_key, ...other } = entry;
+                        return { ...other };
+                    },
+                    { ttl: -1 }
+                )
             );
         }
 
