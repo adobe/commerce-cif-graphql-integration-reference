@@ -17,7 +17,7 @@
         "@adobe/aio-lib-state": "1.1.1",
         "@adobe/aio-sdk": "3.0.0",
         "@adobe/exc-app": "0.2.39",
-        "core-js": "3.17.1",
+        "core-js": "3.17.2",
         "dataloader": "1.4.0",
         "graphiql": "1.4.2",
         "graphql": "14.7.0",
