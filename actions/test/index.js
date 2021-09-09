@@ -25,7 +25,6 @@ async function main(params) {
     // create a Logger
     const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' });
     const state = await stateLib.init();
-    console.debug(state);
 
     try {
         logger.debug(stringParameters(params));

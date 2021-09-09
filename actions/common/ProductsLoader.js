@@ -126,9 +126,12 @@ class ProductsLoader {
                     this.logger.debug(`search products for url keys ${productUrlKeys}`);
                     const val = await state.get('indexUrlKey');
                     if (val != null) {
-                        return productUrlKeys.map((urlKey) => {
-                            return val.value.find((x) => x.url_key === urlKey).sku;
-                        });
+                        return productUrlKeys
+                            .map((urlKey) => {
+                                return val.value.find((x) => x.url_key === urlKey);
+                            })
+                            .filter((x) => x)
+                            .map((x) => x.sku);
                     }
                 }
                 return [];
