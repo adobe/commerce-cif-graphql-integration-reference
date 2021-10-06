@@ -56,6 +56,12 @@ async function main(params) {
             content.search = val.value.find((x) => x.sku === params.product);
         }
 
+        // get the category index and find product
+        val = await state.get('indexCategory');
+        if (val != null) {
+            content.categories = val.value.find((x) => x.sku === params.product);
+        }
+
         const response = {
             statusCode: 200,
             body: content

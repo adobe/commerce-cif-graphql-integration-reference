@@ -16,6 +16,7 @@
 
 const DataLoader = require('dataloader');
 const { Core } = require('@adobe/aio-sdk');
+const { async } = require('regenerator-runtime');
 class ProductsLoader {
     /**
      * @param {Object} [actionParameters] Some optional parameters of the I/O Runtime action, like for example authentication info.
@@ -73,38 +74,10 @@ class ProductsLoader {
         // This method returns a Promise, for example to simulate some HTTP REST call being performed
         // to the 3rd-party commerce system.
         const state = actionParameters.state;
-        if (params.categoryId || (params.filter && (params.filter.category_id || params.filter.price))) {
-            // fetching of the products of a category
-            return Promise.resolve({
-                total: 2,
-                offset: params.currentPage * params.pageSize,
-                limit: params.pageSize,
-                products: [
-                    {
-                        sku: 'product-1',
-                        title: 'Product #1',
-                        description: `Fetched product #1 from ${actionParameters.url}`,
-                        price: {
-                            currency: 'USD',
-                            amount: 12.34
-                        },
-                        categoryIds: [1, 2]
-                    },
-                    {
-                        sku: 'product-2',
-                        title: 'Product #2',
-                        description: `Fetched product #2 from ${actionParameters.url}`,
-                        price: {
-                            currency: 'USD',
-                            amount: 56.78
-                        },
-                        categoryIds: [2, 3]
-                    }
-                ]
-            });
-        } else if (
+        if (
             params.search ||
-            (params.filter && (params.filter.name || params.filter.sku || params.filter.url_key))
+            (params.filter &&
+                (params.filter.name || params.filter.sku || params.filter.url_key || params.filter.category_uid))
         ) {
             const productSkusFunction = async (params) => {
                 // query products by text search
@@ -119,6 +92,7 @@ class ProductsLoader {
                             .map((x) => x.sku);
                     }
                 }
+
                 // get one ore multiple products by url_key
                 if (params.filter.url_key && (params.filter.url_key.eq || params.filter.url_key.in)) {
                     const productUrlKeys =
@@ -133,6 +107,28 @@ class ProductsLoader {
                             .filter((x) => x)
                             .map((x) => x.sku);
                     }
+                }
+
+                // get one ore multiple products by category
+                if (params.filter.category_uid && (params.filter.category_uid.eq || params.filter.category_uid.in)) {
+                    const categoryUIDs =
+                        params.filter.category_uid.in !== undefined
+                            ? params.filter.category_uid.in
+                            : [params.filter.category_uid.eq];
+                    categoryUIDs.map((cat) => 'c-' + cat);
+                    this.logger.debug(`search products for categories ${categoryUIDs}`);
+
+                    return await categoryUIDs.map(async(categoryUID) => {
+                        const val = await state.get(categoryUID);
+                        if (val != null) {
+                            this.logger.debug(`1 found category ${JSON.stringify(val.value)}`);
+                            if (val.value.products) {
+                                this.logger.debug(`2 found category ${JSON.stringify(val.value)}`);
+                                return val.value.products;
+                            }
+                            return [];
+                        }
+                    });
                 }
                 return [];
             };
