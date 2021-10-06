@@ -39,7 +39,7 @@ This enables customers to reuse our existing connector and components in their p
 
 ### Project structure
 
-This project is an Adobe I/O Application, to be deployed on [Adobe I/O Project Firefly](https://www.adobe.io/apis/experienceplatform/project-firefly.html).
+This project is an App Builder, to be deployed on [Adobe I/O](https://www.adobe.io/app-builder/).
 
 The GraphQL implementation is organized around [GraphQL resolvers](https://graphql.org/learn/execution/#root-fields-resolvers). Each resolver is either "local" or "remote". A "local" resolver is deployed and executed in the main Adobe I/O action that processes incoming GraphQL requests: we call this action the `dispatcher`. In contrast, a "remote" resolver is deployed as a separate Adobe I/O Runtime action which is referenced in the dispatcher action configuration and integrated via [schema delegation](https://www.apollographql.com/docs/graphql-tools/schema-delegation/).
 
@@ -63,7 +63,7 @@ The `documentation` folder contains some code that is used to generate a subset 
 
 Within the `web-src` folder we provide a mini web application which loads the [GraphiQL](https://github.com/graphql/graphiql) GraphQL client. It allows you to immediately try out the GraphQL actions of the project.
 
-For a detailed description of the project folder and file structure see [Project Firefly Application getting started documentation](https://www.adobe.io/apis/experienceplatform/project-firefly/docs.html#!AdobeDocs/project-firefly/master/getting_started.md).
+For a detailed description of the project folder and file structure see [App Builder getting started documentation](https://www.adobe.io/app-builder/docs/getting_started/).
 
 ### Local vs. remote resolvers
 
@@ -94,11 +94,11 @@ Make sure you have the following tools installed:
 * NPM 6.x
 * [Adobe I/O CLI](https://github.com/adobe/aio-cli)
 
-To setup you local environment follow the [Project Firefly Application](https://www.adobe.io/apis/experienceplatform/project-firefly/docs.html#!AdobeDocs/project-firefly/master/getting_started/setup.md) documentation.
+To setup you local environment follow the [App Builder](https://www.adobe.io/app-builder/docs/getting_started/) documentation.
 
 ### Getting started
 
-This project is provided as a blueprint, to deploy and run the function on Project Firefly you need to make it your own and attach it to your Adobe I/O Project. This requires creating a project on [Adobe Developer Console](https://console.adobe.io/), setting up and login from the CLI and connecting your project. Follow the steps 1 - 3 of the [Creating your First Project Firefly Application](https://www.adobe.io/apis/experienceplatform/project-firefly/docs.html#!AdobeDocs/project-firefly/master/getting_started/first_app.md) guide.
+This project is provided as a blueprint, to deploy and run the functions on Adobe I/O Runtime you need to make it your own and attach it to your Adobe I/O Project. This requires creating a project on [Adobe Developer Console](https://console.adobe.io/), setting up and login from the CLI and connecting your project. Follow the steps 1 - 3 of the [Creating your first App Builder Application](https://www.adobe.io/app-builder/docs/getting_started/first_app/) guide.
 
 Once done connect the cloned project with you Adobe I/O project:
 
@@ -106,7 +106,7 @@ Once done connect the cloned project with you Adobe I/O project:
 $ aio app use
 ```
 
-The CLI will guide you through the selection of Organization, Project and Workspace that you'd like to use for this Project Firefly Application.
+The CLI will guide you through the selection of Organization, Project and Workspace that you'd like to use for this App Builder application.
 
 ### Build & Deployment
 
