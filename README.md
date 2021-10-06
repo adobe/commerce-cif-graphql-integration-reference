@@ -39,6 +39,7 @@ This enables customers to reuse our existing connector and components in their p
 
 ### Project structure
 
+This project is an application to be deployed to [Adobe Developer App Builder](https://www.adobe.io/app-builder/).
 This project is an App Builder, to be deployed on [Adobe I/O](https://www.adobe.io/app-builder/).
 
 The GraphQL implementation is organized around [GraphQL resolvers](https://graphql.org/learn/execution/#root-fields-resolvers). Each resolver is either "local" or "remote". A "local" resolver is deployed and executed in the main Adobe I/O action that processes incoming GraphQL requests: we call this action the `dispatcher`. In contrast, a "remote" resolver is deployed as a separate Adobe I/O Runtime action which is referenced in the dispatcher action configuration and integrated via [schema delegation](https://www.apollographql.com/docs/graphql-tools/schema-delegation/).
