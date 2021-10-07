@@ -39,7 +39,7 @@ describe('I/O Runtime action', () => {
                 assert.equal(mutationType.fields.length, 26);
 
                 // Ensures the number of types does not decrease "accidentally"
-                assert.equal(schema.data.__schema.types.length, 149);
+                assert.equal(schema.data.__schema.types.length, 160);
             });
         });
     });

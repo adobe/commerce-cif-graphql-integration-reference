@@ -17,7 +17,7 @@
 const assert = require('chai').assert;
 const fs = require('fs');
 const path = require('path');
-const magentoSchema = require('../../actions/resources/magento-schema-2.4.2ee.min.json');
+const magentoSchema = require('../../actions/resources/magento-schema-2.4.3ee.min.json');
 const SchemaPruner = require('../../actions/documentation/SchemaPruner.js');
 
 describe('Schema Pruner', () => {

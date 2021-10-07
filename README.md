@@ -152,7 +152,7 @@ As stated in the previous section, GraphQL introspection allows users to discove
 
 This "pruned" schema is automatically generated and included in this repository. If needed, one can regenerate it by running `npm run doc`. Note that this requires that you have the [jq](https://github.com/stedolan/jq) tool installed on your machine.
 
-To introspect this schema, it is automatically deployed when running `npm run deploy` in a web action called `cif-schema`. Using a GraphQL introspection tool like `GraphiQL`, one can then easily browse the pruned schema at the `https://adobeioruntime.net/api/v1/web/NAMESPACE/graphql-reference/cif-schema` URL. This action only supports introspection, so you cannot execute any query. It however documents all the fields and types that are currently being used by the CIF connector and components.
+To introspect this schema, it is automatically deployed when running `aio app deploy` in a web action called `cif-schema`. Using a GraphQL introspection tool like the included `GraphiQL`, one can then easily browse the pruned schema at the `https://adobeioruntime.net/api/v1/web/NAMESPACE/graphql-reference/cif-schema` URL. This action only supports introspection, so you cannot execute any query. It however documents all the fields and types that are currently being used by the CIF connector and components.
 
 ## Caching
 
