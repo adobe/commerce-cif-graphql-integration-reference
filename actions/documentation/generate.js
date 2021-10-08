@@ -14,7 +14,7 @@
 
 'use strict';
 
-const magentoSchema = require('../resources/magento-schema-2.4.2ee.min.json');
+const magentoSchema = require('../resources/magento-schema-2.4.3ee.min.json');
 const SchemaPruner = require('./SchemaPruner.js');
 const gitClone = require('git-clone');
 const fs = require('fs');
@@ -45,7 +45,7 @@ function generate() {
                 versions.map(version => pruneFolder(schemaPruner, path.join(__dirname, `../../repos/cif-on-skyline-frontend/app/src/queries/${version}`)));
 
                 let prunedSchema = schemaPruner.prune();
-                fs.writeFileSync(path.join(__dirname, '../resources/magento-schema-2.4.2ee.pruned.json'), JSON.stringify(prunedSchema, null, 2));
+                fs.writeFileSync(path.join(__dirname, '../resources/magento-schema-2.4.3ee.pruned.json'), JSON.stringify(prunedSchema, null, 2));
             });
         });
     });

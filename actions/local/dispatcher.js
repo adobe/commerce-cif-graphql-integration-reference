@@ -18,7 +18,7 @@ const { Core } = require('@adobe/aio-sdk');
 const libState = require('@adobe/aio-lib-state');
 const { errorResponse, stringParameters } = require('../utils');
 
-const magentoSchema = require('../resources/magento-schema-2.4.2ee.min.json');
+const magentoSchema = require('../resources/magento-schema-2.4.3ee.min.json');
 const { makeRemoteExecutableSchema, introspectSchema, mergeSchemas } = require('graphql-tools');
 const { graphql, printSchema } = require('graphql');
 
