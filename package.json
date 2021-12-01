@@ -19,7 +19,7 @@
         "@adobe/exc-app": "0.2.47",
         "core-js": "3.19.2",
         "dataloader": "1.4.0",
-        "graphiql": "1.5.7",
+        "graphiql": "1.5.8",
         "graphql": "14.7.0",
         "graphql-tools": "3.1.1",
         "prop-types": "15.7.2",
