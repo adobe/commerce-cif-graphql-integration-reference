@@ -22,7 +22,7 @@
         "graphiql": "1.5.16",
         "graphql": "14.7.0",
         "graphql-tools": "3.1.1",
-        "prop-types": "15.7.2",
+        "prop-types": "15.8.0",
         "react": "17.0.2",
         "react-dom": "17.0.2",
         "regenerator-runtime": "0.13.9"
@@ -32,7 +32,7 @@
         "chai": "4.3.4",
         "eslint": "7.32.0",
         "eslint-plugin-header": "3.1.1",
-        "eslint-plugin-react": "7.27.1",
+        "eslint-plugin-react": "7.28.0",
         "git-clone": "0.2.0",
         "mocha": "8.4.0",
         "mocha-junit-reporter": "1.23.3",
