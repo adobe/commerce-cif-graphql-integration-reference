@@ -166,6 +166,16 @@
                     "possibleTypes": null
                 },
                 {
+                    "kind": "SCALAR",
+                    "name": "Boolean",
+                    "description": "The `Boolean` scalar type represents `true` or `false`.",
+                    "fields": null,
+                    "inputFields": null,
+                    "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
                     "kind": "OBJECT",
                     "name": "StoreConfig",
                     "description": "The type contains information about a store config",
@@ -195,12 +205,12 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "root_category_id",
-                            "description": "The ID of the root category",
+                            "name": "root_category_uid",
+                            "description": "The unique ID for a `CategoryInterface` object.",
                             "args": [],
                             "type": {
                                 "kind": "SCALAR",
-                                "name": "Int",
+                                "name": "ID",
                                 "ofType": null
                             },
                             "isDeprecated": false,
@@ -216,16 +226,6 @@
                     "kind": "SCALAR",
                     "name": "String",
                     "description": "The `String` scalar type represents textual data, represented as UTF-8\ncharacter sequences. The String type is most often used by GraphQL to\nrepresent free-form human-readable text.",
-                    "fields": null,
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": null,
-                    "possibleTypes": null
-                },
-                {
-                    "kind": "SCALAR",
-                    "name": "Boolean",
-                    "description": "The `Boolean` scalar type represents `true` or `false`.",
                     "fields": null,
                     "inputFields": null,
                     "interfaces": null,
@@ -1411,8 +1411,8 @@
                                 "name": "Int",
                                 "ofType": null
                             },
-                            "isDeprecated": false,
-                            "deprecationReason": null
+                            "isDeprecated": true,
+                            "deprecationReason": "Use the `uid` field instead."
                         },
                         {
                             "name": "media_gallery",
@@ -1459,22 +1459,6 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "rating_summary",
-                            "description": "The average of all the ratings given to the product.",
-                            "args": [],
-                            "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Float",
-                                    "ofType": null
-                                }
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
                             "name": "sku",
                             "description": "A number or code assigned to a product to identify the product, options, price, and manufacturer.",
                             "args": [],
@@ -1499,6 +1483,22 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "uid",
+                            "description": "The unique ID for a `ProductInterface` object.",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "ID",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "updated_at",
                             "description": "Timestamp indicating when the product was updated.",
                             "args": [],
@@ -1507,8 +1507,8 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "isDeprecated": false,
-                            "deprecationReason": null
+                            "isDeprecated": true,
+                            "deprecationReason": "The field should not be used on the storefront."
                         },
                         {
                             "name": "url_key",
@@ -1581,18 +1581,6 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "id",
-                            "description": "An ID that uniquely identifies the category.",
-                            "args": [],
-                            "type": {
-                                "kind": "SCALAR",
-                                "name": "Int",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
                             "name": "name",
                             "description": "The display name of the category.",
                             "args": [],
@@ -1600,6 +1588,22 @@
                                 "kind": "SCALAR",
                                 "name": "String",
                                 "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "uid",
+                            "description": "The unique ID for a `CategoryInterface` object.",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "ID",
+                                    "ofType": null
+                                }
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
@@ -1642,8 +1646,8 @@
                                 "name": "Int",
                                 "ofType": null
                             },
-                            "isDeprecated": false,
-                            "deprecationReason": null
+                            "isDeprecated": true,
+                            "deprecationReason": "Use the `category_uid` argument instead."
                         },
                         {
                             "name": "category_name",
@@ -1653,6 +1657,22 @@
                                 "kind": "SCALAR",
                                 "name": "String",
                                 "ofType": null
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "category_uid",
+                            "description": "The unique ID for a `Breadcrumb` object.",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "ID",
+                                    "ofType": null
+                                }
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
@@ -1672,6 +1692,57 @@
                     ],
                     "inputFields": null,
                     "interfaces": [],
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "INPUT_OBJECT",
+                    "name": "ProductAttributeSortInput",
+                    "description": "ProductAttributeSortInput specifies the attribute to use for sorting search results and indicates whether the results are sorted in ascending or descending order. It's possible to sort products using searchable attributes with enabled 'Use in Filter Options' option",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "name",
+                            "description": "Attribute label: Product Name",
+                            "type": {
+                                "kind": "ENUM",
+                                "name": "SortEnum",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "position",
+                            "description": "Sort by the position assigned to each product.",
+                            "type": {
+                                "kind": "ENUM",
+                                "name": "SortEnum",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "price",
+                            "description": "Attribute label: Price",
+                            "type": {
+                                "kind": "ENUM",
+                                "name": "SortEnum",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "relevance",
+                            "description": "Sort by the search relevance score (default).",
+                            "type": {
+                                "kind": "ENUM",
+                                "name": "SortEnum",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
                     "enumValues": null,
                     "possibleTypes": null
                 },
@@ -2121,8 +2192,68 @@
                     "fields": null,
                     "inputFields": [
                         {
+                            "name": "category_uid",
+                            "description": "Filter by the unique category ID for a `CategoryInterface` object.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
                             "name": "ids",
-                            "description": "Filter by category ID that uniquely identifies the category.",
+                            "description": "Deprecated: use 'category_uid' to filter uniquely identifiers of categories.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "name",
+                            "description": "Filter by the display name of the category.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterMatchTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "parent_category_uid",
+                            "description": "Filter by the unique parent category ID for a `CategoryInterface` object.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "parent_id",
+                            "description": "Filter by the unique parent category ID for a `CategoryInterface` object.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "url_key",
+                            "description": "Filter by the part of the URL that identifies the category.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "url_path",
+                            "description": "Filter by the URL path for the category.",
                             "type": {
                                 "kind": "INPUT_OBJECT",
                                 "name": "FilterEqualTypeInput",
@@ -2171,6 +2302,27 @@
                     "possibleTypes": null
                 },
                 {
+                    "kind": "INPUT_OBJECT",
+                    "name": "FilterMatchTypeInput",
+                    "description": "Defines a filter that performs a fuzzy search.",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "match",
+                            "description": "One or more words to filter on",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
                     "kind": "OBJECT",
                     "name": "CategoryResult",
                     "description": "A collection of CategoryTree objects and pagination information.",
@@ -2187,6 +2339,18 @@
                                     "name": "CategoryTree",
                                     "ofType": null
                                 }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
+                            "name": "page_info",
+                            "description": "An object that includes the page_info and currentPage values specified in the query.",
+                            "args": [],
+                            "type": {
+                                "kind": "OBJECT",
+                                "name": "SearchResultPageInfo",
+                                "ofType": null
                             },
                             "isDeprecated": false,
                             "deprecationReason": null
@@ -2267,8 +2431,8 @@
                                 "name": "Int",
                                 "ofType": null
                             },
-                            "isDeprecated": false,
-                            "deprecationReason": null
+                            "isDeprecated": true,
+                            "deprecationReason": "Use the `uid` argument instead."
                         },
                         {
                             "name": "image",
@@ -2362,6 +2526,22 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "uid",
+                            "description": "The unique ID for a `CategoryInterface` object.",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "ID",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "updated_at",
                             "description": "Timestamp indicating when the category was updated.",
                             "args": [],
@@ -2370,8 +2550,8 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "isDeprecated": false,
-                            "deprecationReason": null
+                            "isDeprecated": true,
+                            "deprecationReason": "The field should not be used on the storefront."
                         },
                         {
                             "name": "url_key",
@@ -3915,6 +4095,35 @@
                 },
                 {
                     "kind": "ENUM",
+                    "name": "PriceTypeEnum",
+                    "description": "This enumeration the price type.",
+                    "fields": null,
+                    "inputFields": null,
+                    "interfaces": null,
+                    "enumValues": [
+                        {
+                            "name": "FIXED",
+                            "description": "",
+                            "isDeprecated": false,
+                            "deprecationReason": ""
+                        },
+                        {
+                            "name": "PERCENT",
+                            "description": "",
+                            "isDeprecated": false,
+                            "deprecationReason": ""
+                        },
+                        {
+                            "name": "DYNAMIC",
+                            "description": "",
+                            "isDeprecated": false,
+                            "deprecationReason": ""
+                        }
+                    ],
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "ENUM",
                     "name": "PaymentTokenTypeEnum",
                     "description": "The list of available payment token types",
                     "fields": null,
@@ -3967,10 +4176,60 @@
                     "inputFields": [
                         {
                             "name": "category_id",
-                            "description": "Filter product by category id",
+                            "description": "Deprecated: use `category_uid` to filter product by category id.",
                             "type": {
                                 "kind": "INPUT_OBJECT",
                                 "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "category_uid",
+                            "description": "Filter product by the unique ID for a `CategoryInterface` object.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "description",
+                            "description": "Attribute label: Description",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterMatchTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "name",
+                            "description": "Attribute label: Product Name",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterMatchTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "price",
+                            "description": "Attribute label: Price",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterRangeTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "short_description",
+                            "description": "Attribute label: Short Description",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterMatchTypeInput",
                                 "ofType": null
                             },
                             "defaultValue": null
@@ -3981,6 +4240,47 @@
                             "type": {
                                 "kind": "INPUT_OBJECT",
                                 "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "url_key",
+                            "description": "The part of the URL that identifies the product",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "INPUT_OBJECT",
+                    "name": "FilterRangeTypeInput",
+                    "description": "Defines a filter that matches a range of values, such as prices or dates.",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "from",
+                            "description": "The beginning of the range",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "to",
+                            "description": "The end of the range",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
                                 "ofType": null
                             },
                             "defaultValue": null
@@ -4383,35 +4683,6 @@
                     "possibleTypes": null
                 },
                 {
-                    "kind": "ENUM",
-                    "name": "PriceTypeEnum",
-                    "description": "This enumeration the price type.",
-                    "fields": null,
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": [
-                        {
-                            "name": "FIXED",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "PERCENT",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "DYNAMIC",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        }
-                    ],
-                    "possibleTypes": null
-                },
-                {
                     "kind": "OBJECT",
                     "name": "SimpleProduct",
                     "description": "A simple product is tangible and are usually sold as single units or in fixed quantities.",
@@ -4453,8 +4724,8 @@
                                 "name": "Int",
                                 "ofType": null
                             },
-                            "isDeprecated": false,
-                            "deprecationReason": null
+                            "isDeprecated": true,
+                            "deprecationReason": "Use the `uid` field instead."
                         },
                         {
                             "name": "media_gallery",
@@ -4501,22 +4772,6 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "rating_summary",
-                            "description": "The average of all the ratings given to the product.",
-                            "args": [],
-                            "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Float",
-                                    "ofType": null
-                                }
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
                             "name": "sku",
                             "description": "A number or code assigned to a product to identify the product, options, price, and manufacturer.",
                             "args": [],
@@ -4541,6 +4796,22 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "uid",
+                            "description": "The unique ID for a `ProductInterface` object.",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "ID",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "updated_at",
                             "description": "Timestamp indicating when the product was updated.",
                             "args": [],
@@ -4549,8 +4820,8 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "isDeprecated": false,
-                            "deprecationReason": null
+                            "isDeprecated": true,
+                            "deprecationReason": "The field should not be used on the storefront."
                         },
                         {
                             "name": "url_key",
@@ -4687,8 +4958,8 @@
                                 "name": "Int",
                                 "ofType": null
                             },
-                            "isDeprecated": false,
-                            "deprecationReason": null
+                            "isDeprecated": true,
+                            "deprecationReason": "Use the `uid` field instead."
                         },
                         {
                             "name": "media_gallery",
@@ -4735,22 +5006,6 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "rating_summary",
-                            "description": "The average of all the ratings given to the product.",
-                            "args": [],
-                            "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Float",
-                                    "ofType": null
-                                }
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
                             "name": "sku",
                             "description": "A number or code assigned to a product to identify the product, options, price, and manufacturer.",
                             "args": [],
@@ -4775,6 +5030,22 @@
                             "deprecationReason": null
                         },
                         {
+                            "name": "uid",
+                            "description": "The unique ID for a `ProductInterface` object.",
+                            "args": [],
+                            "type": {
+                                "kind": "NON_NULL",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "ID",
+                                    "ofType": null
+                                }
+                            },
+                            "isDeprecated": false,
+                            "deprecationReason": null
+                        },
+                        {
                             "name": "updated_at",
                             "description": "Timestamp indicating when the product was updated.",
                             "args": [],
@@ -4783,8 +5054,8 @@
                                 "name": "String",
                                 "ofType": null
                             },
-                            "isDeprecated": false,
-                            "deprecationReason": null
+                            "isDeprecated": true,
+                            "deprecationReason": "The field should not be used on the storefront."
                         },
                         {
                             "name": "url_key",

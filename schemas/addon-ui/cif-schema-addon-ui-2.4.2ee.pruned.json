@@ -85,33 +85,6 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "giftRegistry",
-                            "description": "Return the specified gift registry. Some details will not be available to guests.",
-                            "args": [
-                                {
-                                    "name": "giftRegistryUid",
-                                    "description": "",
-                                    "type": {
-                                        "kind": "NON_NULL",
-                                        "name": null,
-                                        "ofType": {
-                                            "kind": "SCALAR",
-                                            "name": "ID",
-                                            "ofType": null
-                                        }
-                                    },
-                                    "defaultValue": null
-                                }
-                            ],
-                            "type": {
-                                "kind": "OBJECT",
-                                "name": "GiftRegistry",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
                             "name": "products",
                             "description": "The products query searches for products that match the criteria specified in the search and filter attributes.",
                             "args": [
@@ -169,33 +142,6 @@
                             "type": {
                                 "kind": "OBJECT",
                                 "name": "Products",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "route",
-                            "description": "Return the full details for a specified product, category, or CMS page given the specified url_key, appended by the url_suffix, if one exists",
-                            "args": [
-                                {
-                                    "name": "url",
-                                    "description": "",
-                                    "type": {
-                                        "kind": "NON_NULL",
-                                        "name": null,
-                                        "ofType": {
-                                            "kind": "SCALAR",
-                                            "name": "String",
-                                            "ofType": null
-                                        }
-                                    },
-                                    "defaultValue": null
-                                }
-                            ],
-                            "type": {
-                                "kind": "INTERFACE",
-                                "name": "RoutableInterface",
                                 "ofType": null
                             },
                             "isDeprecated": false,
@@ -1787,6 +1733,57 @@
                     "possibleTypes": null
                 },
                 {
+                    "kind": "INPUT_OBJECT",
+                    "name": "ProductAttributeSortInput",
+                    "description": "ProductAttributeSortInput specifies the attribute to use for sorting search results and indicates whether the results are sorted in ascending or descending order. It's possible to sort products using searchable attributes with enabled 'Use in Filter Options' option",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "name",
+                            "description": "Attribute label: Product Name",
+                            "type": {
+                                "kind": "ENUM",
+                                "name": "SortEnum",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "position",
+                            "description": "Sort by the position assigned to each product.",
+                            "type": {
+                                "kind": "ENUM",
+                                "name": "SortEnum",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "price",
+                            "description": "Attribute label: Price",
+                            "type": {
+                                "kind": "ENUM",
+                                "name": "SortEnum",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "relevance",
+                            "description": "Sort by the search relevance score (default).",
+                            "type": {
+                                "kind": "ENUM",
+                                "name": "SortEnum",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
                     "kind": "ENUM",
                     "name": "SortEnum",
                     "description": "This enumeration indicates whether to return results in ascending or descending order",
@@ -2252,6 +2249,16 @@
                             "defaultValue": null
                         },
                         {
+                            "name": "name",
+                            "description": "Filter by the display name of the category.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterMatchTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
                             "name": "parent_category_uid",
                             "description": "Filter by the unique parent category ID for a `CategoryInterface` object.",
                             "type": {
@@ -2264,6 +2271,26 @@
                         {
                             "name": "parent_id",
                             "description": "Filter by the unique parent category ID for a `CategoryInterface` object.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "url_key",
+                            "description": "Filter by the part of the URL that identifies the category.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "url_path",
+                            "description": "Filter by the URL path for the category.",
                             "type": {
                                 "kind": "INPUT_OBJECT",
                                 "name": "FilterEqualTypeInput",
@@ -2303,6 +2330,27 @@
                                     "name": "String",
                                     "ofType": null
                                 }
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "INPUT_OBJECT",
+                    "name": "FilterMatchTypeInput",
+                    "description": "Defines a filter that performs a fuzzy search.",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "match",
+                            "description": "One or more words to filter on",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
                             },
                             "defaultValue": null
                         }
@@ -2365,7 +2413,7 @@
                 {
                     "kind": "OBJECT",
                     "name": "CategoryTree",
-                    "description": "Category tree implementation",
+                    "description": "Category Tree implementation.",
                     "fields": [
                         {
                             "name": "breadcrumbs",
@@ -2515,46 +2563,6 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "redirect_code",
-                            "description": "Contains 0 when there is no redirect error. A value of 301 indicates the URL of the requested resource has been changed permanently, while a value of 302 indicates a temporary redirect",
-                            "args": [],
-                            "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Int",
-                                    "ofType": null
-                                }
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "relative_url",
-                            "description": "The internal relative URL. If the specified URL is a redirect, the query returns the redirected URL, not the original",
-                            "args": [],
-                            "type": {
-                                "kind": "SCALAR",
-                                "name": "String",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "type",
-                            "description": "One of PRODUCT, CATEGORY, or CMS_PAGE.",
-                            "args": [],
-                            "type": {
-                                "kind": "ENUM",
-                                "name": "UrlRewriteEntityTypeEnum",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
                             "name": "uid",
                             "description": "The unique ID for a `CategoryInterface` object.",
                             "args": [],
@@ -2613,140 +2621,9 @@
                             "kind": "INTERFACE",
                             "name": "CategoryInterface",
                             "ofType": null
-                        },
-                        {
-                            "kind": "INTERFACE",
-                            "name": "RoutableInterface",
-                            "ofType": null
                         }
                     ],
                     "enumValues": null,
-                    "possibleTypes": null
-                },
-                {
-                    "kind": "INTERFACE",
-                    "name": "RoutableInterface",
-                    "description": "Routable entities serve as the model for a rendered page",
-                    "fields": [
-                        {
-                            "name": "redirect_code",
-                            "description": "Contains 0 when there is no redirect error. A value of 301 indicates the URL of the requested resource has been changed permanently, while a value of 302 indicates a temporary redirect",
-                            "args": [],
-                            "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Int",
-                                    "ofType": null
-                                }
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "relative_url",
-                            "description": "The internal relative URL. If the specified URL is a redirect, the query returns the redirected URL, not the original",
-                            "args": [],
-                            "type": {
-                                "kind": "SCALAR",
-                                "name": "String",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "type",
-                            "description": "One of PRODUCT, CATEGORY, or CMS_PAGE.",
-                            "args": [],
-                            "type": {
-                                "kind": "ENUM",
-                                "name": "UrlRewriteEntityTypeEnum",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        }
-                    ],
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": null,
-                    "possibleTypes": [
-                        {
-                            "kind": "OBJECT",
-                            "name": "CategoryTree",
-                            "ofType": null
-                        },
-                        {
-                            "kind": "OBJECT",
-                            "name": "CmsPage",
-                            "ofType": null
-                        },
-                        {
-                            "kind": "OBJECT",
-                            "name": "VirtualProduct",
-                            "ofType": null
-                        },
-                        {
-                            "kind": "OBJECT",
-                            "name": "SimpleProduct",
-                            "ofType": null
-                        },
-                        {
-                            "kind": "OBJECT",
-                            "name": "DownloadableProduct",
-                            "ofType": null
-                        },
-                        {
-                            "kind": "OBJECT",
-                            "name": "BundleProduct",
-                            "ofType": null
-                        },
-                        {
-                            "kind": "OBJECT",
-                            "name": "GroupedProduct",
-                            "ofType": null
-                        },
-                        {
-                            "kind": "OBJECT",
-                            "name": "ConfigurableProduct",
-                            "ofType": null
-                        },
-                        {
-                            "kind": "OBJECT",
-                            "name": "GiftCardProduct",
-                            "ofType": null
-                        }
-                    ]
-                },
-                {
-                    "kind": "ENUM",
-                    "name": "UrlRewriteEntityTypeEnum",
-                    "description": "This enumeration defines the entity type.",
-                    "fields": null,
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": [
-                        {
-                            "name": "CMS_PAGE",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "PRODUCT",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "CATEGORY",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        }
-                    ],
                     "possibleTypes": null
                 },
                 {
@@ -2765,35 +2642,6 @@
                         },
                         {
                             "name": "MANUAL",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        }
-                    ],
-                    "possibleTypes": null
-                },
-                {
-                    "kind": "ENUM",
-                    "name": "UseInLayeredNavigationOptions",
-                    "description": "",
-                    "fields": null,
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": [
-                        {
-                            "name": "NO",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "FILTERABLE_WITH_RESULTS",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "FILTERABLE_NO_RESULT",
                             "description": "",
                             "isDeprecated": false,
                             "deprecationReason": ""
@@ -4283,142 +4131,6 @@
                     "possibleTypes": null
                 },
                 {
-                    "kind": "OBJECT",
-                    "name": "GiftRegistry",
-                    "description": "",
-                    "fields": [
-                        {
-                            "name": "event_name",
-                            "description": "The name of the event",
-                            "args": [],
-                            "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "String",
-                                    "ofType": null
-                                }
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "uid",
-                            "description": "The unique ID assigned to the gift registry",
-                            "args": [],
-                            "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "ID",
-                                    "ofType": null
-                                }
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        }
-                    ],
-                    "inputFields": null,
-                    "interfaces": [],
-                    "enumValues": null,
-                    "possibleTypes": null
-                },
-                {
-                    "kind": "ENUM",
-                    "name": "GiftRegistryDynamicAttributeGroup",
-                    "description": "",
-                    "fields": null,
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": [
-                        {
-                            "name": "EVENT_INFORMATION",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "PRIVACY_SETTINGS",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "REGISTRANT",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "GENERAL_INFORMATION",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "DETAILED_INFORMATION",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "SHIPPING_ADDRESS",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        }
-                    ],
-                    "possibleTypes": null
-                },
-                {
-                    "kind": "ENUM",
-                    "name": "GiftRegistryPrivacySettings",
-                    "description": "",
-                    "fields": null,
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": [
-                        {
-                            "name": "PRIVATE",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "PUBLIC",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        }
-                    ],
-                    "possibleTypes": null
-                },
-                {
-                    "kind": "ENUM",
-                    "name": "GiftRegistryStatus",
-                    "description": "",
-                    "fields": null,
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": [
-                        {
-                            "name": "ACTIVE",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "INACTIVE",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        }
-                    ],
-                    "possibleTypes": null
-                },
-                {
                     "kind": "ENUM",
                     "name": "ReturnItemStatus",
                     "description": "",
@@ -4671,76 +4383,6 @@
                 },
                 {
                     "kind": "ENUM",
-                    "name": "DynamicBlockLocationEnum",
-                    "description": "",
-                    "fields": null,
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": [
-                        {
-                            "name": "CONTENT",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "HEADER",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "FOOTER",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "LEFT",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "RIGHT",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        }
-                    ],
-                    "possibleTypes": null
-                },
-                {
-                    "kind": "ENUM",
-                    "name": "DynamicBlockTypeEnum",
-                    "description": "",
-                    "fields": null,
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": [
-                        {
-                            "name": "SPECIFIED",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "CART_PRICE_RULE_RELATED",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "CATALOG_PRICE_RULE_RELATED",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        }
-                    ],
-                    "possibleTypes": null
-                },
-                {
-                    "kind": "ENUM",
                     "name": "PayflowLinkMode",
                     "description": "Mode for payment: TEST or LIVE. Applies to Payflow Link and Payments Advanced payment methods.",
                     "fields": null,
@@ -4769,6 +4411,16 @@
                     "fields": null,
                     "inputFields": [
                         {
+                            "name": "category_id",
+                            "description": "Deprecated: use `category_uid` to filter product by category id.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
                             "name": "category_uid",
                             "description": "Filter product by the unique ID for a `CategoryInterface` object.",
                             "type": {
@@ -4779,11 +4431,92 @@
                             "defaultValue": null
                         },
                         {
+                            "name": "description",
+                            "description": "Attribute label: Description",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterMatchTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "name",
+                            "description": "Attribute label: Product Name",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterMatchTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "price",
+                            "description": "Attribute label: Price",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterRangeTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "short_description",
+                            "description": "Attribute label: Short Description",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterMatchTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
                             "name": "sku",
                             "description": "Attribute label: SKU",
                             "type": {
                                 "kind": "INPUT_OBJECT",
                                 "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "url_key",
+                            "description": "The part of the URL that identifies the product",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "INPUT_OBJECT",
+                    "name": "FilterRangeTypeInput",
+                    "description": "Defines a filter that matches a range of values, such as prices or dates.",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "from",
+                            "description": "The beginning of the range",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "to",
+                            "description": "The end of the range",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
                                 "ofType": null
                             },
                             "defaultValue": null
@@ -4846,6 +4579,35 @@
                 },
                 {
                     "kind": "ENUM",
+                    "name": "UrlRewriteEntityTypeEnum",
+                    "description": "This enumeration defines the entity type.",
+                    "fields": null,
+                    "inputFields": null,
+                    "interfaces": null,
+                    "enumValues": [
+                        {
+                            "name": "CMS_PAGE",
+                            "description": "",
+                            "isDeprecated": false,
+                            "deprecationReason": ""
+                        },
+                        {
+                            "name": "PRODUCT",
+                            "description": "",
+                            "isDeprecated": false,
+                            "deprecationReason": ""
+                        },
+                        {
+                            "name": "CATEGORY",
+                            "description": "",
+                            "isDeprecated": false,
+                            "deprecationReason": ""
+                        }
+                    ],
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "ENUM",
                     "name": "CartUserInputErrorType",
                     "description": "",
                     "fields": null,
@@ -4896,70 +4658,6 @@
                         {
                             "name": "UNDEFINED",
                             "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        }
-                    ],
-                    "possibleTypes": null
-                },
-                {
-                    "kind": "ENUM",
-                    "name": "WishlistCartUserInputErrorType",
-                    "description": "",
-                    "fields": null,
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": [
-                        {
-                            "name": "PRODUCT_NOT_FOUND",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "NOT_SALABLE",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "INSUFFICIENT_STOCK",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "UNDEFINED",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        }
-                    ],
-                    "possibleTypes": null
-                },
-                {
-                    "kind": "ENUM",
-                    "name": "GiftRegistryItemsUserErrorType",
-                    "description": "",
-                    "fields": null,
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": [
-                        {
-                            "name": "OUT_OF_STOCK",
-                            "description": "Used for handling out of stock products",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "NOT_FOUND",
-                            "description": "Used for exceptions like EntityNotFound",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "UNDEFINED",
-                            "description": "Used for other exceptions, such as database connection failures",
                             "isDeprecated": false,
                             "deprecationReason": ""
                         }
@@ -5221,38 +4919,9 @@
                     "possibleTypes": null
                 },
                 {
-                    "kind": "ENUM",
-                    "name": "CustomizableDateTypeEnum",
-                    "description": "This enumeration customizable date type.",
-                    "fields": null,
-                    "inputFields": null,
-                    "interfaces": null,
-                    "enumValues": [
-                        {
-                            "name": "DATE",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "DATE_TIME",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        },
-                        {
-                            "name": "TIME",
-                            "description": "",
-                            "isDeprecated": false,
-                            "deprecationReason": ""
-                        }
-                    ],
-                    "possibleTypes": null
-                },
-                {
                     "kind": "OBJECT",
                     "name": "SimpleProduct",
-                    "description": "A simple product is tangible and is usually sold in single units or in fixed quantities",
+                    "description": "A simple product is tangible and are usually sold as single units or in fixed quantities.",
                     "fields": [
                         {
                             "name": "categories",
@@ -5355,34 +5024,6 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "redirect_code",
-                            "description": "Contains 0 when there is no redirect error. A value of 301 indicates the URL of the requested resource has been changed permanently, while a value of 302 indicates a temporary redirect",
-                            "args": [],
-                            "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Int",
-                                    "ofType": null
-                                }
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "relative_url",
-                            "description": "The internal relative URL. If the specified URL is a redirect, the query returns the redirected URL, not the original",
-                            "args": [],
-                            "type": {
-                                "kind": "SCALAR",
-                                "name": "String",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
                             "name": "sku",
                             "description": "A number or code assigned to a product to identify the product, options, price, and manufacturer.",
                             "args": [],
@@ -5417,18 +5058,6 @@
                             "type": {
                                 "kind": "OBJECT",
                                 "name": "ProductImage",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "type",
-                            "description": "One of PRODUCT, CATEGORY, or CMS_PAGE.",
-                            "args": [],
-                            "type": {
-                                "kind": "ENUM",
-                                "name": "UrlRewriteEntityTypeEnum",
                                 "ofType": null
                             },
                             "isDeprecated": false,
@@ -5480,11 +5109,6 @@
                         {
                             "kind": "INTERFACE",
                             "name": "ProductInterface",
-                            "ofType": null
-                        },
-                        {
-                            "kind": "INTERFACE",
-                            "name": "RoutableInterface",
                             "ofType": null
                         }
                     ],
@@ -5666,34 +5290,6 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "redirect_code",
-                            "description": "Contains 0 when there is no redirect error. A value of 301 indicates the URL of the requested resource has been changed permanently, while a value of 302 indicates a temporary redirect",
-                            "args": [],
-                            "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Int",
-                                    "ofType": null
-                                }
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "relative_url",
-                            "description": "The internal relative URL. If the specified URL is a redirect, the query returns the redirected URL, not the original",
-                            "args": [],
-                            "type": {
-                                "kind": "SCALAR",
-                                "name": "String",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
                             "name": "sku",
                             "description": "A number or code assigned to a product to identify the product, options, price, and manufacturer.",
                             "args": [],
@@ -5728,18 +5324,6 @@
                             "type": {
                                 "kind": "OBJECT",
                                 "name": "ProductImage",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "type",
-                            "description": "One of PRODUCT, CATEGORY, or CMS_PAGE.",
-                            "args": [],
-                            "type": {
-                                "kind": "ENUM",
-                                "name": "UrlRewriteEntityTypeEnum",
                                 "ofType": null
                             },
                             "isDeprecated": false,
@@ -5807,11 +5391,6 @@
                         {
                             "kind": "INTERFACE",
                             "name": "ProductInterface",
-                            "ofType": null
-                        },
-                        {
-                            "kind": "INTERFACE",
-                            "name": "RoutableInterface",
                             "ofType": null
                         }
                     ],
@@ -5998,34 +5577,6 @@
                             "deprecationReason": null
                         },
                         {
-                            "name": "redirect_code",
-                            "description": "Contains 0 when there is no redirect error. A value of 301 indicates the URL of the requested resource has been changed permanently, while a value of 302 indicates a temporary redirect",
-                            "args": [],
-                            "type": {
-                                "kind": "NON_NULL",
-                                "name": null,
-                                "ofType": {
-                                    "kind": "SCALAR",
-                                    "name": "Int",
-                                    "ofType": null
-                                }
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "relative_url",
-                            "description": "The internal relative URL. If the specified URL is a redirect, the query returns the redirected URL, not the original",
-                            "args": [],
-                            "type": {
-                                "kind": "SCALAR",
-                                "name": "String",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
                             "name": "sku",
                             "description": "A number or code assigned to a product to identify the product, options, price, and manufacturer.",
                             "args": [],
@@ -6060,18 +5611,6 @@
                             "type": {
                                 "kind": "OBJECT",
                                 "name": "ProductImage",
-                                "ofType": null
-                            },
-                            "isDeprecated": false,
-                            "deprecationReason": null
-                        },
-                        {
-                            "name": "type",
-                            "description": "One of PRODUCT, CATEGORY, or CMS_PAGE.",
-                            "args": [],
-                            "type": {
-                                "kind": "ENUM",
-                                "name": "UrlRewriteEntityTypeEnum",
                                 "ofType": null
                             },
                             "isDeprecated": false,
@@ -6123,11 +5662,6 @@
                         {
                             "kind": "INTERFACE",
                             "name": "ProductInterface",
-                            "ofType": null
-                        },
-                        {
-                            "kind": "INTERFACE",
-                            "name": "RoutableInterface",
                             "ofType": null
                         }
                     ],

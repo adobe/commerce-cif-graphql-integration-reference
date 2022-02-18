@@ -1681,6 +1681,57 @@
                     "possibleTypes": null
                 },
                 {
+                    "kind": "INPUT_OBJECT",
+                    "name": "ProductAttributeSortInput",
+                    "description": "ProductAttributeSortInput specifies the attribute to use for sorting search results and indicates whether the results are sorted in ascending or descending order. It's possible to sort products using searchable attributes with enabled 'Use in Filter Options' option",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "name",
+                            "description": "Attribute label: Product Name",
+                            "type": {
+                                "kind": "ENUM",
+                                "name": "SortEnum",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "position",
+                            "description": "Sort by the position assigned to each product.",
+                            "type": {
+                                "kind": "ENUM",
+                                "name": "SortEnum",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "price",
+                            "description": "Attribute label: Price",
+                            "type": {
+                                "kind": "ENUM",
+                                "name": "SortEnum",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "relevance",
+                            "description": "Sort by the search relevance score (default).",
+                            "type": {
+                                "kind": "ENUM",
+                                "name": "SortEnum",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
                     "kind": "ENUM",
                     "name": "SortEnum",
                     "description": "This enumeration indicates whether to return results in ascending or descending order",
@@ -2134,6 +2185,36 @@
                                 "ofType": null
                             },
                             "defaultValue": null
+                        },
+                        {
+                            "name": "name",
+                            "description": "Filter by the display name of the category.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterMatchTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "url_key",
+                            "description": "Filter by the part of the URL that identifies the category.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "url_path",
+                            "description": "Filter by the URL path for the category.",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
                         }
                     ],
                     "interfaces": null,
@@ -2167,6 +2248,27 @@
                                     "name": "String",
                                     "ofType": null
                                 }
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "INPUT_OBJECT",
+                    "name": "FilterMatchTypeInput",
+                    "description": "Defines a filter that performs a fuzzy search.",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "match",
+                            "description": "One or more words to filter on",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
                             },
                             "defaultValue": null
                         }
@@ -4004,11 +4106,92 @@
                             "defaultValue": null
                         },
                         {
+                            "name": "description",
+                            "description": "Attribute label: Description",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterMatchTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "name",
+                            "description": "Attribute label: Product Name",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterMatchTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "price",
+                            "description": "Attribute label: Price",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterRangeTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "short_description",
+                            "description": "Attribute label: Short Description",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterMatchTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
                             "name": "sku",
                             "description": "Attribute label: SKU",
                             "type": {
                                 "kind": "INPUT_OBJECT",
                                 "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "url_key",
+                            "description": "The part of the URL that identifies the product",
+                            "type": {
+                                "kind": "INPUT_OBJECT",
+                                "name": "FilterEqualTypeInput",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        }
+                    ],
+                    "interfaces": null,
+                    "enumValues": null,
+                    "possibleTypes": null
+                },
+                {
+                    "kind": "INPUT_OBJECT",
+                    "name": "FilterRangeTypeInput",
+                    "description": "Defines a filter that matches a range of values, such as prices or dates.",
+                    "fields": null,
+                    "inputFields": [
+                        {
+                            "name": "from",
+                            "description": "The beginning of the range",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            },
+                            "defaultValue": null
+                        },
+                        {
+                            "name": "to",
+                            "description": "The end of the range",
+                            "type": {
+                                "kind": "SCALAR",
+                                "name": "String",
                                 "ofType": null
                             },
                             "defaultValue": null

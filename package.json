@@ -10,8 +10,7 @@
         "test": "npm run lint && npm run test-cov",
         "test-cov": "nyc npm run unit && npm run lcov-report",
         "lcov-report": "nyc report --reporter=lcov",
-        "unit": "mocha test/**/*Test.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-unit.json",
-        "doc": "node actions/documentation/generate.js && jq -c . < actions/resources/magento-schema-2.4.3ee.pruned.json > actions/resources/magento-schema-2.4.3ee.pruned.min.json"
+        "unit": "mocha test/**/*Test.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-unit.json"
     },
     "dependencies": {
         "@adobe/aio-lib-state": "1.1.2",
@@ -34,6 +33,7 @@
         "eslint-plugin-header": "3.1.1",
         "eslint-plugin-react": "7.28.0",
         "git-clone": "0.2.0",
+        "inquirer": "^8.2.0",
         "mocha": "8.4.0",
         "mocha-junit-reporter": "1.23.3",
         "mocha-multi-reporters": "1.5.1",
@@ -46,8 +46,7 @@
             "actions/**"
         ],
         "exclude": [
-            "actions/resources",
-            "actions/documentation/generate.js"
+            "actions/resources"
         ],
         "check-coverage": true,
         "per-file": false,
