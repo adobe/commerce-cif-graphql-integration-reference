@@ -23,15 +23,11 @@ const inquirer = require('inquirer');
 const SchemaBuilder = require('../actions/common/SchemaBuilder');
 const SchemaPruner = require('../actions/documentation/SchemaPruner');
 
-const NOT_USED = 'NOT USED';
-
 (async () => {
     console.log('This script will help you generate a minimal or pruned GraphQL schema based on the queries required for CIF.');
 
     // Find available schema and query versions
     let magentoVersions = findVersions('magento', /([\d]+\.[\d]+.[\d]+(ce|ee)?)/);
-    let componentsVersions = findVersions('components', /([\d]+\.[\d]+.[\d]+(-SNAPSHOT)?)/);
-    let addonVersions = findVersions('addon', /([\d]{4}\.[\d]{2}.[\d]{2}(\.[\d]+)?(-SNAPSHOT)?)/);
 
     // Ask user to provide version selection
     const answers = await inquirer
@@ -43,55 +39,60 @@ const NOT_USED = 'NOT USED';
                 choices: Array.from(magentoVersions),
             },
             {
-                type: 'list',
-                name: 'componentVersion',
-                message: 'Please select a version of the CIF Core Components:',
-                choices: [...Array.from(componentsVersions), NOT_USED]
+                type: 'confirm',
+                name: 'includeComponents',
+                message: 'Include queries of CIF Core Components?',
+                default: true
             },
             {
-                type: 'list',
-                name: 'addonVersion',
-                message: 'Please select a version of the CIF Add-on:',
-                choices: [...Array.from(addonVersions), NOT_USED]
+                type: 'confirm',
+                name: 'includeAddon',
+                message: 'Include queries of CIF Add-on?',
+                default: true
             },
         ]);
 
-    const { magentoVersion, componentVersion, addonVersion } = answers;
+    const { magentoVersion, includeComponents, includeAddon } = answers;
     let schemas = [];
 
     // Read Magento schema
     const magentoSchema = JSON.parse(readFileSync(`magento/magento-schema-${magentoVersion}.json`, 'UTF-8'));
 
-    // Generate pruned schema for add-on (backend)
-    if (addonVersion !== NOT_USED) {
-        const addonQueriesPath = `addon/addon-queries-${addonVersion}.log`;
-        const addonSchema = generatePrunedSchema(magentoSchema, addonQueriesPath);
-        schemas.push(addonSchema);
-        writeFileSync(`cif-schema-addon-${addonVersion}.pruned.json`, JSON.stringify(addonSchema, null, 2), 'UTF-8');
-        console.log(`Wrote add-on schema to cif-schema-addon-${addonVersion}.pruned.json`);
-    }
-
     // Generate pruned schema for CIF Core Components
-    if (componentVersion !== NOT_USED) {
-        const componentQueriesPath = `components/components-queries-${componentVersion}.log`;
+    if (includeComponents) {
+        const componentQueriesPath = `components/components-queries.log`;
         const componentSchema = generatePrunedSchema(magentoSchema, componentQueriesPath);
         schemas.push(componentSchema);
-        writeFileSync(`cif-schema-components-${componentVersion}.pruned.json`, JSON.stringify(componentSchema, null, 2), 'UTF-8');
-        console.log(`Wrote components schema to cif-schema-components-${componentVersion}.pruned.json`);
+        writeFileSync(`cif-schema-components.pruned.json`, JSON.stringify(componentSchema, null, 2), 'UTF-8');
+        console.log(`Wrote components schema to cif-schema-components.pruned.json`);
     }
 
-    // Select Add-on UI schema that matches Magento schema
-    let addonUiSchema;
-    try {
-        addonUiSchema = JSON.parse(readFileSync(`addon-ui/cif-schema-addon-ui-${magentoVersion}.pruned.json`, 'UTF-8'));
-        schemas.push(addonUiSchema);
-    } catch (err) {
-        console.error(`Could not find add-on UI schema for version ${magentoVersion}`, err);
-        return;
+    if (includeAddon) {
+        // Generate pruned schema for add-on (backend)
+        const addonQueriesPath = `addon/addon-queries.log`;
+        const addonSchema = generatePrunedSchema(magentoSchema, addonQueriesPath);
+        schemas.push(addonSchema);
+        writeFileSync(`cif-schema-addon.pruned.json`, JSON.stringify(addonSchema, null, 2), 'UTF-8');
+        console.log(`Wrote add-on schema to cif-schema-addon.pruned.json`);
+
+        // Select Add-on UI schema that matches Magento schema
+        let addonUiSchema;
+        try {
+            addonUiSchema = JSON.parse(readFileSync(`addon-ui/cif-schema-addon-ui-${magentoVersion}.pruned.json`, 'UTF-8'));
+            schemas.push(addonUiSchema);
+        } catch (err) {
+            console.error(`Could not find add-on UI schema for version ${magentoVersion}`, err);
+            return;
+        }
     }
 
     // Merge Add-on UI, Components and Add-on schemas
     const executableSchemas = schemas.map(s => new SchemaBuilder(s).build());
+    if (schemas.length === 0) {
+        console.log('No queries selected to generate a schema of.');
+        return;
+    }
+
     let mergedSchema = mergeSchemas({
         schemas: executableSchemas,
     });
