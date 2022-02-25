@@ -228,22 +228,28 @@ class Product {
 
     __convertData(data) {
         return {
-            id: 1, // dummy id
+            uid: data.sku,
             sku: data.sku,
             url_key: data.sku,
             name: data.title,
             description: {
                 html: data.description
             },
-            price: {
-                regularPrice: {
-                    amount: {
+            price_range: {
+                maximum_price: {
+                    final_price: {
                         currency: data.price.currency,
                         value: data.price.amount
+                    },
+                    regular_price: {
+                        currency: data.price.currency,
+                        value: data.price.amount
+                    },
+                    discount: {
+                        amount_off: 0,
+                        percent_off: 0
                     }
-                }
-            },
-            price_range: {
+                },
                 minimum_price: {
                     final_price: {
                         currency: data.price.currency,
@@ -260,18 +266,21 @@ class Product {
                 }
             },
             small_image: {
-                url: `${this.actionParameters.url}/images/small/${data.sku}.jpg` // Dummy
+                url: data.image_url,
+                label: data.title
             },
             image: {
-                url: `${this.actionParameters.url}/images/normal/${data.sku}.jpg` // Dummy
+                url: data.image_url,
+                label: data.title
             },
             thumbnail: {
-                url: `${this.actionParameters.url}/images/thumb/${data.sku}.jpg` // Dummy
+                url: data.image_url,
+                label: data.title
             },
             media_gallery: [
                 {
                     __typename: 'ProductImage',
-                    url: `${this.actionParameters.url}/images/normal/${data.sku}.jpg`, // Dummy
+                    url: data.image_url,
                     disabled: false,
                     position: 0
                 }

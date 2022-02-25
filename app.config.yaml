@@ -12,6 +12,7 @@ application:
             runtime: 'nodejs:14'
             inputs:
               LOG_LEVEL: debug
+              SPREADSHEET: 12xsb05i3BorRLuKmuDyu1OQwHGhouC8vPDJBBiwOINA
               use-aio-cache: false # number of seconds for caching; set to false or remove to disable caching
               url: https://a-dummy-url.com
               remoteSchemas: # Action with smaller order has "merge priority" in schema conflicts
@@ -21,6 +22,8 @@ application:
             annotations:
               provide-api-key: true
               final: true
+            include:
+              - ["./actions/resources/keys.json"]
 
           cart:
             function: actions/remote/cartResolver.js

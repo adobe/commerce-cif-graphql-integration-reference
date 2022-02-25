@@ -15,6 +15,10 @@
 'use strict';
 
 const DataLoader = require('dataloader');
+const {
+    getAuthToken,
+    getSpreadSheetValues
+} = require('../services/googleSheet.js');
 
 class ProductsLoader {
     /**
@@ -28,17 +32,22 @@ class ProductsLoader {
         let loadingFunction = (keys) => {
             return Promise.resolve(
                 keys.map((key) => {
-                    console.debug('--> Performing a search with ' + JSON.stringify(key, null, 0));
-                    return this.__searchProducts(key, actionParameters).catch((error) => {
-                        console.error(
-                            `Failed loading products for search ${JSON.stringify(
-                                key,
-                                null,
-                                0
-                            )}, got error ${JSON.stringify(error, null, 0)}`
-                        );
-                        return null;
-                    });
+                    console.debug(
+                        '--> Performing a search with ' +
+                            JSON.stringify(key, null, 0)
+                    );
+                    return this.__searchProducts(key, actionParameters).catch(
+                        (error) => {
+                            console.error(
+                                `Failed loading products for search ${JSON.stringify(
+                                    key,
+                                    null,
+                                    0
+                                )}, got error ${JSON.stringify(error, null, 0)}`
+                            );
+                            return null;
+                        }
+                    );
                 })
             );
         };
@@ -67,79 +76,97 @@ class ProductsLoader {
      * @param {Object} actionParameters Some parameters of the I/O action itself (e.g. backend server URL, authentication info, etc)
      * @returns {Promise} A Promise with the products data.
      */
-    __searchProducts(params, actionParameters) {
-        // This method returns a Promise, for example to simulate some HTTP REST call being performed
-        // to the 3rd-party commerce system.
+    async __searchProducts(params, actionParameters) {
+        //Read from the spreadsheet
+        const spreadsheetId = actionParameters.SPREADSHEET;
+        const spreadsheetRange = 'weretail-internal!C2:G'; //range of cells to read from
+        const auth = await getAuthToken();
+        const response = await getSpreadSheetValues({
+            spreadsheetId,
+            auth,
+            spreadsheetRange
+        });
 
-        if (
-            params.search ||
-            params.categoryId ||
-            (params.filter && (params.filter.category_id || params.filter.price))
-        ) {
-            // Text search or fetching of the products of a category
+        if (params.search) {
+            const product = response.data.values.filter((row) =>
+                row[1].includes(params.search)
+            );
             return Promise.resolve({
-                total: 2,
+                total: product.length,
                 offset: params.currentPage * params.pageSize,
                 limit: params.pageSize,
-                products: [
-                    {
-                        sku: 'product-1',
-                        title: 'Product #1',
-                        description: `Fetched product #1 from ${actionParameters.url}`,
+                products: product.map((product) => {
+                    return {
+                        sku: product[0],
+                        title: product[1],
+                        description: `Description for product ${product[1]}`,
                         price: {
                             currency: 'USD',
-                            amount: 12.34
+                            amount: product[3]
                         },
+                        image_url: product[4],
                         categoryIds: [1, 2]
-                    },
-                    {
-                        sku: 'product-2',
-                        title: 'Product #2',
-                        description: `Fetched product #2 from ${actionParameters.url}`,
-                        price: {
-                            currency: 'USD',
-                            amount: 56.78
-                        },
-                        categoryIds: [2, 3]
-                    }
-                ]
+                    };
+                })
             });
-        } else if (params.filter && (params.filter.sku || params.filter.url_key)) {
+        } else if (
+            params.filter &&
+            (params.filter.sku || params.filter.url_key)
+        ) {
             // Get a product by sku or url_key
-            if ((params.filter.sku && params.filter.sku.eq) || (params.filter.url_key && params.filter.url_key.eq)) {
-                let key = params.filter.sku ? params.filter.sku.eq : params.filter.url_key.eq;
+            if (
+                (params.filter.sku && params.filter.sku.eq) ||
+                (params.filter.url_key && params.filter.url_key.eq)
+            ) {
+                let key = params.filter.sku
+                    ? params.filter.sku.eq
+                    : params.filter.url_key.eq;
+
+                const product = response.data.values.find(
+                    (row) => row[0] === key
+                );
+
                 return Promise.resolve({
                     total: 1,
                     offset: params.currentPage * params.pageSize,
                     limit: params.pageSize,
                     products: [
                         {
-                            sku: key,
-                            title: `Product #${key}`,
-                            description: `Fetched product #${key} from ${actionParameters.url}`,
+                            sku: product[0],
+                            title: product[1],
+                            description: `Description for product ${product[1]}`,
                             price: {
                                 currency: 'USD',
-                                amount: 12.34
+                                amount: product[3]
                             },
+                            image_url: product[4],
                             categoryIds: [1, 2]
                         }
                     ]
                 });
-            } else if (params.filter.sku.in) {
-                // Get multiple products by skus
+            } else if (params.filter.sku.in || params.filter.url_key.in) {
+                let keys = params.filter.sku
+                    ? params.filter.sku.in
+                    : params.filter.url_key.in;
+
+                const product = response.data.values.filter((row) =>
+                    keys.includes(row[0])
+                );
+
                 return Promise.resolve({
-                    total: params.filter.sku.in.length,
+                    total: product.length,
                     offset: params.currentPage * params.pageSize,
                     limit: params.pageSize,
-                    products: params.filter.sku.in.map((sku) => {
+                    products: product.map((product) => {
                         return {
-                            sku: sku,
-                            title: `Product #${sku}`,
-                            description: `Fetched product #${sku} from ${actionParameters.url}`,
+                            sku: product[0],
+                            title: product[1],
+                            description: `Description for product ${product[1]}`,
                             price: {
                                 currency: 'USD',
-                                amount: 12.34
+                                amount: product[3]
                             },
+                            image_url: product[4],
                             categoryIds: [1, 2]
                         };
                     })
