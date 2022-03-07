@@ -46,8 +46,7 @@ class ProductsLoader {
                                 )}, got error ${JSON.stringify(error, null, 0)}`
                             );
                             return null;
-                        }
-                    );
+                    });
                 })
             );
         };
@@ -61,6 +60,21 @@ class ProductsLoader {
         return this.loader.load(key);
     }
 
+    __mapProductRow(product) {
+        return {
+            sku: product[0],
+            title: product[1],
+            description: product[8],
+            short_description: product[9],
+            price: {
+                currency: 'USD',
+                amount: product[3]
+            },
+            image_url: product[4],
+            categoryIds: [product[5]]
+        };
+    }
+
     /**
      * In a real 3rd-party integration, this method would query the 3rd-party system to search
      * products based on the search parameters. Note that to demonstrate how one can customize the arguments
@@ -70,16 +84,13 @@ class ProductsLoader {
      * @param {Object} params An object with the search parameters defined by the Magento GraphQL "products" field.
      * @param {String} [params.search] The "search" argument of the GraphQL "products" field.
      * @param {String} [params.filter] The "filter" argument of the GraphQL "products" field.
-     * @param {number} [params.categoryId] An optional category id (integer), to get all the products if a given category.
-     * @param {Integer} params.currentPage The "currentPage" argument of the GraphQL "products" field.
-     * @param {Integer} params.pageSize The "pageSize" argument of the GraphQL "products" field.
      * @param {Object} actionParameters Some parameters of the I/O action itself (e.g. backend server URL, authentication info, etc)
      * @returns {Promise} A Promise with the products data.
      */
     async __searchProducts(params, actionParameters) {
         //Read from the spreadsheet
         const spreadsheetId = actionParameters.SPREADSHEET;
-        const spreadsheetRange = 'weretail-internal!C2:G'; //range of cells to read from
+        const spreadsheetRange = 'weretail-internal!C2:L';
         const auth = await getAuthToken();
         const response = await getSpreadSheetValues({
             spreadsheetId,
@@ -96,57 +107,17 @@ class ProductsLoader {
                 offset: params.currentPage * params.pageSize,
                 limit: params.pageSize,
                 products: product.map((product) => {
-                    return {
-                        sku: product[0],
-                        title: product[1],
-                        description: `Description for product ${product[1]}`,
-                        price: {
-                            currency: 'USD',
-                            amount: product[3]
-                        },
-                        image_url: product[4],
-                        categoryIds: [1, 2]
-                    };
+                    return this.__mapProductRow(product);
                 })
             });
-        } else if (
-            params.filter &&
-            (params.filter.sku || params.filter.url_key)
-        ) {
-            // Get a product by sku or url_key
-            if (
-                (params.filter.sku && params.filter.sku.eq) ||
-                (params.filter.url_key && params.filter.url_key.eq)
-            ) {
-                let key = params.filter.sku
-                    ? params.filter.sku.eq
-                    : params.filter.url_key.eq;
-
-                const product = response.data.values.find(
-                    (row) => row[0] === key
-                );
-
-                return Promise.resolve({
-                    total: 1,
-                    offset: params.currentPage * params.pageSize,
-                    limit: params.pageSize,
-                    products: [
-                        {
-                            sku: product[0],
-                            title: product[1],
-                            description: `Description for product ${product[1]}`,
-                            price: {
-                                currency: 'USD',
-                                amount: product[3]
-                            },
-                            image_url: product[4],
-                            categoryIds: [1, 2]
-                        }
-                    ]
-                });
-            } else if (params.filter.sku.in || params.filter.url_key.in) {
+        } else if (params.filter) {
+            if (params.filter.sku || params.filter.url_key) {
                 let keys = params.filter.sku
-                    ? params.filter.sku.in
+                    ? params.filter.sku.eq
+                        ? [params.filter.sku.eq]
+                        : params.filter.sku.in
+                    : params.filter.url_key.eq
+                    ? [params.filter.url_key.eq]
                     : params.filter.url_key.in;
 
                 const product = response.data.values.filter((row) =>
@@ -158,17 +129,25 @@ class ProductsLoader {
                     offset: params.currentPage * params.pageSize,
                     limit: params.pageSize,
                     products: product.map((product) => {
-                        return {
-                            sku: product[0],
-                            title: product[1],
-                            description: `Description for product ${product[1]}`,
-                            price: {
-                                currency: 'USD',
-                                amount: product[3]
-                            },
-                            image_url: product[4],
-                            categoryIds: [1, 2]
-                        };
+                        return this.__mapProductRow(product);
+                    })
+                });
+            }
+            if (params.filter.category_uid) {
+                let keys = params.filter.category_uid.eq
+                    ? [params.filter.category_uid.eq]
+                    : params.filter.category_uid.in;
+
+                const product = response.data.values.filter((row) =>
+                    keys.includes(row[5])
+                );
+
+                return Promise.resolve({
+                    total: product.length,
+                    offset: params.currentPage * params.pageSize,
+                    limit: params.pageSize,
+                    products: product.map((product) => {
+                        return this.__mapProductRow(product);
                     })
                 });
             }

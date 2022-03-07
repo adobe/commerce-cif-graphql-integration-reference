@@ -58,9 +58,8 @@ class CategoryTree {
      */
     __convertData(data) {
         return {
-            id: data.id,
-            position: data.id,
-            url_key: data.id,
+            uid: data.uid,
+            url_key: data.uid,
             url_path: data.slug,
             name: data.title,
             description: data.description,
@@ -211,6 +210,10 @@ class Product {
     }
 
     get categories() {
+
+        console.log("mhhhh")
+        console.log(this.productData.categoryIds);
+
         return this.productData.categoryIds.map((categoryId) => {
             return new CategoryTree({
                 categoryId: categoryId,

@@ -69,7 +69,7 @@ class CategoryTreeLoader {
         // in an extra request if they are being requested in the GraphQL query.
 
         return Promise.resolve({
-            id: categoryId,
+            uid: categoryId,
             slug: this.__toSlug(categoryId),
             title: `Category #${categoryId}`,
             description: `Fetched category #${categoryId} from ${actionParameters.url}`,

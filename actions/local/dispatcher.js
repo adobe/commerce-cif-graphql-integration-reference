@@ -16,7 +16,6 @@
 
 const { Core } = require('@adobe/aio-sdk');
 const libState = require('@adobe/aio-lib-state');
-const { google } = require('googleapis');
 const { errorResponse, stringParameters } = require('../utils');
 
 const magentoSchema = require('../resources/magento-schema-2.4.3ee.min.json');
