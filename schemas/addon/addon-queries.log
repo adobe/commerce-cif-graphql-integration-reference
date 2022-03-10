@@ -1,0 +1,6 @@
+{categoryList(filters:{category_uid:{in:["OA==","MTE=","not-found"]}}){id,name,url_path,uid}}
+{categoryList(filters:{ids:{in:["8","11","not-found"]}}){id,name,url_path}}
+{products(filter:{sku:{in:["MH09","WJ08","WP07","not-found"]}}){items{sku,name,...on ConfigurableProduct{variants{product{sku,name}}}}}}
+{products(search:"",sort:{relevance:DESC},currentPage:1,pageSize:10){items{__typename,id,sku,name,url_key,updated_at,thumbnail{url}}}}
+{products(search:"cats",sort:{relevance:DESC},currentPage:1,pageSize:10){items{__typename,id,sku,name,url_key,updated_at,thumbnail{url}}}}
+{products(search:"cats",sort:{relevance:DESC},currentPage:1,pageSize:30){items{__typename,id,sku,name,url_key,updated_at,thumbnail{url}}}}

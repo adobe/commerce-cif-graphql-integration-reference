@@ -40,7 +40,7 @@ class SchemaBuilder {
         }
 
         // Remove "Mutation" root type if it doesn't have any field
-        if (mutationRootType && mutationRootType.fields.length == 0) {
+        if (!mutationRootType || (mutationRootType && mutationRootType.fields.length == 0)) {
             this.removeMutationType();
         }
 
