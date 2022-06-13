@@ -4,9 +4,7 @@
             "queryType": {
                 "name": "Query"
             },
-            "mutationType": {
-                "name": "Mutation"
-            },
+            "mutationType": null,
             "subscriptionType": null,
             "types": [
                 {
@@ -4068,58 +4066,8 @@
                     "fields": null,
                     "inputFields": [
                         {
-                            "name": "activity",
-                            "description": "Attribute label: Activity",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "category_gear",
-                            "description": "Attribute label: Category Gear",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
                             "name": "category_id",
                             "description": "Filter product by category id",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "climate",
-                            "description": "Attribute label: Climate",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "collar",
-                            "description": "Attribute label: Collar",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "color",
-                            "description": "Attribute label: Color",
                             "type": {
                                 "kind": "INPUT_OBJECT",
                                 "name": "FilterEqualTypeInput",
@@ -4138,101 +4086,11 @@
                             "defaultValue": null
                         },
                         {
-                            "name": "eco_collection",
-                            "description": "Attribute label: Eco Collection",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "erin_recommends",
-                            "description": "Attribute label: Erin Recommends",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "features_bags",
-                            "description": "Attribute label: Features",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "format",
-                            "description": "Attribute label: Format",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "gender",
-                            "description": "Attribute label: Gender",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "material",
-                            "description": "Attribute label: Material",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
                             "name": "name",
                             "description": "Attribute label: Product Name",
                             "type": {
                                 "kind": "INPUT_OBJECT",
                                 "name": "FilterMatchTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "new",
-                            "description": "Attribute label: New",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "pattern",
-                            "description": "Attribute label: Pattern",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "performance_fabric",
-                            "description": "Attribute label: Performance Fabric",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
                                 "ofType": null
                             },
                             "defaultValue": null
@@ -4248,16 +4106,6 @@
                             "defaultValue": null
                         },
                         {
-                            "name": "sale",
-                            "description": "Attribute label: Sale",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
                             "name": "short_description",
                             "description": "Attribute label: Short Description",
                             "type": {
@@ -4268,68 +4116,8 @@
                             "defaultValue": null
                         },
                         {
-                            "name": "size",
-                            "description": "Attribute label: Size",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
                             "name": "sku",
                             "description": "Attribute label: SKU",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "sleeve",
-                            "description": "Attribute label: Sleeve",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "strap_bags",
-                            "description": "Attribute label: Strap/Handle",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "style_bags",
-                            "description": "Attribute label: Style Bags",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "style_bottom",
-                            "description": "Attribute label: Style Bottom",
-                            "type": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "FilterEqualTypeInput",
-                                "ofType": null
-                            },
-                            "defaultValue": null
-                        },
-                        {
-                            "name": "style_general",
-                            "description": "Attribute label: Style General",
                             "type": {
                                 "kind": "INPUT_OBJECT",
                                 "name": "FilterEqualTypeInput",

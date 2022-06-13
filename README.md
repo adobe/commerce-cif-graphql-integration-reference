@@ -127,6 +127,8 @@ This will build and deploy the GraphQl functions and web frontend. The CLI will 
 
 To test the GraphQL endpoint directly open the GraphiQL to test some GraphQL queries. The URL for your GraphiQL instance is printed out by the AIO CLI during the deployment. Any other GraphQL client will work as well.
 
+Please also make sure your implementation is compatible with the queries CIF is using. You can use the GraphQL schema checker tool in the [schemas](schemas/README.md) folder.
+
 ## Developing a real 3rd-party integration
 
 This repository provides a reference implementation that can be used as a starting point to develop a real integration with a 3rd-party commerce system. In order to implement a real integration, one will have to:

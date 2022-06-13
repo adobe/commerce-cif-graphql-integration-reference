@@ -32,8 +32,7 @@ const inquirer = require('inquirer');
         {
             type: 'input',
             name: 'endpoint',
-            message: 'Please provide the GraphQL endpoint URL:',
-            default: 'https://adobe-starter.dummycachetest.com/graphql',
+            message: 'Please provide the full GraphQL endpoint URL:',
             validate: input => {
                 try {
                     const parsed = new URL(input);
