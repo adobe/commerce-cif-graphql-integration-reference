@@ -4,9 +4,7 @@
             "queryType": {
                 "name": "Query"
             },
-            "mutationType": {
-                "name": "Mutation"
-            },
+            "mutationType": null,
             "subscriptionType": null,
             "types": [
                 {
