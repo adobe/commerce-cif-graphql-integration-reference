@@ -48,7 +48,8 @@ const App = props => {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'x-ow-extra-logging': 'on'
                     },
                     body: JSON.stringify(graphQLParams),
                     credentials: 'same-origin'
