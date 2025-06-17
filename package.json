@@ -13,9 +13,9 @@
         "unit": "mocha test/**/*Test.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-unit.json"
     },
     "dependencies": {
-        "@adobe/aio-lib-state": "1.1.2",
-        "@adobe/aio-sdk": "3.0.0",
-        "@adobe/exc-app": "0.2.47",
+        "@adobe/aio-lib-state": "5.1.0",
+        "@adobe/aio-sdk": "6.0.0",
+        "@adobe/exc-app": "1.4.16",
         "core-js": "3.20.3",
         "dataloader": "1.4.0",
         "graphiql": "1.5.16",
