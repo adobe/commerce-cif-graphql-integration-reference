@@ -23,14 +23,14 @@ jobs:
       - name: npm install
         run: npm i
       - name: Setup CLI
-        uses: adobe/aio-cli-setup-action@1.1.0
+        uses: adobe/aio-cli-setup-action@v1.3.0
         with:
           os: ${{ matrix.os }}
           version: 8.x.x
       - name: Build
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
-        uses: adobe/aio-apps-action@2.0.1
+        uses: adobe/aio-apps-action@2.0.2
         with:
           os: ${{ matrix.os }}
           command: build
