@@ -8,7 +8,7 @@
  *    Unless required by applicable law or agreed to in writing, software distributed under
  *    the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
  *    OF ANY KIND, either express or implied. See the License for the specific language
- *    governing permissions and limitations under the License
+ *    governing permissions and limitations under the License.
  *
  ******************************************************************************/
 
@@ -47,7 +47,7 @@ class Cart {
 
     /**
      * Converts some cart data from the 3rd-party commerce system into the Magento GraphQL format.
-     * Properties that require some extra data fetching with the 3rd-party system must have dedicated getters
+     * Properties that require some extra data fetching with the 3rd-party system must have dedicated getter
      * in this class.
      *
      * @param {Object} data
