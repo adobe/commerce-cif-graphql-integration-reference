@@ -47,7 +47,7 @@ class Cart {
 
     /**
      * Converts some cart data from the 3rd-party commerce system into the Magento GraphQL format.
-     * Properties that require some extra data fetching with the 3rd-party system must have dedicated getter
+     * Properties that require some extra data fetching with the 3rd-party system must have dedicated getters
      * in this class.
      *
      * @param {Object} data
