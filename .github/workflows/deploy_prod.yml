@@ -3,6 +3,7 @@ name: AIO App CI
 on:
   release:
     types: [released]
+
 jobs:
   deploy:
     name: Deploy to Prod
@@ -14,11 +15,12 @@ jobs:
         os: [ubuntu-latest]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: npm
       - name: npm install
         run: npm i
       - name: Setup CLI
