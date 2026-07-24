@@ -7,7 +7,6 @@ jobs:
     name: Test PR
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
         node-version: ['18']
         os: [macos-latest, ubuntu-latest, windows-latest]
@@ -32,7 +31,7 @@ jobs:
         uses: adobe/aio-cli-setup-action@1.1.0
         with:
           os: ${{ matrix.os }}
-          version: 8.3.0
+          version: 8.x.x
       - name: Build
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
