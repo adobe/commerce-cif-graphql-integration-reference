@@ -18,21 +18,34 @@ const openwhisk = require('openwhisk');
 const { print } = require('graphql');
 
 /**
- * This class implements a GraphQL Fetcher that can be used with the graphql-tools
- * library to query a remote GraphQL endpoint deployed in an Adobe I/O Runtime action.
+ * This class implements a GraphQL Executor that can be used with the @graphql-tools/wrap
+ * library (introspectSchema/wrapSchema) to query a remote GraphQL endpoint deployed in an
+ * Adobe I/O Runtime action.
  */
 class RemoteResolverFetcher {
     constructor(actionName) {
         this.actionName = actionName;
 
         // We export a method which MUST be bound to the object
-        // because it's not going to be called with 'this.fetcher()'
-        this.fetcher = this.__fetch.bind(this);
+        // because it's not going to be called with 'this.executor()'
+        this.executor = this.__execute.bind(this);
     }
 
-    __fetch(params) {
-        let query = print(params.query); // Convert from AST to String
+    __execute(params) {
+        let query = print(params.document); // Convert from AST to String
         let context = params.context ? params.context.graphqlContext : null;
+
+        // Derive the operation name from the first named OperationDefinition in the document
+        let operationName = null;
+        if (params.document && Array.isArray(params.document.definitions)) {
+            let operationDefinition = params.document.definitions.find(
+                (definition) => definition.kind === 'OperationDefinition' && definition.name && definition.name.value
+            );
+            if (operationDefinition) {
+                operationName = operationDefinition.name.value;
+            }
+        }
+
         let ow = openwhisk();
         return ow.actions.invoke({
             actionName: this.actionName,
@@ -41,7 +54,7 @@ class RemoteResolverFetcher {
             params: {
                 query,
                 variables: params.variables,
-                operationName: params.operationName,
+                operationName,
                 context
             }
         });
