@@ -18,6 +18,22 @@ const openwhisk = require('openwhisk');
 const { print } = require('graphql');
 
 /**
+ * Derives the operation name from the first named OperationDefinition in the given document.
+ * Returns null if the document has no named operation.
+ */
+function getOperationName(document) {
+    if (document && Array.isArray(document.definitions)) {
+        let operationDefinition = document.definitions.find(
+            (definition) => definition.kind === 'OperationDefinition' && definition.name && definition.name.value
+        );
+        if (operationDefinition) {
+            return operationDefinition.name.value;
+        }
+    }
+    return null;
+}
+
+/**
  * This class implements a GraphQL Executor that can be used with the @graphql-tools/wrap
  * library (introspectSchema/wrapSchema) to query a remote GraphQL endpoint deployed in an
  * Adobe I/O Runtime action.
@@ -34,17 +50,7 @@ class RemoteResolverFetcher {
     __execute(params) {
         let query = print(params.document); // Convert from AST to String
         let context = params.context ? params.context.graphqlContext : null;
-
-        // Derive the operation name from the first named OperationDefinition in the document
-        let operationName = null;
-        if (params.document && Array.isArray(params.document.definitions)) {
-            let operationDefinition = params.document.definitions.find(
-                (definition) => definition.kind === 'OperationDefinition' && definition.name && definition.name.value
-            );
-            if (operationDefinition) {
-                operationName = operationDefinition.name.value;
-            }
-        }
+        let operationName = getOperationName(params.document);
 
         let ow = openwhisk();
         return ow.actions.invoke({

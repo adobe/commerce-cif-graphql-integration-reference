@@ -115,14 +115,14 @@ async function resolve(params) {
                 // root fields ("products", "category", ...). The resolvers read the per-request
                 // dataloaders from the GraphQL execution context (see below).
                 let local = localSchema();
-                let localOrder = local.sortOrder;
                 let localExecutableSchema = addResolversToSchema({
                     schema: local,
                     resolvers: localResolvers
                 });
-                localExecutableSchema.sortOrder = localOrder;
 
-                let subschemas = [localExecutableSchema];
+                // Track each subschema together with its sort order, instead of mutating the
+                // GraphQLSchema instances with a custom property.
+                let subschemaEntries = [{ schema: localExecutableSchema, order: local.sortOrder }];
 
                 if (params.remoteSchemas) {
                     let cachedSchemas = [];
@@ -137,8 +137,7 @@ async function resolve(params) {
                             schema: remoteSchema,
                             executor: remote.executor
                         });
-                        remoteExecutableSchema.sortOrder = remote.order;
-                        subschemas.push(remoteExecutableSchema);
+                        subschemaEntries.push({ schema: remoteExecutableSchema, order: remote.order });
 
                         // We store the remote schemas in SDL form in the aio-lib-state cache
                         if (storeSchema) {
@@ -159,12 +158,12 @@ async function resolve(params) {
                     }
                 }
 
-                // Sort the subschemas by ascending sort order so that, on type conflicts,
-                // the schema with the lowest sort order wins (see onTypeConflict).
-                subschemas.sort((a, b) => a.sortOrder - b.sortOrder);
+                // Sort by ascending sort order so that, on type conflicts, the schema with the
+                // lowest sort order is the "left" candidate and wins (see onTypeConflict).
+                subschemaEntries.sort((a, b) => a.order - b.order);
 
                 let finalSchema = stitchSchemas({
-                    subschemas: subschemas,
+                    subschemas: subschemaEntries.map((entry) => entry.schema),
                     onTypeConflict: onTypeConflict
                 });
 
@@ -204,12 +203,8 @@ async function resolve(params) {
 }
 
 /**
- * When stitching schemas, this method keeps the data of the schema with the lowest sort order.
- *
- * The subschemas passed to stitchSchemas are sorted by ascending sortOrder, and stitchSchemas
- * resolves type conflicts by reducing the type candidates in subschema order (left = earlier
- * candidate = lowest sortOrder). Keeping the "left" candidate therefore preserves the original
- * "lowest sortOrder wins" merge priority.
+ * On a type conflict, keep the "left" candidate. Subschemas are pre-sorted by ascending sort order,
+ * so the earliest/lowest-order candidate is always "left" and wins (preserving merge priority).
  */
 function onTypeConflict(left) {
     return left;
