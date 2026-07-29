@@ -1,33 +1,23 @@
 name: AIO App CI
 
 on: [pull_request]
-
 jobs:
   test:
     name: Test PR
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
-        node-version: ['18']
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        node-version: ['12']
+        os: [macOS-latest, ubuntu-latest, windows-latest]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
       - name: npm install
         run: npm i
-      # aio-cli 8.x bundles an old node-gyp that imports distutils, removed from
-      # Python 3.12+. Pin Python 3.11 so native deps (e.g. @parcel/watcher) build
-      # on runners that compile from source (macOS arm64).
-      - name: Use Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
       - name: Setup CLI
         uses: adobe/aio-cli-setup-action@1.1.0
         with:
