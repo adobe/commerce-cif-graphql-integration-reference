@@ -90,8 +90,8 @@ The code in this repository is not released in NPM because it is not meant to be
 ### Tools
 
 Make sure you have the following tools installed:
-* Node 12.x
-* NPM 6.x
+* Node 18.x
+* NPM 8.x
 * [Adobe I/O CLI](https://github.com/adobe/aio-cli)
 
 To setup you local environment follow the [App Builder](https://www.adobe.io/app-builder/docs/getting_started/) documentation.

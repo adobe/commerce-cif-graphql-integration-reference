@@ -1,21 +1,31 @@
 name: AIO App CI
 
 on: [pull_request]
+
 jobs:
   test:
     name: Test PR
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: ['12']
-        os: [macOS-latest, ubuntu-latest, windows-latest]
+        node-version: ['18']
+        os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: npm
+      # aio-cli 8.x bundles an old node-gyp that imports distutils, removed from
+      # Python 3.12+. Pin Python 3.11 so native deps build on runners that compile
+      # from source (e.g. macOS arm64, Windows). This must run before `npm i`, which
+      # can itself invoke node-gyp on those runners.
+      - name: Use Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: npm install
         run: npm i
       - name: Setup CLI

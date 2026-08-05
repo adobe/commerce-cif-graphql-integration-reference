@@ -16,7 +16,7 @@
 'use strict';
 
 const { readFileSync, writeFileSync, readdirSync } = require('fs');
-const { mergeSchemas } = require('graphql-tools');
+const { stitchSchemas } = require('@graphql-tools/stitch');
 const { introspectionFromSchema } = require('graphql');
 const inquirer = require('inquirer');
 
@@ -93,8 +93,8 @@ const SchemaPruner = require('../actions/documentation/SchemaPruner');
         return;
     }
 
-    let mergedSchema = mergeSchemas({
-        schemas: executableSchemas,
+    let mergedSchema = stitchSchemas({
+        subschemas: executableSchemas,
     });
     mergedSchema = mergePostActions(mergedSchema);
 

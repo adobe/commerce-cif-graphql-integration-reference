@@ -11,8 +11,8 @@
     ],
     "packageRules": [
         {
-            "allowedVersions": "14",
-            "matchPackageNames": ["circleci/node"]
+            "allowedVersions": "18",
+            "matchPackageNames": ["cimg/node"]
         },
         {
             "groupName": "adobe fixes",

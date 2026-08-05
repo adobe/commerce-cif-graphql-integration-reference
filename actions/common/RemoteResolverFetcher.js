@@ -18,21 +18,44 @@ const openwhisk = require('openwhisk');
 const { print } = require('graphql');
 
 /**
- * This class implements a GraphQL Fetcher that can be used with the graphql-tools
- * library to query a remote GraphQL endpoint deployed in an Adobe I/O Runtime action.
+ * Derives the operation name from the first named OperationDefinition in the given document.
+ * Returns null if the document has no named operation.
+ */
+function getOperationName(document) {
+    if (document && Array.isArray(document.definitions)) {
+        let operationDefinition = document.definitions.find(
+            (definition) => definition.kind === 'OperationDefinition' && definition.name && definition.name.value
+        );
+        if (operationDefinition) {
+            return operationDefinition.name.value;
+        }
+    }
+    return null;
+}
+
+/**
+ * This class implements a GraphQL Executor that can be used with the @graphql-tools/wrap
+ * library (introspectSchema/wrapSchema) to query a remote GraphQL endpoint deployed in an
+ * Adobe I/O Runtime action.
  */
 class RemoteResolverFetcher {
     constructor(actionName) {
         this.actionName = actionName;
 
         // We export a method which MUST be bound to the object
-        // because it's not going to be called with 'this.fetcher()'
-        this.fetcher = this.__fetch.bind(this);
+        // because it's not going to be called with 'this.executor()'
+        this.executor = this.__execute.bind(this);
     }
 
-    __fetch(params) {
-        let query = print(params.query); // Convert from AST to String
-        let context = params.context ? params.context.graphqlContext : null;
+    __execute(params) {
+        let query = print(params.document); // Convert from AST to String
+        // With @graphql-tools/delegate@6, the executor receives the GraphQL execution context
+        // directly as params.context (unlike graphql-tools@3, which nested it under
+        // params.context.graphqlContext). We forward only the remote-safe payload and never the
+        // per-request dataloaders, which are not JSON-serializable.
+        let context = params.context ? params.context.remoteContext : null;
+        let operationName = getOperationName(params.document);
+
         let ow = openwhisk();
         return ow.actions.invoke({
             actionName: this.actionName,
@@ -41,7 +64,7 @@ class RemoteResolverFetcher {
             params: {
                 query,
                 variables: params.variables,
-                operationName: params.operationName,
+                operationName,
                 context
             }
         });
