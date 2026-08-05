@@ -34,6 +34,9 @@ describe('Dispatcher Resolver', () => {
     let getCategoryById;
     let getCartById;
     let cachedFiles = new Set();
+    // Records the params forwarded to each remote (OpenWhisk) action invocation so tests can
+    // assert on the context that is delegated to remote resolvers.
+    let remoteInvocations = [];
 
     before(() => {
         // Disable console debugging
@@ -46,6 +49,7 @@ describe('Dispatcher Resolver', () => {
             return {
                 actions: {
                     invoke: (options) => {
+                        remoteInvocations.push(options.params);
                         let resolve = require(options.actionName).main;
                         return resolve({
                             query: options.params.query,
@@ -86,6 +90,7 @@ describe('Dispatcher Resolver', () => {
     });
 
     beforeEach(() => {
+        remoteInvocations = [];
         // We "spy" all the loading functions
         searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
         getProductBySku = sinon.spy(ProductLoader.prototype, '__getProductBySku');
@@ -349,6 +354,15 @@ describe('Dispatcher Resolver', () => {
                     pageSize: 20,
                     currentPage: 1
                 }, args));
+
+                // Ensure the remote resolver context is forwarded to the remote action. The
+                // dispatcher must delegate the remote-safe payload (remoteContext) and must NOT
+                // leak the per-request dataloaders into the OpenWhisk action parameters.
+                let cartInvocation = remoteInvocations.find(params => /cart\s*\(/.test(params.query));
+                assert.isDefined(cartInvocation, 'expected the cart remote action to be invoked');
+                expect(cartInvocation.context).to.eql({ dummy: 'Can be some authentication token' });
+                expect(cartInvocation.context).to.not.have.property('productsLoader');
+                expect(cartInvocation.context).to.not.have.property('categoryTreeLoader');
 
                 // Ensure the cart loading function is only called once
                 // (we dont check the 'args' parameter because this is modified by graphql-tools)

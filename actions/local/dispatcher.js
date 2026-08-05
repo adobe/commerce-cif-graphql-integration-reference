@@ -19,8 +19,10 @@ const libState = require('@adobe/aio-lib-state');
 const { errorResponse, stringParameters } = require('../utils');
 
 const magentoSchema = require('../resources/magento-schema-2.4.3ee.min.json');
-const { makeRemoteExecutableSchema, introspectSchema, mergeSchemas } = require('graphql-tools');
-const { graphql, printSchema } = require('graphql');
+const { wrapSchema, introspectSchema } = require('@graphql-tools/wrap');
+const { stitchSchemas } = require('@graphql-tools/stitch');
+const { addResolversToSchema } = require('@graphql-tools/schema');
+const { graphql, printSchema, buildSchema } = require('graphql');
 
 const { Products, CategoryTree } = require('../common/Catalog.js');
 const ProductsLoader = require('../common/ProductsLoader.js');
@@ -29,6 +31,52 @@ const SchemaBuilder = require('../common/SchemaBuilder.js');
 const RemoteResolverFetcher = require('../common/RemoteResolverFetcher.js');
 
 let cachedSchema = null;
+
+// Local resolvers for the executable local schema. They resolve the local root fields and read the
+// per-request dataloaders from the GraphQL execution context so that caching is shared across the
+// local root fields of a single query.
+const localResolvers = {
+    Query: {
+        products: (source, args, context) => {
+            return new Products({
+                search: args,
+                graphqlContext: context,
+                actionParameters: args,
+                productsLoader: context.productsLoader,
+                categoryTreeLoader: context.categoryTreeLoader
+            });
+        },
+        category: (source, args, context) => {
+            return new CategoryTree({
+                categoryId: args.id,
+                graphqlContext: context,
+                actionParameters: args,
+                categoryTreeLoader: context.categoryTreeLoader,
+                productsLoader: context.productsLoader
+            });
+        },
+        categoryList: (source, args, context) => {
+            // returns an Array of categories
+            let categoryId = args.filters.ids
+                ? args.filters.ids.eq
+                : args.filters.url_key
+                ? args.filters.url_key.eq
+                : 1;
+            return [
+                new CategoryTree({
+                    categoryId: categoryId,
+                    graphqlContext: context,
+                    actionParameters: args,
+                    categoryTreeLoader: context.categoryTreeLoader,
+                    productsLoader: context.productsLoader
+                })
+            ];
+        },
+        customAttributeMetadata: () => {
+            return null; // Not supported by example integration
+        }
+    }
+};
 
 async function resolve(params) {
     const logger = Core.Logger('dispatcher', {
@@ -63,23 +111,38 @@ async function resolve(params) {
     return Promise.all(remoteResolvers)
         .then(async (remotes) => {
             if (cachedSchema == null) {
-                let remoteExecutableSchemas = [localSchema()];
+                // The local schema is made executable by attaching resolvers that resolve the local
+                // root fields ("products", "category", ...). The resolvers read the per-request
+                // dataloaders from the GraphQL execution context (see below).
+                let local = localSchema();
+                let localExecutableSchema = addResolversToSchema({
+                    schema: local,
+                    resolvers: localResolvers
+                });
+
+                // Track each subschema together with its sort order, instead of mutating the
+                // GraphQLSchema instances with a custom property.
+                let subschemaEntries = [{ schema: localExecutableSchema, order: local.sortOrder }];
 
                 if (params.remoteSchemas) {
                     let cachedSchemas = [];
 
                     remotes.forEach((remote) => {
-                        let remoteExecutableSchema = makeRemoteExecutableSchema({
-                            schema: remote.schema,
-                            fetcher: remote.fetcher
+                        // When loaded from the aio-lib-state cache, the remote schema is an SDL
+                        // string and must be rebuilt into a GraphQLSchema before being wrapped.
+                        let remoteSchema =
+                            typeof remote.schema === 'string' ? buildSchema(remote.schema) : remote.schema;
+
+                        let remoteExecutableSchema = wrapSchema({
+                            schema: remoteSchema,
+                            executor: remote.executor
                         });
-                        remoteExecutableSchema.sortOrder = remote.order;
-                        remoteExecutableSchemas.push(remoteExecutableSchema);
+                        subschemaEntries.push({ schema: remoteExecutableSchema, order: remote.order });
 
                         // We store the remote schemas in SDL form in the aio-lib-state cache
                         if (storeSchema) {
                             cachedSchemas.push({
-                                schema: printSchema(remote.schema),
+                                schema: printSchema(remoteSchema),
                                 action: remote.action,
                                 order: remote.order
                             });
@@ -95,69 +158,43 @@ async function resolve(params) {
                     }
                 }
 
-                let finalSchema = mergeSchemas({
-                    schemas: remoteExecutableSchemas,
+                // Sort by ascending sort order so that, on type conflicts, the schema with the
+                // lowest sort order is the "left" candidate and wins (see onTypeConflict).
+                subschemaEntries.sort((a, b) => a.order - b.order);
+
+                let finalSchema = stitchSchemas({
+                    subschemas: subschemaEntries.map((entry) => entry.schema),
                     onTypeConflict: onTypeConflict
                 });
 
                 cachedSchema = finalSchema; // eslint-disable-line require-atomic-updates
             }
 
-            // Passed to all resolver actions, can for example contain an authentication token
-            let context = {
-                dummy: 'Can be some authentication token'
-            };
-
-            // We instantiate some loaders common to the "products" and "category" resolvers
+            // We instantiate some loaders common to the "products" and "category" resolvers.
+            // They are passed to the local resolvers through the GraphQL execution context so that
+            // caching/deduplication is shared across all the local root fields of a single query.
             let categoryTreeLoader = new CategoryTreeLoader(params);
             let productsLoader = new ProductsLoader(params);
 
-            // Local resolvers object
-            let resolvers = {
-                products: (params, context) => {
-                    return new Products({
-                        search: params,
-                        graphqlContext: context,
-                        actionParameters: params,
-                        productsLoader: productsLoader,
-                        categoryTreeLoader: categoryTreeLoader
-                    });
+            // The GraphQL execution context. It carries two kinds of data:
+            //  - remoteContext: the payload that is forwarded to remote resolver actions (see
+            //    RemoteResolverFetcher). It must stay JSON-serializable because it is passed as
+            //    OpenWhisk action parameters, so it can for example contain an authentication token.
+            //  - the per-request dataloaders, read by the local resolvers. These are kept out of
+            //    remoteContext on purpose so that DataLoader instances are never serialized into
+            //    the remote action parameters.
+            let context = {
+                remoteContext: {
+                    dummy: 'Can be some authentication token'
                 },
-                category: (params, context) => {
-                    return new CategoryTree({
-                        categoryId: params.id,
-                        graphqlContext: context,
-                        actionParameters: params,
-                        categoryTreeLoader: categoryTreeLoader,
-                        productsLoader: productsLoader
-                    });
-                },
-                categoryList: (params, context) => {
-                    // returns an Array of categories
-                    let categoryId = params.filters.ids
-                        ? params.filters.ids.eq
-                        : params.filters.url_key
-                        ? params.filters.url_key.eq
-                        : 1;
-                    return [
-                        new CategoryTree({
-                            categoryId: categoryId,
-                            graphqlContext: context,
-                            actionParameters: params,
-                            categoryTreeLoader: categoryTreeLoader,
-                            productsLoader: productsLoader
-                        })
-                    ];
-                },
-                customAttributeMetadata: () => {
-                    return null; // Not supported by example integration
-                }
+                productsLoader: productsLoader,
+                categoryTreeLoader: categoryTreeLoader
             };
 
             // convert variables parameter to JSON object (requiered for GET requests)
             const variables = typeof (params.variables) === 'string' ? JSON.parse(params.variables) : params.variables;
             // Main resolver action, partially delegating resolution to the "remote schemas"
-            return graphql(cachedSchema, params.query, resolvers, context, variables, params.operationName).then(
+            return graphql(cachedSchema, params.query, {}, context, variables, params.operationName).then(
                 (response) => {
                     logger.info(`successful request`);
                     return {
@@ -174,12 +211,11 @@ async function resolve(params) {
 }
 
 /**
- * When merging schemas, this method keeps the data of the schema with lowest order.
- * The parameters are automatically passed by the graphql-tools library.
+ * On a type conflict, keep the "left" candidate. Subschemas are pre-sorted by ascending sort order,
+ * so the earliest/lowest-order candidate is always "left" and wins (preserving merge priority).
  */
-function onTypeConflict(left, right, info) {
-    let diff = info.left.schema.sortOrder - info.right.schema.sortOrder;
-    return diff <= 0 ? left : right;
+function onTypeConflict(left) {
+    return left;
 }
 
 /**
@@ -192,11 +228,11 @@ function prepareRemoteSchemaFetchers(remoteSchemas) {
     // Get all resolver actions to fetch the remote schemas dynamically
     return Object.values(remoteSchemas).map((resolver) => {
         console.debug(`Preparing remote schema fetcher for action ${resolver.action}`);
-        let fetcher = new RemoteResolverFetcher(resolver.action).fetcher;
-        return introspectSchema(fetcher).then((schema) => {
+        let executor = new RemoteResolverFetcher(resolver.action).executor;
+        return introspectSchema(executor).then((schema) => {
             return Promise.resolve({
                 schema,
-                fetcher,
+                executor,
                 order: resolver.order,
                 action: resolver.action
             });
@@ -217,7 +253,7 @@ async function fetchRemoteSchemasFromCache(state) {
         return schemas.value.map((obj) => {
             return Promise.resolve({
                 schema: obj.schema,
-                fetcher: new RemoteResolverFetcher(obj.action).fetcher,
+                executor: new RemoteResolverFetcher(obj.action).executor,
                 order: obj.order
             });
         });
