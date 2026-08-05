@@ -18,15 +18,16 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
-      - name: npm install
-        run: npm i
       # aio-cli 8.x bundles an old node-gyp that imports distutils, removed from
       # Python 3.12+. Pin Python 3.11 so native deps build on runners that compile
-      # from source (e.g. macOS arm64, Windows).
+      # from source (e.g. macOS arm64, Windows). This must run before `npm i`, which
+      # can itself invoke node-gyp on those runners.
       - name: Use Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: npm install
+        run: npm i
       - name: Setup CLI
         uses: adobe/aio-cli-setup-action@1.1.0
         with:

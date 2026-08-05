@@ -49,7 +49,11 @@ class RemoteResolverFetcher {
 
     __execute(params) {
         let query = print(params.document); // Convert from AST to String
-        let context = params.context ? params.context.graphqlContext : null;
+        // With @graphql-tools/delegate@6, the executor receives the GraphQL execution context
+        // directly as params.context (unlike graphql-tools@3, which nested it under
+        // params.context.graphqlContext). We forward only the remote-safe payload and never the
+        // per-request dataloaders, which are not JSON-serializable.
+        let context = params.context ? params.context.remoteContext : null;
         let operationName = getOperationName(params.document);
 
         let ow = openwhisk();

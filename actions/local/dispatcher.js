@@ -176,9 +176,17 @@ async function resolve(params) {
             let categoryTreeLoader = new CategoryTreeLoader(params);
             let productsLoader = new ProductsLoader(params);
 
-            // Passed to all resolver actions, can for example contain an authentication token
+            // The GraphQL execution context. It carries two kinds of data:
+            //  - remoteContext: the payload that is forwarded to remote resolver actions (see
+            //    RemoteResolverFetcher). It must stay JSON-serializable because it is passed as
+            //    OpenWhisk action parameters, so it can for example contain an authentication token.
+            //  - the per-request dataloaders, read by the local resolvers. These are kept out of
+            //    remoteContext on purpose so that DataLoader instances are never serialized into
+            //    the remote action parameters.
             let context = {
-                dummy: 'Can be some authentication token',
+                remoteContext: {
+                    dummy: 'Can be some authentication token'
+                },
                 productsLoader: productsLoader,
                 categoryTreeLoader: categoryTreeLoader
             };
