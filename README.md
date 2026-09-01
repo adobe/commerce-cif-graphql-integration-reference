@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/adobe/commerce-cif-graphql-integration-reference.svg?style=svg)](https://circleci.com/gh/adobe/commerce-cif-graphql-integration-reference)
+[![AIO App CI](https://github.com/adobe/commerce-cif-graphql-integration-reference/actions/workflows/pr_test.yml/badge.svg)](https://github.com/adobe/commerce-cif-graphql-integration-reference/actions/workflows/pr_test.yml)
 [![codecov](https://codecov.io/gh/adobe/commerce-cif-graphql-integration-reference/branch/master/graph/badge.svg)](https://codecov.io/gh/adobe/commerce-cif-graphql-integration-reference)
 
 # 3rd-Party GraphQL integration with AEM Commerce and CIF on Adobe I/O Runtime
