@@ -28,7 +28,7 @@ jobs:
       - name: Use Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - name: npm install
         run: npm i
       - name: Setup CLI
