@@ -25,6 +25,11 @@ You can also read our [Medium article](https://medium.com/adobetech/serverless-g
 
 This repository provides a reference implementation **example** that can be used as a **starting point** to develop a real integration. This is NOT a complete implementation that supports all the GraphQL queries of the CIF components and connector. Do not expect that it will work OOTB with all the CIF components: there is no point that we implement a full example mock implementation, this is just demonstrating how one should/can develop a real integration.
 
+**Do not copy this project as is into production.** It returns dummy data, so it never has to deal with a slow or failing backend, large responses, or real traffic. A real integration must be designed around the APIs, data, and traffic of your own commerce system, and must be tested under realistic load before going live. Otherwise, problems like out-of-memory container restarts, mass activation failures, and timeouts in AEM may only show up in production. Before going live, read and apply:
+* [Building your own integration layer](#building-your-own-integration-layer), to adapt the patterns of this project to your commerce system
+* [Test under load before going to production](#test-under-load-before-going-to-production), to verify how your implementation behaves under load and with a slow backend
+* [Resilience and sizing](#resilience-and-sizing), for outbound timeouts, request size limits, memory and concurrency sizing, caching, and logging without secrets
+
 **Very important**: in order to help a developer, identify what GraphQL queries are sent by the CIF components and connector, this repository also contains a "pruned" Magento schema that only contains the fields being queried by the CIF components and connector. This schema hence represents the fields of the Magento schema that must be implemented by a real integration to fully support all the CIF GraphQL queries. Make sure you read this [documentation](#schema-documentation).
 
 ## Introduction
@@ -90,8 +95,8 @@ The code in this repository is not released in NPM because it is not meant to be
 ### Tools
 
 Make sure you have the following tools installed:
-* Node 18.x
-* NPM 8.x
+* Node 22.x (the actions run on the `nodejs:22` runtime of Adobe I/O Runtime)
+* NPM 10.x
 * [Adobe I/O CLI](https://github.com/adobe/aio-cli)
 
 To setup you local environment follow the [App Builder](https://www.adobe.io/app-builder/docs/getting_started/) documentation.
@@ -138,6 +143,26 @@ This repository provides a reference implementation that can be used as a starti
 * introduce new local and/or remote resolvers, to incrementally support more fields of the Magento GraphQL API
 * modify the GraphQL schema to only expose the implemented fields and any potential schema customization(s) and/or extension(s)
 
+## Building your own integration layer
+
+This project shows how an App Builder application can act as an intermediate layer between AEM CIF and a commerce system: it exposes the Magento GraphQL API that CIF expects, and translates each query into calls to the commerce system. It is a demo of the patterns, not a product: do not deploy it as is, and do not copy it line by line. Understand how the pieces fit together (schema, resolvers, loaders, data classes, caching), and then design your own layer around the APIs, data, and traffic of **your** commerce system. For example:
+
+* **Start from the queries you need.** Use the [pruned schema](#schema-documentation) and the CIF components you actually use to list the queries that your layer must answer, and only implement and expose those fields.
+* **Shape the loaders after your backend.** Decide how each GraphQL field maps to your backend APIs, which calls can be batched or combined (the loaders use [dataloader](https://github.com/graphql/dataloader) for this), how authentication tokens are obtained and reused, and how backend rate limits are respected.
+* **Choose what to cache.** Decide what can be cached and for how long based on how often your data changes: a category tree can usually be cached much longer than prices or stock.
+* **Set limits that match your backend.** The timeouts, `max-page-size`, `concurrency`, and memory values of this project are examples. Tune them based on how your backend behaves, see [Resilience and sizing](#resilience-and-sizing).
+* **Choose local or remote resolvers on purpose.** Local resolvers share the process and cache of the dispatcher, remote resolvers can be scaled and deployed separately, see [Local vs. remote resolvers](#local-vs-remote-resolvers).
+
+### Test under load before going to production
+
+A layer that works for a single request can still fail under real traffic, especially when the backend is slow. Before going to production, check how your implementation behaves under load:
+
+* **Load test a staging deployment with realistic traffic.** Replay the GraphQL queries that AEM really sends (product listing, product detail, search, navigation, ...) with a realistic catalog size, at and above the expected peak, and also with empty AEM caches (for example after a cache flush or a deployment), when many requests arrive at the same time.
+* **Test with a slow and failing backend.** Add latency, errors, and timeouts to the backend calls, and check that the action fails fast, that its memory stays bounded, that containers are not killed, and that AEM pages degrade gracefully instead of hanging.
+* **Measure.** Watch the activation durations (including p95/p99), error rates, memory usage, cold starts, the number of backend calls per GraphQL request, and the backend rate-limit responses, for example with `aio rt activation list`, `aio app logs`, and the log forwarding of App Builder.
+* **Tune and optimize.** Use the results to tune `concurrency`, memory, timeouts, `max-page-size`, and cache durations, and to optimize the hot paths of your use cases (batching, caching, fetching only the fields that are needed from the backend).
+* **Repeat.** Run the tests again after significant changes, like new CIF components or queries, backend changes, or expected traffic growth.
+
 ## Schema customization and/or extension
 
 With GraphQL introspection, it is very easy for users to discover and browse a GraphQL schema in order to understand the types of queries it supports. Since the goal of the 3rd-party integration is to adapt the Magento GraphQL schema to "non-Adobe" e-commerce platforms, it is clear that:
@@ -160,9 +185,22 @@ To introspect this schema, it is automatically deployed when running `aio app de
 
 For performance reasons, the [dispatcher.js](src/local/dispatcher.js) implementation "caches" the GraphQL schema in a global variable, so that further WARM invocations of the same action can immediately reuse the schema previously built with schema stitching. The Adobe I/O Runtime platform indeed reuses existing `Node.js` containers when possible, so it is possible to "cache" data in global variables.
 
+Because a single container processes many activations concurrently (see the `concurrency` limit of the action), the schema is built only once per container: the local schema is built when the action code is loaded, and all the activations that arrive while the stitched schema is being built wait for that single build instead of each starting their own. If the build fails (for example because a remote resolver action cannot be introspected), it is not cached and the next activation retries it.
+
 In addition, the dispatcher implementation also demonstrates the use of the [aio-lib-state](https://github.com/adobe/aio-lib-state) library in order to cache all the remote schemas in a cache maintained by the Adobe I/O platform. This cache is used as a second-level caching layer when a COLD container is used, and its usefulness increases with the number of remote resolvers. The cache is disabled by default and has to be explicitly activated by developers.
 
 This caching is activated/disabled by the `use-aio-cache` property set in [manifest.yml](manifest.yml). To activate the caching, set this property to an integer value that will define the caching duration in seconds. During development, we **strongly recommend** that this property is set to `false` to make sure that changes to the schema are immediately visible in the schema.
+
+## Resilience and sizing
+
+This reference implementation returns dummy data, so it is never slow. A real integration calls a 3rd-party commerce system that can be slow or fail. AEM renders pages with many sequential GraphQL requests, so a slow backend quickly leads to many requests waiting at the same time in the same action container. Without the guards below, these requests pile up until the container runs out of memory. It is then killed, and all the activations that it was running fail together. Please consider the following when building a real integration:
+
+* **Set timeouts on all outbound calls.** Every request to the 3rd-party system (for example in the `*Loader.js` classes) must have a timeout, for example with an `AbortController` and `fetch`, or with the `timeout` option of your HTTP client. This timeout must be shorter than the `socketTimeout` of the AEM CIF GraphQL client (5 seconds by default, see the `GraphqlClientConfiguration` OSGi configuration in AEM), so that the action fails fast and releases its memory instead of working on a response that AEM has already given up on.
+* **Bound the request sizes.** Never trust the `pageSize` and similar arguments sent by the client. The [ProductsLoader.js](actions/common/ProductsLoader.js) example clamps `pageSize` to the `max-page-size` input of the dispatcher action (100 by default, see `app.config.yaml`) before calling the backend, and `page_info.page_size` reports the page size that was actually applied. Apply the same approach to any other argument that controls the amount of data fetched from the backend, and avoid fetching large unbounded lists (all the tags, all the categories, ...) for each request.
+* **Size the memory for the configured concurrency.** An I/O Runtime container processes up to `concurrency` activations at the same time and all of them share the `memorySize` of the action. Both can be set with the `limits` of each action in `app.config.yaml`. Measure the memory used by one request with realistic data, and make sure that `concurrency` times that value fits in the memory limit, with some headroom. With a slow backend, a lower concurrency (for example 50 to 100 instead of 200) is safer, because I/O Runtime then spreads the load over more containers.
+* **Cache static data.** Build the schema only once per container (see [Caching](#caching)), enable `use-aio-cache` in production, and cache data that rarely changes, like the category tree, in global variables or with [aio-lib-state](https://github.com/adobe/aio-lib-state), so that it is not fetched again for every request.
+* **Never log secrets.** Pass credentials (client ids, client secrets, API keys, tokens, ...) as action inputs or headers, and never log them. The `stringParameters()` function in [utils.js](actions/utils.js) hides the values of all the parameters, headers, and nested properties whose names look sensitive. Extend its list of name patterns if your inputs use other names. Keep `LOG_LEVEL` at `info` in production and only use `debug` temporarily for troubleshooting.
+* **Protect AEM from a slow backend.** On the AEM side, the CIF GraphQL client can use a circuit breaker with a fault tolerant fallback when the backend is slow or unavailable. It is enabled with the `enableFaultTolerantFallback` property of the `GraphqlClientConfiguration` OSGi configuration.
 
 ### Contributing
 

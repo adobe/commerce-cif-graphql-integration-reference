@@ -11,7 +11,7 @@ jobs:
       checks: write
     strategy:
       matrix:
-        node-version: ['18']
+        node-version: ['22']
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - name: Checkout

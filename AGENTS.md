@@ -4,7 +4,7 @@ Reference implementation for integrating 3rd-party commerce platforms with AEM C
 
 ## Build
 
-- **Runtime:** Node.js 12.x (CI-tested version), compatible with 10/12/14
+- **Runtime:** Node.js 22.x (CI-tested version, `engines.node >=22`)
 - **Adobe I/O CLI:** Required for build/deploy (`aio` v8.x)
 - `npm install` — install dependencies
 - `aio app build` — build the application
@@ -44,6 +44,7 @@ Reference implementation for integrating 3rd-party commerce platforms with AEM C
 - **Resolver pattern:** "Local" resolvers run in the dispatcher action (shared process, shared cache); "remote" resolvers are separate I/O Runtime actions integrated via schema delegation
 - **Data layer:** `*Loader.js` classes fetch data (using `dataloader` for batching); companion data classes convert responses to Magento GraphQL types
 - **Schema building:** `SchemaBuilder.js` builds the executable schema by merging the local schema with remote schemas discovered via introspection
-- **Caching:** Schema cached in global variable (warm containers); optional second-level cache via `@adobe/aio-lib-state` (controlled by `use-aio-cache` in `app.config.yaml`)
+- **Caching:** Schema built once per container (single-flight promise shared by concurrent activations, reset on failure) and cached in a global variable (warm containers); optional second-level cache via `@adobe/aio-lib-state` (controlled by `use-aio-cache` in `app.config.yaml`)
 - **App config:** `app.config.yaml` defines all Runtime actions, their inputs, and remote schema wiring (`remoteSchemas` map with merge-priority `order`)
-- **Runtime:** Actions execute on `nodejs:14` containers in Adobe I/O Runtime
+- **Runtime:** Actions execute on `nodejs:22` containers in Adobe I/O Runtime
+- **Logging:** Log action parameters only via `stringParameters()` (`actions/utils.js`), which hides sensitive values; default `LOG_LEVEL` is `info`
