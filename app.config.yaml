@@ -10,6 +10,11 @@ application:
             function: actions/local/dispatcher.js
             web: 'yes'
             runtime: 'nodejs:22'
+            # Example limits, see "Resilience and sizing" in the README. Measure the memory used per request
+            # under realistic load, and make sure that concurrency x memory per request fits in memorySize (MB).
+            # limits:
+            #   concurrency: 50
+            #   memorySize: 1024
             inputs:
               LOG_LEVEL: info # use debug only for troubleshooting, parameters are logged with sensitive values hidden
               use-aio-cache: false # number of seconds for caching; set to false or remove to disable caching

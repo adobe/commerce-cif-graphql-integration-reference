@@ -109,6 +109,23 @@ describe("utils.js", () => {
             expect(parsed.backend.auth.clientSecret).to.equal("<hidden>");
             expect(parsed.list[0]).to.deep.equal({ token: "<hidden>", id: 1 });
         });
+        it("hides client ids and passwords with a prefix or a suffix in their name", () => {
+            const params = {
+                IMS_CLIENT_ID: "leak1",
+                sapClientId: "leak2",
+                backend_client_id: "leak3",
+                pwd: "leak4",
+                DB_PWD: "leak5",
+                "x-client-id-header": "leak6",
+                keyPassphrase: "leak7",
+                clientName: "my-client",
+            };
+            const result = utils.stringParameters(params);
+            ["leak1", "leak2", "leak3", "leak4", "leak5", "leak6", "leak7"].forEach((secret) =>
+                expect(result).not.to.include(secret)
+            );
+            expect(JSON.parse(result).clientName).to.equal("my-client");
+        });
         it("hides sensitive values in JSON string parameters like GET request variables", () => {
             const params = {
                 query: "mutation($email: String!, $password: String!) { generateCustomerToken(email: $email, password: $password) { token } }",

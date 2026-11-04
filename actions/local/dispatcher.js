@@ -187,8 +187,10 @@ async function buildExecutableSchema(params) {
 
     // We first try to get the remote schemas from the aio-lib-state cache
     if (Number.isInteger(params['use-aio-cache'])) {
-        state = await libState.init();
-        remoteResolvers = await fetchRemoteSchemasFromCache(state);
+        state = await initStateCache();
+        if (state) {
+            remoteResolvers = await fetchRemoteSchemasFromCache(state);
+        }
     }
 
     // If we didn't get anything from the aio-lib-state cache,
@@ -231,9 +233,14 @@ async function buildExecutableSchema(params) {
         if (state && cachedSchemas.length > 0) {
             let ttl = params['use-aio-cache'];
             console.debug(`Trying to put schemas in aio-lib-state cache with ttl:${ttl} ...`);
-            await state.put('schemas', cachedSchemas, {
-                ttl
-            });
+            try {
+                await state.put('schemas', cachedSchemas, {
+                    ttl
+                });
+            } catch (error) {
+                // The schema was built: a failing cache write must not fail the activations
+                console.warn(`Could not put schemas in aio-lib-state cache: ${error.message}`);
+            }
         }
     }
 
@@ -290,13 +297,34 @@ function prepareRemoteSchemaFetchers(remoteSchemas) {
 }
 
 /**
+ * Initializes the aio-lib-state cache. The cache is best-effort: if it is not available
+ * (for example because the state service is throttling requests), this returns null and
+ * the remote schemas are introspected instead.
+ */
+async function initStateCache() {
+    try {
+        return await libState.init();
+    } catch (error) {
+        console.warn(`Could not initialize aio-lib-state cache: ${error.message}`);
+        return null;
+    }
+}
+
+/**
  * This method checks if the SDL remote schemas are available in the aio-lib-state cache.
  * If successful, it returns an Array of remote resolvers that can be used to build the
- * executable remote schemas. It returns null if nothing could be fetched from the cache.
+ * executable remote schemas. It returns null if nothing could be fetched from the cache,
+ * including when reading the cache fails.
  */
 async function fetchRemoteSchemasFromCache(state) {
     console.debug('Trying to get remote schemas from aio-lib-state cache ...');
-    let schemas = await state.get('schemas');
+    let schemas;
+    try {
+        schemas = await state.get('schemas');
+    } catch (error) {
+        console.warn(`Could not get schemas from aio-lib-state cache: ${error.message}`);
+        return null;
+    }
     if (schemas) {
         console.debug(`Got ${schemas.value.length} schemas from aio-lib-state cache`);
         return schemas.value.map((obj) => {

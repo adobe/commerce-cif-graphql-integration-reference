@@ -27,13 +27,15 @@ const DEFAULT_SENSITIVE_PARAM_PATTERNS = Object.freeze([
     '*token*',
     '*password*',
     '*passwd*',
+    '*passphrase*',
+    '*pwd*',
     '*key*',
     '*credential*',
     '*authorization*',
     '*cookie*',
-    'client_id',
-    'client-id',
-    'clientid'
+    '*client_id*',
+    '*client-id*',
+    '*clientid*'
 ]);
 
 function escapeRegExp(string) {

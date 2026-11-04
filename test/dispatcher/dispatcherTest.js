@@ -41,6 +41,10 @@ describe('Dispatcher Resolver', () => {
     let failingIntrospections = 0;
     // Number of reads of the aio-lib-state cache
     let stateGets = 0;
+    // Simulates a failing aio-lib-state call: 'init', 'get' or 'put'
+    let failingStateCall = null;
+    // If true, the aio-lib-state cache is empty
+    let emptyState = false;
 
     const isIntrospection = (params) => /__schema/.test(params.query);
 
@@ -74,13 +78,25 @@ describe('Dispatcher Resolver', () => {
 
         // Mock aio-lib-state library, caching objects in files
         mockRequire('@adobe/aio-lib-state', {
-            init: () => {
+            init: async () => {
+                if (failingStateCall === 'init') {
+                    throw new Error('init failed');
+                }
                 return {
-                    get: (key) => {
+                    get: async (key) => {
                         stateGets++;
+                        if (failingStateCall === 'get') {
+                            throw new Error('get failed');
+                        }
+                        if (emptyState) {
+                            return null;
+                        }
                         return fs.existsSync(`test/${key}.cache`) ? JSON.parse(fs.readFileSync(`test/${key}.cache`)) : null;
                     },
-                    put: (key, value) => {
+                    put: async (key, value) => {
+                        if (failingStateCall === 'put') {
+                            throw new Error('put failed: too many requests');
+                        }
                         cachedFiles.add(`test/${key}.cache`);
                         fs.writeFileSync(`test/${key}.cache`, JSON.stringify({value}));
                     }
@@ -104,6 +120,8 @@ describe('Dispatcher Resolver', () => {
         remoteInvocations = [];
         failingIntrospections = 0;
         stateGets = 0;
+        failingStateCall = null;
+        emptyState = false;
         // We "spy" all the loading functions
         searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
         getProductBySku = sinon.spy(ProductLoader.prototype, '__getProductBySku');
@@ -682,6 +700,38 @@ describe('Dispatcher Resolver', () => {
             }).then(result => {
                 assertSuccess(result);
                 assert.equal(introspections(), 2);
+            });
+        });
+
+        it(`does not fail ${CONCURRENCY} concurrent cold start invocations when the aio-lib-state cache write fails`, () => {
+            let params = { ...args, 'use-aio-cache': 3600 };
+            failingStateCall = 'put';
+            emptyState = true;
+            console.warn.resetHistory();
+            return concurrentRequests(params).then(results => {
+                results.forEach(assertSuccess);
+                assert.equal(introspections(), 1);
+                assert.isTrue(console.warn.calledWithMatch('Could not put schemas in aio-lib-state cache'));
+
+                // The schema built in the container is cached despite the failing cache write
+                return resolve({ ...params });
+            }).then(result => {
+                assertSuccess(result);
+                assert.equal(introspections(), 1);
+                assert.equal(stateGets, 1);
+            });
+        });
+
+        ['init', 'get'].forEach(failingCall => {
+            it(`introspects the remote schemas when the aio-lib-state ${failingCall} call fails`, () => {
+                let params = { ...args, 'use-aio-cache': 3600 };
+                failingStateCall = failingCall;
+                console.warn.resetHistory();
+                return concurrentRequests(params).then(results => {
+                    results.forEach(assertSuccess);
+                    assert.equal(introspections(), 1);
+                    assert.isTrue(console.warn.calledWithMatch('aio-lib-state cache'));
+                });
             });
         });
     });

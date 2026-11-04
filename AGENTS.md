@@ -40,7 +40,7 @@ Reference implementation for integrating 3rd-party commerce platforms with AEM C
 
 ## Architecture
 
-- **GraphQL (graphql-js 14 + graphql-tools 3):** Schema-first approach with schema stitching
+- **GraphQL (graphql-js 14 + @graphql-tools 6):** Schema-first approach with schema stitching
 - **Resolver pattern:** "Local" resolvers run in the dispatcher action (shared process, shared cache); "remote" resolvers are separate I/O Runtime actions integrated via schema delegation
 - **Data layer:** `*Loader.js` classes fetch data (using `dataloader` for batching); companion data classes convert responses to Magento GraphQL types
 - **Schema building:** `SchemaBuilder.js` builds the executable schema by merging the local schema with remote schemas discovered via introspection
