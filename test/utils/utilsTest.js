@@ -35,11 +35,12 @@ describe("utils.js", () => {
     });
 
     describe("stringParameters", () => {
-        it("no auth header", () => {
+        it("no sensitive parameters", () => {
             const params = {
                 a: 1,
                 b: 2,
-                __ow_headers: { "x-api-key": "fake-api-key" },
+                url: "https://mybackendserver.com/rest",
+                __ow_headers: { "x-request-id": "abcd" },
             };
             expect(utils.stringParameters(params)).to.equal(
                 JSON.stringify(params)
@@ -57,7 +58,114 @@ describe("utils.js", () => {
             expect(utils.stringParameters(params)).to.include(
                 '"authorization":"<hidden>"'
             );
-            expect(utils.stringParameters(params)).not.to.equal("secret");
+            expect(utils.stringParameters(params)).to.include(
+                '"x-api-key":"<hidden>"'
+            );
+            expect(utils.stringParameters(params)).not.to.include("secret");
+            expect(utils.stringParameters(params)).not.to.include("fake-api-key");
+        });
+        it("hides sensitive parameters, headers and nested values case-insensitively", () => {
+            const secrets = [
+                "s-client-id", "s-client-secret", "s-access-token", "s-password", "s-apikey",
+                "s-api-key", "s-x-api-key", "s-authorization", "s-cookie", "s-nested-secret",
+                "s-array-token", "s-ims-credentials", "s-private-key", "s-client-id-dash"
+            ];
+            const params = {
+                LOG_LEVEL: "debug",
+                url: "https://mybackendserver.com/rest",
+                client_id: "s-client-id",
+                "client-id": "s-client-id-dash",
+                CLIENT_SECRET: "s-client-secret",
+                accessToken: "s-access-token",
+                Password: "s-password",
+                apikey: "s-apikey",
+                API_KEY: "s-api-key",
+                PRIVATE_KEY: { pem: "s-private-key" },
+                __ow_headers: {
+                    "X-Api-Key": "s-x-api-key",
+                    Authorization: "s-authorization",
+                    cookie: "s-cookie",
+                    "x-request-id": "abcd",
+                },
+                backend: {
+                    host: "mybackendserver.com",
+                    auth: { clientSecret: "s-nested-secret", user: "admin" },
+                    imsCredentials: "s-ims-credentials",
+                },
+                list: [{ token: "s-array-token", id: 1 }],
+            };
+            const result = utils.stringParameters(params);
+            secrets.forEach((secret) => expect(result).not.to.include(secret));
+
+            const parsed = JSON.parse(result);
+            expect(parsed.LOG_LEVEL).to.equal("debug");
+            expect(parsed.url).to.equal("https://mybackendserver.com/rest");
+            expect(parsed.client_id).to.equal("<hidden>");
+            expect(parsed.PRIVATE_KEY).to.equal("<hidden>");
+            expect(parsed.__ow_headers["x-request-id"]).to.equal("abcd");
+            expect(parsed.__ow_headers.Authorization).to.equal("<hidden>");
+            expect(parsed.backend.host).to.equal("mybackendserver.com");
+            expect(parsed.backend.auth.user).to.equal("admin");
+            expect(parsed.backend.auth.clientSecret).to.equal("<hidden>");
+            expect(parsed.list[0]).to.deep.equal({ token: "<hidden>", id: 1 });
+        });
+        it("hides client ids and passwords with a prefix or a suffix in their name", () => {
+            const params = {
+                IMS_CLIENT_ID: "leak1",
+                sapClientId: "leak2",
+                backend_client_id: "leak3",
+                pwd: "leak4",
+                DB_PWD: "leak5",
+                "x-client-id-header": "leak6",
+                keyPassphrase: "leak7",
+                clientName: "my-client",
+            };
+            const result = utils.stringParameters(params);
+            ["leak1", "leak2", "leak3", "leak4", "leak5", "leak6", "leak7"].forEach((secret) =>
+                expect(result).not.to.include(secret)
+            );
+            expect(JSON.parse(result).clientName).to.equal("my-client");
+        });
+        it("hides sensitive values in JSON string parameters like GET request variables", () => {
+            const params = {
+                query: "mutation($email: String!, $password: String!) { generateCustomerToken(email: $email, password: $password) { token } }",
+                variables: JSON.stringify({ email: "jane@example.com", password: "s-password" }),
+                notJson: "{ not json",
+            };
+            const parsed = JSON.parse(utils.stringParameters(params));
+            expect(parsed.query).to.equal(params.query);
+            expect(JSON.parse(parsed.variables)).to.deep.equal({ email: "jane@example.com", password: "<hidden>" });
+            expect(parsed.notJson).to.equal("{ not json");
+        });
+        it("does not modify the parameters", () => {
+            const params = {
+                client_secret: "s-client-secret",
+                nested: { token: "s-token" },
+                __ow_headers: { authorization: "Bearer s-bearer" },
+            };
+            const copy = JSON.parse(JSON.stringify(params));
+            utils.stringParameters(params);
+            expect(params).to.deep.equal(copy);
+        });
+        it("supports custom name patterns, as strings or regular expressions", () => {
+            const params = { client_secret: "s-client-secret", myCustomField: "custom", other: "visible", ssn: "123" };
+            const patterns = [...utils.DEFAULT_SENSITIVE_PARAM_PATTERNS, "my*field", /^SSN$/g];
+            // Run twice to make sure that global regular expressions are not stateful
+            [1, 2].forEach(() => {
+                const parsed = JSON.parse(utils.stringParameters(params, patterns));
+                expect(parsed).to.deep.equal({
+                    client_secret: "<hidden>",
+                    myCustomField: "<hidden>",
+                    other: "visible",
+                    ssn: "<hidden>",
+                });
+            });
+        });
+        it("handles circular references", () => {
+            const params = { a: 1, token: "s-token" };
+            params.self = params;
+            const parsed = JSON.parse(utils.stringParameters(params));
+            expect(parsed).to.deep.equal({ a: 1, token: "<hidden>", self: "[Circular]" });
         });
     });
 

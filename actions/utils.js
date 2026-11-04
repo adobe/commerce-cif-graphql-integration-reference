@@ -14,23 +14,100 @@
 
 'use strict';
 
+const HIDDEN_VALUE = '<hidden>';
+
+/**
+ * Default name patterns of the parameters (and headers, and nested properties) whose values must never be logged.
+ * Patterns are matched case-insensitively against the full property name, `*` matches any sequence of characters.
+ * Note that `*key*` intentionally also matches non-secret names like `url_key`: a hidden value in a debug log is
+ * better than a leaked API key.
+ */
+const DEFAULT_SENSITIVE_PARAM_PATTERNS = Object.freeze([
+    '*secret*',
+    '*token*',
+    '*password*',
+    '*passwd*',
+    '*passphrase*',
+    '*pwd*',
+    '*key*',
+    '*credential*',
+    '*authorization*',
+    '*cookie*',
+    '*client_id*',
+    '*client-id*',
+    '*clientid*'
+]);
+
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function toNameMatcher(pattern) {
+    let regExp;
+    if (pattern instanceof RegExp) {
+        // Drop the stateful flags so that RegExp.test() always starts at index 0
+        let flags = pattern.flags.replace(/[gy]/g, '');
+        regExp = new RegExp(pattern.source, flags.includes('i') ? flags : flags + 'i');
+    } else {
+        regExp = new RegExp('^' + String(pattern).split('*').map(escapeRegExp).join('.*') + '$', 'i');
+    }
+    return (name) => regExp.test(name);
+}
+
+function redact(value, isSensitive, ancestors) {
+    if (typeof value === 'string') {
+        // GraphQL variables of GET requests (and similar inputs) are passed as JSON strings
+        let trimmed = value.trim();
+        if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+            try {
+                return JSON.stringify(redact(JSON.parse(trimmed), isSensitive, ancestors));
+            } catch (e) {
+                return value;
+            }
+        }
+        return value;
+    }
+
+    if (value === null || typeof value !== 'object') {
+        return value;
+    }
+
+    if (ancestors.has(value)) {
+        return '[Circular]';
+    }
+    ancestors.add(value);
+
+    let result;
+    if (Array.isArray(value)) {
+        result = value.map((item) => redact(item, isSensitive, ancestors));
+    } else {
+        result = {};
+        Object.keys(value).forEach((name) => {
+            result[name] = isSensitive(name) ? HIDDEN_VALUE : redact(value[name], isSensitive, ancestors);
+        });
+    }
+
+    ancestors.delete(value);
+    return result;
+}
+
 /**
  *
  * Returns a log ready string of the action input parameters.
- * The `Authorization` header content will be replaced by '<hidden>'.
+ * The values of all the parameters, headers, and nested properties whose name matches one of the sensitive
+ * name patterns are replaced by '<hidden>'. The `params` object is not modified.
  *
  * @param {object} params action input parameters.
+ * @param {Array<string|RegExp>} [sensitivePatterns] the name patterns of the values to hide,
+ *        defaults to `DEFAULT_SENSITIVE_PARAM_PATTERNS`. String patterns support the `*` wildcard.
  *
  * @returns {string}
  *
  */
-function stringParameters(params) {
-    // hide authorization token without overriding params
-    let headers = params.__ow_headers || {};
-    if (headers.authorization) {
-        headers = { ...headers, authorization: '<hidden>' };
-    }
-    return JSON.stringify({ ...params, __ow_headers: headers });
+function stringParameters(params, sensitivePatterns = DEFAULT_SENSITIVE_PARAM_PATTERNS) {
+    let matchers = sensitivePatterns.map(toNameMatcher);
+    let isSensitive = (name) => matchers.some((matches) => matches(name));
+    return JSON.stringify(redact(params, isSensitive, new Set()));
 }
 
 /**
@@ -145,6 +222,7 @@ function errorResponse(statusCode, message, logger) {
 }
 
 module.exports = {
+    DEFAULT_SENSITIVE_PARAM_PATTERNS,
     errorResponse,
     getBearerToken,
     stringParameters,

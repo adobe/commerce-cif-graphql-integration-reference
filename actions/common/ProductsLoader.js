@@ -16,11 +16,20 @@
 
 const DataLoader = require('dataloader');
 
+// The default page size of the Magento GraphQL "products" field
+const DEFAULT_PAGE_SIZE = 20;
+
+// The default maximum page size, can be configured with the "max-page-size" input of the action
+const DEFAULT_MAX_PAGE_SIZE = 100;
+
 class ProductsLoader {
     /**
      * @param {Object} [actionParameters] Some optional parameters of the I/O Runtime action, like for example authentication info.
      */
     constructor(actionParameters) {
+        let maxPageSize = actionParameters ? Number(actionParameters['max-page-size']) : NaN;
+        this.maxPageSize = Number.isInteger(maxPageSize) && maxPageSize > 0 ? maxPageSize : DEFAULT_MAX_PAGE_SIZE;
+
         // A custom function to generate custom cache keys, simply serializing the key.
         let cacheKeyFunction = (key) => JSON.stringify(key, null, 0);
 
@@ -49,7 +58,24 @@ class ProductsLoader {
     }
 
     load(key) {
-        return this.loader.load(key);
+        return this.loader.load(this.__boundPageSize(key));
+    }
+
+    /**
+     * Never trust the page size requested by the client: an unbounded page size makes the backend
+     * fetch and the action hold a large amount of data in memory for a single request.
+     * The page size is clamped to the maximum page size, and invalid values fall back to the default page size.
+     * The page_info.page_size field of the response reports the page size that was actually applied.
+     *
+     * @param {Object} key The search parameters.
+     * @returns {Object} A copy of the search parameters with a bounded page size.
+     */
+    __boundPageSize(key) {
+        if (!key || key.pageSize === undefined) {
+            return key;
+        }
+        let pageSize = Number.isInteger(key.pageSize) && key.pageSize > 0 ? key.pageSize : DEFAULT_PAGE_SIZE;
+        return { ...key, pageSize: Math.min(pageSize, this.maxPageSize) };
     }
 
     /**

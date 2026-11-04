@@ -37,6 +37,16 @@ describe('Dispatcher Resolver', () => {
     // Records the params forwarded to each remote (OpenWhisk) action invocation so tests can
     // assert on the context that is delegated to remote resolvers.
     let remoteInvocations = [];
+    // Number of upcoming remote schema introspections that must fail, to simulate a failing remote action
+    let failingIntrospections = 0;
+    // Number of reads of the aio-lib-state cache
+    let stateGets = 0;
+    // Simulates a failing aio-lib-state call: 'init', 'get' or 'put'
+    let failingStateCall = null;
+    // If true, the aio-lib-state cache is empty
+    let emptyState = false;
+
+    const isIntrospection = (params) => /__schema/.test(params.query);
 
     before(() => {
         // Disable console debugging
@@ -50,6 +60,10 @@ describe('Dispatcher Resolver', () => {
                 actions: {
                     invoke: (options) => {
                         remoteInvocations.push(options.params);
+                        if (failingIntrospections > 0 && isIntrospection(options.params)) {
+                            failingIntrospections--;
+                            return Promise.reject(new Error('The action did not produce a valid response'));
+                        }
                         let resolve = require(options.actionName).main;
                         return resolve({
                             query: options.params.query,
@@ -64,12 +78,25 @@ describe('Dispatcher Resolver', () => {
 
         // Mock aio-lib-state library, caching objects in files
         mockRequire('@adobe/aio-lib-state', {
-            init: () => {
+            init: async () => {
+                if (failingStateCall === 'init') {
+                    throw new Error('init failed');
+                }
                 return {
-                    get: (key) => {
+                    get: async (key) => {
+                        stateGets++;
+                        if (failingStateCall === 'get') {
+                            throw new Error('get failed');
+                        }
+                        if (emptyState) {
+                            return null;
+                        }
                         return fs.existsSync(`test/${key}.cache`) ? JSON.parse(fs.readFileSync(`test/${key}.cache`)) : null;
                     },
-                    put: (key, value) => {
+                    put: async (key, value) => {
+                        if (failingStateCall === 'put') {
+                            throw new Error('put failed: too many requests');
+                        }
                         cachedFiles.add(`test/${key}.cache`);
                         fs.writeFileSync(`test/${key}.cache`, JSON.stringify({value}));
                     }
@@ -91,6 +118,10 @@ describe('Dispatcher Resolver', () => {
 
     beforeEach(() => {
         remoteInvocations = [];
+        failingIntrospections = 0;
+        stateGets = 0;
+        failingStateCall = null;
+        emptyState = false;
         // We "spy" all the loading functions
         searchProducts = sinon.spy(ProductsLoader.prototype, '__searchProducts');
         getProductBySku = sinon.spy(ProductLoader.prototype, '__getProductBySku');
@@ -525,5 +556,183 @@ describe('Dispatcher Resolver', () => {
             });
         });
 
+    });
+
+    describe('Page size limit', () => {
+
+        const productsQuery = pageSize => `{products(search:"short",currentPage:1,pageSize:${pageSize}){page_info{page_size},items{sku}}}`;
+
+        let params = (extra) => Object.assign({
+            url: 'https://mybackendserver.com/rest',
+            variables: '{}',
+            'use-aio-cache': 3600
+        }, extra);
+
+        [
+            { requested: 1000, maxPageSize: undefined, expected: 100 },
+            { requested: 100, maxPageSize: undefined, expected: 100 },
+            { requested: 6, maxPageSize: undefined, expected: 6 },
+            { requested: 1000, maxPageSize: 50, expected: 50 },
+            { requested: 1000, maxPageSize: '50', expected: 50 },
+            { requested: 1000, maxPageSize: 'invalid', expected: 100 },
+            { requested: 1000, maxPageSize: 0, expected: 100 },
+            { requested: 0, maxPageSize: undefined, expected: 20 },
+            { requested: -5, maxPageSize: undefined, expected: 20 }
+        ].forEach(({ requested, maxPageSize, expected }) => {
+            it(`applies page size ${expected} for pageSize ${requested} and max-page-size ${JSON.stringify(maxPageSize)}`, () => {
+                let args = params({ query: productsQuery(requested), 'max-page-size': maxPageSize });
+                return resolve(args).then(result => {
+                    assert.isUndefined(result.body.errors);
+                    assert.equal(result.body.data.products.page_info.page_size, expected);
+                    assert(searchProducts.calledOnce);
+                    assert.equal(searchProducts.firstCall.args[0].pageSize, expected);
+                });
+            });
+        });
+
+        it('applies the maximum page size to the products of a category', () => {
+            let args = params({ query: '{category(id:211){products(currentPage:1,pageSize:1000){items{sku}}}}' });
+            return resolve(args).then(result => {
+                assert.isUndefined(result.body.errors);
+                assert(searchProducts.calledOnce);
+                assert.equal(searchProducts.firstCall.args[0].pageSize, 100);
+            });
+        });
+
+        it('does not change search parameters without a page size', () => {
+            let loader = new ProductsLoader();
+            let key = { search: 'short', pageSize: 1000 };
+            assert.deepEqual(loader.__boundPageSize({ search: 'short' }), { search: 'short' });
+            assert.deepEqual(loader.__boundPageSize(key), { search: 'short', pageSize: 100 });
+            assert.equal(key.pageSize, 1000); // The original key is not mutated
+        });
+    });
+
+    describe('Schema build at cold start', () => {
+
+        const CONCURRENCY = 20;
+        const query = '{products(search:"short", currentPage:1){total_count}, cart(cart_id:"abcd"){email}}';
+
+        // Without "use-aio-cache", every schema build introspects the remote "cart" schema
+        let args = {
+            url: 'https://mybackendserver.com/rest',
+            remoteSchemas: {
+                cart: {
+                    order: 20,
+                    action: '../../actions/remote/cartResolver.js'
+                }
+            },
+            query
+        };
+
+        const concurrentRequests = (params) => {
+            return Promise.all(Array.from({ length: CONCURRENCY }, () => resolve({ ...params })));
+        };
+
+        const assertSuccess = (result) => {
+            assert.equal(result.statusCode, 200);
+            assert.isUndefined(result.body.errors);
+            assert.equal(result.body.data.products.total_count, 2);
+            assert.equal(result.body.data.cart.email, 'dummy@example.com');
+        };
+
+        const introspections = () => remoteInvocations.filter(isIntrospection).length;
+
+        beforeEach(() => {
+            cleanCachedSchema();
+        });
+
+        after(() => {
+            cleanCachedSchema();
+        });
+
+        it(`builds the schema only once for ${CONCURRENCY} concurrent cold start invocations`, () => {
+            return concurrentRequests(args).then(results => {
+                assert.equal(results.length, CONCURRENCY);
+                results.forEach(assertSuccess);
+                assert.equal(introspections(), 1, 'the remote schema must be introspected exactly once');
+
+                // WARM invocations reuse the cached schema
+                return resolve({ ...args });
+            }).then(result => {
+                assertSuccess(result);
+                assert.equal(introspections(), 1);
+            });
+        });
+
+        it(`reads the aio-lib-state cache only once for ${CONCURRENCY} concurrent cold start invocations`, () => {
+            let params = { ...args, 'use-aio-cache': 3600 };
+            return concurrentRequests(params).then(results => {
+                results.forEach(assertSuccess);
+                assert.equal(stateGets, 1, 'the aio-lib-state cache must be read exactly once');
+                assert.isAtMost(introspections(), 1);
+            });
+        });
+
+        it('does not cache a failed schema build and retries it on the next invocation', () => {
+            failingIntrospections = 1;
+            return concurrentRequests(args).then(results => {
+                // All the concurrent invocations share the single failed build
+                results.forEach(result => {
+                    assert.equal(result.error.statusCode, 500);
+                    assert.equal(result.error.body.error, 'server error');
+                });
+                assert.equal(introspections(), 1);
+
+                // The next invocations retry the build once and succeed
+                return concurrentRequests(args);
+            }).then(results => {
+                results.forEach(assertSuccess);
+                assert.equal(introspections(), 2);
+            });
+        });
+
+        it('ignores a schema build that was in progress when the cache was cleaned', () => {
+            let first = resolve({ ...args });
+            cleanCachedSchema();
+            let second = resolve({ ...args });
+            return Promise.all([first, second]).then(results => {
+                results.forEach(assertSuccess);
+                assert.equal(introspections(), 2);
+
+                // The schema of the second build is cached
+                return resolve({ ...args });
+            }).then(result => {
+                assertSuccess(result);
+                assert.equal(introspections(), 2);
+            });
+        });
+
+        it(`does not fail ${CONCURRENCY} concurrent cold start invocations when the aio-lib-state cache write fails`, () => {
+            let params = { ...args, 'use-aio-cache': 3600 };
+            failingStateCall = 'put';
+            emptyState = true;
+            console.warn.resetHistory();
+            return concurrentRequests(params).then(results => {
+                results.forEach(assertSuccess);
+                assert.equal(introspections(), 1);
+                assert.isTrue(console.warn.calledWithMatch('Could not put schemas in aio-lib-state cache'));
+
+                // The schema built in the container is cached despite the failing cache write
+                return resolve({ ...params });
+            }).then(result => {
+                assertSuccess(result);
+                assert.equal(introspections(), 1);
+                assert.equal(stateGets, 1);
+            });
+        });
+
+        ['init', 'get'].forEach(failingCall => {
+            it(`introspects the remote schemas when the aio-lib-state ${failingCall} call fails`, () => {
+                let params = { ...args, 'use-aio-cache': 3600 };
+                failingStateCall = failingCall;
+                console.warn.resetHistory();
+                return concurrentRequests(params).then(results => {
+                    results.forEach(assertSuccess);
+                    assert.equal(introspections(), 1);
+                    assert.isTrue(console.warn.calledWithMatch('aio-lib-state cache'));
+                });
+            });
+        });
     });
 });

@@ -30,7 +30,13 @@ const CategoryTreeLoader = require('../common/CategoryTreeLoader.js');
 const SchemaBuilder = require('../common/SchemaBuilder.js');
 const RemoteResolverFetcher = require('../common/RemoteResolverFetcher.js');
 
+// The final stitched schema, built once per container and reused by all further (WARM) invocations.
 let cachedSchema = null;
+
+// The schema build in progress, if any. All the activations running concurrently in the same container
+// (I/O Runtime action concurrency) wait for this single build instead of each building their own schema,
+// which would multiply the memory usage and the remote introspection calls at cold start.
+let schemaBuildPromise = null;
 
 // Local resolvers for the executable local schema. They resolve the local root fields and read the
 // per-request dataloaders from the GraphQL execution context so that caching is shared across the
@@ -78,6 +84,12 @@ const localResolvers = {
     }
 };
 
+// The local schema does not depend on the action parameters, so it is built only once when the action
+// code is loaded in the container. It is made executable by attaching resolvers that resolve the local
+// root fields ("products", "category", ...). The resolvers read the per-request dataloaders from the
+// GraphQL execution context (see below).
+const localSubschema = buildLocalSubschema();
+
 async function resolve(params) {
     const logger = Core.Logger('dispatcher', {
         level: params.LOG_LEVEL || 'info'
@@ -86,90 +98,8 @@ async function resolve(params) {
     logger.info('dispatcher resolve action');
     logger.debug(stringParameters(params));
 
-    let remoteResolvers = null;
-    let state = null; // The aio-lib-state object
-    let storeSchema = false; // If true, we will put the remote schemas in the aio-lib-state cache
-
-    // If the schema is not cached, we try to get the remote schemas from the aio-lib-state cache
-    if (cachedSchema == null && Number.isInteger(params['use-aio-cache'])) {
-        state = await libState.init();
-        remoteResolvers = await fetchRemoteSchemasFromCache(state);
-    }
-
-    // If the schema is not cached and we didn't get anything from the aio-lib-state cache,
-    // we prepare the remote fetchers to build the executable remote schemas
-    if (cachedSchema == null && params.remoteSchemas && remoteResolvers == null) {
-        remoteResolvers = prepareRemoteSchemaFetchers(params.remoteSchemas);
-        storeSchema = Number.isInteger(params['use-aio-cache']);
-    }
-
-    // The schema is already available, we use a NOOP Promise for Promise.all()
-    if (remoteResolvers == null) {
-        remoteResolvers = [Promise.resolve({})]; // Do nothing below
-    }
-
-    return Promise.all(remoteResolvers)
-        .then(async (remotes) => {
-            if (cachedSchema == null) {
-                // The local schema is made executable by attaching resolvers that resolve the local
-                // root fields ("products", "category", ...). The resolvers read the per-request
-                // dataloaders from the GraphQL execution context (see below).
-                let local = localSchema();
-                let localExecutableSchema = addResolversToSchema({
-                    schema: local,
-                    resolvers: localResolvers
-                });
-
-                // Track each subschema together with its sort order, instead of mutating the
-                // GraphQLSchema instances with a custom property.
-                let subschemaEntries = [{ schema: localExecutableSchema, order: local.sortOrder }];
-
-                if (params.remoteSchemas) {
-                    let cachedSchemas = [];
-
-                    remotes.forEach((remote) => {
-                        // When loaded from the aio-lib-state cache, the remote schema is an SDL
-                        // string and must be rebuilt into a GraphQLSchema before being wrapped.
-                        let remoteSchema =
-                            typeof remote.schema === 'string' ? buildSchema(remote.schema) : remote.schema;
-
-                        let remoteExecutableSchema = wrapSchema({
-                            schema: remoteSchema,
-                            executor: remote.executor
-                        });
-                        subschemaEntries.push({ schema: remoteExecutableSchema, order: remote.order });
-
-                        // We store the remote schemas in SDL form in the aio-lib-state cache
-                        if (storeSchema) {
-                            cachedSchemas.push({
-                                schema: printSchema(remoteSchema),
-                                action: remote.action,
-                                order: remote.order
-                            });
-                        }
-                    });
-
-                    if (state && cachedSchemas.length > 0) {
-                        let ttl = params['use-aio-cache'];
-                        console.debug(`Trying to put schemas in aio-lib-state cache with ttl:${ttl} ...`);
-                        await state.put('schemas', cachedSchemas, {
-                            ttl
-                        });
-                    }
-                }
-
-                // Sort by ascending sort order so that, on type conflicts, the schema with the
-                // lowest sort order is the "left" candidate and wins (see onTypeConflict).
-                subschemaEntries.sort((a, b) => a.order - b.order);
-
-                let finalSchema = stitchSchemas({
-                    subschemas: subschemaEntries.map((entry) => entry.schema),
-                    onTypeConflict: onTypeConflict
-                });
-
-                cachedSchema = finalSchema; // eslint-disable-line require-atomic-updates
-            }
-
+    return getSchema(params)
+        .then((schema) => {
             // We instantiate some loaders common to the "products" and "category" resolvers.
             // They are passed to the local resolvers through the GraphQL execution context so that
             // caching/deduplication is shared across all the local root fields of a single query.
@@ -194,7 +124,7 @@ async function resolve(params) {
             // convert variables parameter to JSON object (requiered for GET requests)
             const variables = typeof (params.variables) === 'string' ? JSON.parse(params.variables) : params.variables;
             // Main resolver action, partially delegating resolution to the "remote schemas"
-            return graphql(cachedSchema, params.query, {}, context, variables, params.operationName).then(
+            return graphql(schema, params.query, {}, context, variables, params.operationName).then(
                 (response) => {
                     logger.info(`successful request`);
                     return {
@@ -208,6 +138,132 @@ async function resolve(params) {
             logger.error(error);
             return errorResponse(500, 'server error', logger);
         });
+}
+
+/**
+ * Returns a Promise of the executable schema. The schema is built at most once at a time per container:
+ * concurrent activations share the same in-progress build. If the build fails, the in-progress build is
+ * discarded so that the next activation retries it, instead of caching the failure forever.
+ *
+ * @param {*} params The action parameters.
+ */
+function getSchema(params) {
+    if (cachedSchema != null) {
+        return Promise.resolve(cachedSchema);
+    }
+
+    if (schemaBuildPromise == null) {
+        const buildPromise = buildExecutableSchema(params).then(
+            (schema) => {
+                // Ignore the result if the cache was cleaned while this build was in progress
+                if (schemaBuildPromise === buildPromise) {
+                    cachedSchema = schema;
+                    schemaBuildPromise = null;
+                }
+                return schema;
+            },
+            (error) => {
+                if (schemaBuildPromise === buildPromise) {
+                    schemaBuildPromise = null;
+                }
+                throw error;
+            }
+        );
+        schemaBuildPromise = buildPromise;
+    }
+
+    return schemaBuildPromise;
+}
+
+/**
+ * Builds the executable schema by stitching the local schema with all the remote schemas.
+ *
+ * @param {*} params The action parameters.
+ */
+async function buildExecutableSchema(params) {
+    let remoteResolvers = null;
+    let state = null; // The aio-lib-state object
+    let storeSchema = false; // If true, we will put the remote schemas in the aio-lib-state cache
+
+    // We first try to get the remote schemas from the aio-lib-state cache
+    if (Number.isInteger(params['use-aio-cache'])) {
+        state = await initStateCache();
+        if (state) {
+            remoteResolvers = await fetchRemoteSchemasFromCache(state);
+        }
+    }
+
+    // If we didn't get anything from the aio-lib-state cache,
+    // we prepare the remote fetchers to build the executable remote schemas
+    if (params.remoteSchemas && remoteResolvers == null) {
+        remoteResolvers = prepareRemoteSchemaFetchers(params.remoteSchemas);
+        storeSchema = Number.isInteger(params['use-aio-cache']);
+    }
+
+    let remotes = await Promise.all(remoteResolvers || []);
+
+    // Track each subschema together with its sort order, instead of mutating the
+    // GraphQLSchema instances with a custom property.
+    let subschemaEntries = [localSubschema];
+
+    if (params.remoteSchemas) {
+        let cachedSchemas = [];
+
+        remotes.forEach((remote) => {
+            // When loaded from the aio-lib-state cache, the remote schema is an SDL
+            // string and must be rebuilt into a GraphQLSchema before being wrapped.
+            let remoteSchema = typeof remote.schema === 'string' ? buildSchema(remote.schema) : remote.schema;
+
+            let remoteExecutableSchema = wrapSchema({
+                schema: remoteSchema,
+                executor: remote.executor
+            });
+            subschemaEntries.push({ schema: remoteExecutableSchema, order: remote.order });
+
+            // We store the remote schemas in SDL form in the aio-lib-state cache
+            if (storeSchema) {
+                cachedSchemas.push({
+                    schema: printSchema(remoteSchema),
+                    action: remote.action,
+                    order: remote.order
+                });
+            }
+        });
+
+        if (state && cachedSchemas.length > 0) {
+            let ttl = params['use-aio-cache'];
+            console.debug(`Trying to put schemas in aio-lib-state cache with ttl:${ttl} ...`);
+            try {
+                await state.put('schemas', cachedSchemas, {
+                    ttl
+                });
+            } catch (error) {
+                // The schema was built: a failing cache write must not fail the activations
+                console.warn(`Could not put schemas in aio-lib-state cache: ${error.message}`);
+            }
+        }
+    }
+
+    // Sort by ascending sort order so that, on type conflicts, the schema with the
+    // lowest sort order is the "left" candidate and wins (see onTypeConflict).
+    subschemaEntries.sort((a, b) => a.order - b.order);
+
+    return stitchSchemas({
+        subschemas: subschemaEntries.map((entry) => entry.schema),
+        onTypeConflict: onTypeConflict
+    });
+}
+
+/**
+ * Builds the executable local schema, together with its sort order.
+ */
+function buildLocalSubschema() {
+    let local = localSchema();
+    let localExecutableSchema = addResolversToSchema({
+        schema: local,
+        resolvers: localResolvers
+    });
+    return { schema: localExecutableSchema, order: local.sortOrder };
 }
 
 /**
@@ -241,13 +297,34 @@ function prepareRemoteSchemaFetchers(remoteSchemas) {
 }
 
 /**
+ * Initializes the aio-lib-state cache. The cache is best-effort: if it is not available
+ * (for example because the state service is throttling requests), this returns null and
+ * the remote schemas are introspected instead.
+ */
+async function initStateCache() {
+    try {
+        return await libState.init();
+    } catch (error) {
+        console.warn(`Could not initialize aio-lib-state cache: ${error.message}`);
+        return null;
+    }
+}
+
+/**
  * This method checks if the SDL remote schemas are available in the aio-lib-state cache.
  * If successful, it returns an Array of remote resolvers that can be used to build the
- * executable remote schemas. It returns null if nothing could be fetched from the cache.
+ * executable remote schemas. It returns null if nothing could be fetched from the cache,
+ * including when reading the cache fails.
  */
 async function fetchRemoteSchemasFromCache(state) {
     console.debug('Trying to get remote schemas from aio-lib-state cache ...');
-    let schemas = await state.get('schemas');
+    let schemas;
+    try {
+        schemas = await state.get('schemas');
+    } catch (error) {
+        console.warn(`Could not get schemas from aio-lib-state cache: ${error.message}`);
+        return null;
+    }
     if (schemas) {
         console.debug(`Got ${schemas.value.length} schemas from aio-lib-state cache`);
         return schemas.value.map((obj) => {
@@ -312,6 +389,7 @@ function localSchema() {
 // Only exported for unit testing
 function cleanCachedSchema() {
     cachedSchema = null;
+    schemaBuildPromise = null;
 }
 
 module.exports.main = resolve;

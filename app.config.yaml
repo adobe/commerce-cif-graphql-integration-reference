@@ -9,11 +9,17 @@ application:
           dispatcher:
             function: actions/local/dispatcher.js
             web: 'yes'
-            runtime: 'nodejs:18'
+            runtime: 'nodejs:22'
+            # Example limits, see "Resilience and sizing" in the README. Measure the memory used per request
+            # under realistic load, and make sure that concurrency x memory per request fits in memorySize (MB).
+            # limits:
+            #   concurrency: 50
+            #   memorySize: 1024
             inputs:
-              LOG_LEVEL: debug
+              LOG_LEVEL: info # use debug only for troubleshooting, parameters are logged with sensitive values hidden
               use-aio-cache: false # number of seconds for caching; set to false or remove to disable caching
               url: https://a-dummy-url.com
+              max-page-size: 100 # the maximum "pageSize" of product searches, larger values are clamped to this value
               remoteSchemas: # Action with smaller order has "merge priority" in schema conflicts
                 cart:
                   order: 20
@@ -24,7 +30,7 @@ application:
 
           cart:
             function: actions/remote/cartResolver.js
-            runtime: 'nodejs:18'
+            runtime: 'nodejs:22'
             inputs:
               LOG_LEVEL: info
 
@@ -32,7 +38,7 @@ application:
           # used by the AEM/Magento integration.
           cif-schema:
             function: actions/documentation/introspection.js
-            runtime: 'nodejs:18'
+            runtime: 'nodejs:22'
             web: 'yes'
             annotations:
               final: true
