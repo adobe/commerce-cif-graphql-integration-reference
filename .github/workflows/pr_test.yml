@@ -15,9 +15,9 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
@@ -26,7 +26,7 @@ jobs:
       # from source (e.g. macOS arm64, Windows). This must run before `npm i`, which
       # can itself invoke node-gyp on those runners.
       - name: Use Python 3.11
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.11'
       - name: npm install
@@ -56,7 +56,7 @@ jobs:
       # nothing. Gated to ubuntu-latest so the matrix does not publish duplicate checks.
       - name: Publish test results
         if: failure() && matrix.os == 'ubuntu-latest'
-        uses: mikepenz/action-junit-report@v5
+        uses: mikepenz/action-junit-report@v6
         with:
           check_name: Tests
           report_paths: 'test/results/**/*.xml'
@@ -66,7 +66,7 @@ jobs:
       # Upload coverage once (from ubuntu-latest) to avoid triplicate matrix uploads.
       - name: Upload coverage to Codecov
         if: success() && matrix.os == 'ubuntu-latest'
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         with:
           files: coverage/lcov.info
           fail_ci_if_error: false
